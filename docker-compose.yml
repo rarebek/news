@@ -19,11 +19,11 @@ services:
 
   app_news:
     build: .
-    container_name: app
+    container_name: app_news
     networks:
       tarkib:
         aliases:
-          - app
+          - app_news
     ports:
       - "8088:8088"
     env_file: .env
