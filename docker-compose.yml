@@ -31,10 +31,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_healthy
-      minio:
-        condition: service_healthy
     environment:
       - DATABASE_URL=postgres://$${POSTGRES_USER}:$${POSTGRES_PASSWORD}@postgres:5432/$${POSTGRES_DB}
       - REDIS_URL=redis://redis:6379
@@ -45,5 +41,3 @@ networks:
 
 volumes:
   pg-data:
-  redis-data:
-  minio-data:
