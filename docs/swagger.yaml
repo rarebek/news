@@ -1,0 +1,332 @@
+basePath: /v1
+definitions:
+  models.AdminLoginRequest:
+    properties:
+      password:
+        example: Nodirbek
+        type: string
+      phone_number:
+        example: "+998889561006"
+        type: string
+    type: object
+  models.AdminLoginResponse:
+    properties:
+      access_token:
+        type: string
+    type: object
+  models.CategoryResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      subcategories:
+        items:
+          $ref: '#/definitions/models.SubCategoryResponse'
+        type: array
+    type: object
+  models.Message:
+    properties:
+      message:
+        type: string
+    type: object
+  models.News:
+    properties:
+      description:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      subcategory_id:
+        type: integer
+    type: object
+  models.NewsWithCategoryNames:
+    properties:
+      category_name:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      subcategory_name:
+        type: string
+    type: object
+  models.SubCategoryResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  v1.response:
+    properties:
+      error:
+        example: message
+        type: string
+    type: object
+info:
+  contact: {}
+  description: 'Backend - Nodirbek No''monov     TG: https://t.me/alwaysgolang'
+  title: tarkib.uz back-end
+  version: "1.0"
+paths:
+  /auth/admin/create:
+    post:
+      consumes:
+      - application/json
+      description: Creates an admin
+      operationId: create-admin
+      parameters:
+      - description: Phone Number and Password to create Admin
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.AdminLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AdminLoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - BearerAuth: []
+      summary: Create Admin
+      tags:
+      - auth
+  /auth/admin/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates an admin and returns an access token on successful
+        login.
+      operationId: login-admin
+      parameters:
+      - description: Phone Number and Password
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.AdminLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AdminLoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Login
+      tags:
+      - auth
+  /auth/superadmin/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a super admin and returns an access token on successful
+        login.
+      operationId: login-super-admin
+      parameters:
+      - description: Phone Number and Password
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.AdminLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AdminLoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Super Admin Login
+      tags:
+      - auth
+  /category/getall:
+    get:
+      consumes:
+      - application/json
+      description: This method retrieves all categories with their subcategories.
+      operationId: get-all-categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.CategoryResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Get All Categories
+      tags:
+      - categories
+  /news/create:
+    post:
+      consumes:
+      - application/json
+      description: This method for creating a new news.
+      operationId: create-news
+      parameters:
+      - description: News details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.News'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Message'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - BearerAuth: []
+      summary: Create News
+      tags:
+      - news
+  /news/getall:
+    get:
+      consumes:
+      - application/json
+      description: This method retrieves all news with pagination.
+      operationId: get-all-news
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: limit
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.News'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Get All News
+      tags:
+      - news
+  /news/getall/withcategory:
+    get:
+      consumes:
+      - application/json
+      description: This method retrieves all news with category and subcategory names.
+      operationId: get-all-news-with-category
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: Subcategory id for getting all news by subcategory and category
+        in: query
+        name: subcategory_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.NewsWithCategoryNames'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Get All News By Category
+      tags:
+      - news
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
