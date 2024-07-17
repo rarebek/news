@@ -18,7 +18,9 @@ func NewNewsRepo(pg *postgres.Postgres) *NewsRepo {
 }
 
 func (n *NewsRepo) CreateNews(ctx context.Context, request *entity.News) error {
-	var newsID = uuid.NewString()
+	var (
+		newsID = uuid.NewString()
+	)
 	data := map[string]interface{}{
 		"id":          newsID,
 		"name":        request.Name,
@@ -35,14 +37,38 @@ func (n *NewsRepo) CreateNews(ctx context.Context, request *entity.News) error {
 		return err
 	}
 
-	data = map[string]interface{}{
-		"subcategory_id": request.SubCategoryID,
-		"news_id":        newsID,
+	for _, v := range request.SubCategoryIDs {
+		data = map[string]interface{}{
+			"subcategory_id": v,
+			"news_id":        newsID,
+		}
+
+		sql, args, err = n.Builder.Insert("subcategory_news").
+			SetMap(data).ToSql()
+		if err != nil {
+			return err
+		}
+
+		if _, err = n.Pool.Exec(ctx, sql, args...); err != nil {
+			return err
+		}
 	}
 
-	sql, args, err = n.Builder.Insert("subcategory_news").
-		SetMap(data).ToSql()
+	return nil
+}
+
+func (n *NewsRepo) DeleteNews(ctx context.Context, id string) error {
+	var count int
+	sql, args, err := n.Builder.Delete("news").
+		Where(squirrel.Eq{
+			"id": id,
+		}).ToSql()
 	if err != nil {
+		return err
+	}
+
+	query := `SELECT COUNT(*) from subcategory_news WHERE news_id = $1`
+	if err = n.Pool.QueryRow(ctx, query, id).Scan(&count); err != nil {
 		return err
 	}
 
@@ -50,11 +76,29 @@ func (n *NewsRepo) CreateNews(ctx context.Context, request *entity.News) error {
 		return err
 	}
 
+	for i := 0; i < count; i++ {
+		sql, args, err = n.Builder.Delete("subcategory_news").
+			Where(squirrel.Eq{
+				"news_id": id,
+			}).ToSql()
+		if err != nil {
+			return err
+		}
+
+		if _, err = n.Pool.Exec(ctx, sql, args...); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
-func (n *NewsRepo) GetAllNews(ctx context.Context, request *entity.GetAllNewsRequest) ([]entity.News, error) {
-	var newsList []entity.News
+func (n *NewsRepo) GetAllNews(ctx context.Context, request *entity.GetAllNewsRequest) ([]entity.
+	News, error) {
+	var (
+		newsList []entity.News
+		ids      []int
+	)
 	offset := (request.Page - 1) * request.Limit
 
 	sql, args, err := n.Builder.Select("*").
@@ -78,48 +122,36 @@ func (n *NewsRepo) GetAllNews(ctx context.Context, request *entity.GetAllNewsReq
 		if err := rows.Scan(&news.ID, &news.Name, &news.Description, &news.ImageURL, &news.CreatedAt); err != nil {
 			return nil, err
 		}
-		newsList = append(newsList, news)
-	}
 
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return newsList, nil
-}
-func (n *NewsRepo) GetAllNewsByCategory(ctx context.Context, request *entity.GetNewsBySubCategory) ([]entity.NewsWithCategoryNames, error) {
-	var newsList []entity.NewsWithCategoryNames
-	offset := (request.Page - 1) * request.Limit
-
-	sql, args, err := n.Builder.
-		Select("n.id, n.name, n.description, n.image_url, n.created_at, s.name AS subcategory_name, c.name AS category_name").
-		From("news n").
-		Join("subcategory_news sn ON n.id = sn.news_id").
-		Join("subcategories s ON sn.subcategory_id = s.id").
-		Join("categories c ON s.category_id = c.id").
-		Where(squirrel.Eq{
-			"s.id": request.SubCategoryId,
-		}).
-		OrderBy("n.created_at DESC").
-		Limit(uint64(request.Limit)).
-		Offset(uint64(offset)).
-		ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	rows, err := n.Pool.Query(ctx, sql, args...)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var news entity.NewsWithCategoryNames
-		if err := rows.Scan(&news.ID, &news.Name, &news.Description, &news.ImageURL, &news.CreatedAt, &news.SubCategoryName, &news.CategoryName); err != nil {
+		sql, args, err = n.Builder.Select("subcategory_id").
+			From("subcategory_news").
+			Where(squirrel.Eq{
+				"news_id": news.ID,
+			}).ToSql()
+		if err != nil {
 			return nil, err
 		}
+
+		rows, err := n.Pool.Query(ctx, sql, args...)
+		if err != nil {
+			return nil, err
+		}
+
+		for rows.Next() {
+			var id int
+			if err = rows.Scan(&id); err != nil {
+				return nil, err
+			}
+
+			ids = append(ids, id)
+
+		}
+
+		news.SubCategoryIDs = ids
+
 		newsList = append(newsList, news)
+
+		ids = nil
 	}
 
 	if err := rows.Err(); err != nil {

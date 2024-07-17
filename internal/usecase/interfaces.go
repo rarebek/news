@@ -26,13 +26,13 @@ type (
 	News interface {
 		CreateNews(ctx context.Context, request *entity.News) error
 		GetAllNews(ctx context.Context, request *entity.GetAllNewsRequest) ([]entity.News, error)
-		GetAllNewsByCategory(ctx context.Context, request *entity.GetNewsBySubCategory) ([]entity.NewsWithCategoryNames, error)
+		DeleteNews(ctx context.Context, id string) error
 	}
 
 	NewsRepo interface {
 		CreateNews(ctx context.Context, request *entity.News) error
 		GetAllNews(ctx context.Context, request *entity.GetAllNewsRequest) ([]entity.News, error)
-		GetAllNewsByCategory(ctx context.Context, request *entity.GetNewsBySubCategory) ([]entity.NewsWithCategoryNames, error)
+		DeleteNews(ctx context.Context, id string) error
 	}
 
 	Category interface {

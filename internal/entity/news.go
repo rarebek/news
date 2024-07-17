@@ -3,12 +3,12 @@ package entity
 import "time"
 
 type News struct {
-	ID            string    `json:"id"`
-	Name          string    `json:"name"`
-	Description   string    `json:"description"`
-	ImageURL      string    `json:"image_url"`
-	CreatedAt     time.Time `json:"created_at"`
-	SubCategoryID int       `json:"subcategory_id"`
+	ID             string    `json:"id"`
+	Name           string    `json:"name"`
+	Description    string    `json:"description"`
+	ImageURL       string    `json:"image_url"`
+	CreatedAt      time.Time `json:"created_at"`
+	SubCategoryIDs []int     `json:"subcategory_ids"`
 }
 
 type NewsWithCategoryNames struct {

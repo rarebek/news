@@ -13,12 +13,7 @@ type Message struct {
 	Message string `json:"message"`
 }
 
-type News struct {
-	Name          string `json:"name"`
-	Description   string `json:"description"`
-	ImageURL      string `json:"image_url"`
-	SubCategoryID int    `json:"subcategory_id"`
-}
+
 
 type SubCategoryResponse struct {
 	ID   int    `json:"id"`

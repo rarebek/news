@@ -38,25 +38,10 @@ definitions:
         type: string
       name:
         type: string
-      subcategory_id:
-        type: integer
-    type: object
-  models.NewsWithCategoryNames:
-    properties:
-      category_name:
-        type: string
-      created_at:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      image_url:
-        type: string
-      name:
-        type: string
-      subcategory_name:
-        type: string
+      subcategory_ids:
+        items:
+          type: integer
+        type: array
     type: object
   models.SubCategoryResponse:
     properties:
@@ -74,7 +59,7 @@ definitions:
 info:
   contact: {}
   description: 'Backend - Nodirbek No''monov     TG: https://t.me/alwaysgolang'
-  title: tarkib.uz back-end
+  title: news back-end
   version: "1.0"
 paths:
   /auth/admin/create:
@@ -115,7 +100,7 @@ paths:
       tags:
       - superadmin
   /auth/admin/delete:
-    post:
+    delete:
       consumes:
       - application/json
       description: This method deletes admin.
@@ -132,7 +117,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.AdminLoginResponse'
+            $ref: '#/definitions/v1.response'
         "400":
           description: Bad Request
           schema:
@@ -248,7 +233,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: This method for creating a new news.
+      description: This method for creating a news
       operationId: create-news
       parameters:
       - description: News details
@@ -279,6 +264,42 @@ paths:
       security:
       - BearerAuth: []
       summary: Create News
+      tags:
+      - news
+  /news/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: This method deleting news
+      operationId: delete-news
+      parameters:
+      - description: ID of the news to delete
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Message'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - BearerAuth: []
+      summary: Delete News
       tags:
       - news
   /news/getall:
@@ -316,48 +337,6 @@ paths:
           schema:
             $ref: '#/definitions/v1.response'
       summary: Get All News
-      tags:
-      - news
-  /news/getall/withcategory:
-    get:
-      consumes:
-      - application/json
-      description: This method retrieves all news with category and subcategory names.
-      operationId: get-all-news-with-category
-      parameters:
-      - description: Page number
-        in: query
-        name: page
-        required: true
-        type: integer
-      - description: Number of items per page
-        in: query
-        name: limit
-        required: true
-        type: integer
-      - description: Subcategory id for getting all news by subcategory and category
-        in: query
-        name: subcategory_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.NewsWithCategoryNames'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/v1.response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.response'
-      summary: Get All News By Category
       tags:
       - news
 securityDefinitions:

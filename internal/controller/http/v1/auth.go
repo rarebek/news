@@ -160,12 +160,12 @@ func (r *authRoutes) createAdmin(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       id path int true "ID of the admin to delete"
-// @Success     200 {object} models.AdminLoginResponse
+// @Success     200 {object} response
 // @Failure     400 {object} response
 // @Failure     401 {object} response
 // @Failure     500 {object} response
 // @Security    BearerAuth
-// @Router      /auth/admin/delete [post]
+// @Router      /auth/admin/delete [delete]
 func (r *authRoutes) deleteAdmin(c *gin.Context) {
 	id := c.Param("id")
 

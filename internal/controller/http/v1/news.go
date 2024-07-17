@@ -24,12 +24,12 @@ func newNewsRoutes(handler *gin.RouterGroup, t usecase.NewsUseCase, l logger.Int
 	{
 		h.POST("/create", r.create)
 		h.GET("/getall", r.getAllNews)
-		h.GET("/getall/withcategory", r.getAllNewsWithCategoryNames)
+		h.DELETE("/delete/:id", r.deleteNews)
 	}
 }
 
 // @Summary     Create News
-// @Description This method for creating a new news.
+// @Description This method for creating a news
 // @ID          create-news
 // @Tags  	    news
 // @Accept      json
@@ -50,10 +50,10 @@ func (n *newsRoutes) create(c *gin.Context) {
 	}
 
 	if err := n.t.CreateNews(c.Request.Context(), &entity.News{
-		Name:          body.Name,
-		Description:   body.Description,
-		ImageURL:      body.ImageURL,
-		SubCategoryID: body.SubCategoryID,
+		Name:           body.Name,
+		Description:    body.Description,
+		ImageURL:       body.ImageURL,
+		SubCategoryIDs: body.SubCategoryIDs,
 	}); err != nil {
 		n.l.Error(err)
 		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti")
@@ -62,6 +62,32 @@ func (n *newsRoutes) create(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Yangilik muvaffaqiyatli yaratildi.",
+	})
+}
+
+// @Summary     Delete News
+// @Description This method deleting news
+// @ID          delete-news
+// @Tags  	    news
+// @Accept      json
+// @Produce     json
+// @Param       id path string true "ID of the news to delete"
+// @Success     200 {object} models.Message
+// @Failure     400 {object} response
+// @Failure     401 {object} response
+// @Failure     500 {object} response
+// @Security    BearerAuth
+// @Router      /news/delete/{id} [delete]
+func (n *newsRoutes) deleteNews(c *gin.Context) {
+	id := c.Param("id")
+	if err := n.t.DeleteNews(c.Request.Context(), id); err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti")
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Yangilik muvaffaqiyatli o'chirildi.",
 	})
 }
 
@@ -103,65 +129,6 @@ func (n *newsRoutes) getAllNews(c *gin.Context) {
 	news, err := n.t.GetAllNews(c.Request.Context(), &entity.GetAllNewsRequest{
 		Page:  pageInt,
 		Limit: limitInt,
-	})
-	if err != nil {
-		n.l.Error(err)
-		errorResponse(c, http.StatusInternalServerError, models.ErrServerProblems)
-		return
-	}
-
-	c.JSON(http.StatusOK, news)
-}
-
-// @Summary		Get All News By Category
-// @Description This method retrieves all news with category and subcategory names.
-// @ID          get-all-news-with-category
-// @Tags  	    news
-// @Accept      json
-// @Produce     json
-// @Param       page  query int true  "Page number"
-// @Param       limit query int true  "Number of items per page"
-// @Param       subcategory_id query int true  "Subcategory id for getting all news by subcategory and category"
-// @Success     200 {object} []models.NewsWithCategoryNames
-// @Failure     400 {object} response
-// @Failure     500 {object} response
-// @Router      /news/getall/withcategory [get]
-func (n *newsRoutes) getAllNewsWithCategoryNames(c *gin.Context) {
-	var (
-		page          string
-		limit         string
-		subcategoryId string
-	)
-
-	page = c.Query("page")
-	limit = c.Query("limit")
-	subcategoryId = c.Query("subcategory_id")
-
-	pageInt, err := strconv.Atoi(page)
-	if err != nil {
-		n.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
-		return
-	}
-
-	limitInt, err := strconv.Atoi(limit)
-	if err != nil {
-		n.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
-		return
-	}
-
-	subcategoryIdInt, err := strconv.Atoi(subcategoryId)
-	if err != nil {
-		n.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
-		return
-	}
-
-	news, err := n.t.GetAllNewsByCategory(c.Request.Context(), &entity.GetNewsBySubCategory{
-		Page:          pageInt,
-		Limit:         limitInt,
-		SubCategoryId: subcategoryIdInt,
 	})
 	if err != nil {
 		n.l.Error(err)

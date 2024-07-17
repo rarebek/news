@@ -74,7 +74,7 @@ const docTemplate = `{
             }
         },
         "/auth/admin/delete": {
-            "post": {
+            "delete": {
                 "security": [
                     {
                         "BearerAuth": []
@@ -105,7 +105,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.AdminLoginResponse"
+                            "$ref": "#/definitions/v1.response"
                         }
                     },
                     "400": {
@@ -275,7 +275,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "This method for creating a new news.",
+                "description": "This method for creating a news",
                 "consumes": [
                     "application/json"
                 ],
@@ -296,6 +296,62 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.News"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Message"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/news/delete/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "This method deleting news",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "news"
+                ],
+                "summary": "Delete News",
+                "operationId": "delete-news",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the news to delete",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -380,68 +436,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/news/getall/withcategory": {
-            "get": {
-                "description": "This method retrieves all news with category and subcategory names.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "news"
-                ],
-                "summary": "Get All News By Category",
-                "operationId": "get-all-news-with-category",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Page number",
-                        "name": "page",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Number of items per page",
-                        "name": "limit",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Subcategory id for getting all news by subcategory and category",
-                        "name": "subcategory_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.NewsWithCategoryNames"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/v1.response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/v1.response"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -503,34 +497,11 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "subcategory_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.NewsWithCategoryNames": {
-            "type": "object",
-            "properties": {
-                "category_name": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "image_url": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "subcategory_name": {
-                    "type": "string"
+                "subcategory_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
@@ -570,7 +541,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "",
 	BasePath:         "/v1",
 	Schemes:          []string{},
-	Title:            "tarkib.uz back-end",
+	Title:            "news back-end",
 	Description:      "Backend - Nodirbek No'monov     TG: https://t.me/alwaysgolang",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

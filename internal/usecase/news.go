@@ -34,11 +34,6 @@ func (n *NewsUseCase) GetAllNews(ctx context.Context, request *entity.GetAllNews
 	return news, nil
 }
 
-func (n *NewsUseCase) GetAllNewsByCategory(ctx context.Context, request *entity.GetNewsBySubCategory) ([]entity.NewsWithCategoryNames, error) {
-	news, err := n.repo.GetAllNewsByCategory(ctx, request)
-	if err != nil {
-		return nil, err
-	}
-
-	return news, nil
+func (n *NewsUseCase) DeleteNews(ctx context.Context, id string) error {
+	return n.repo.DeleteNews(ctx, id)
 }

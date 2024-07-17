@@ -22,7 +22,7 @@ import (
 
 // NewRouter -.
 // Swagger spec:
-// @title       tarkib.uz back-end
+// @title       news back-end
 // @description Backend - Nodirbek No'monov     TG: https://t.me/alwaysgolang
 // @version     1.0
 // @BasePath    /v1
