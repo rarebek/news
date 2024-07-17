@@ -25,7 +25,7 @@ services:
         aliases:
           - app_news
     ports:
-      - "8088:8088"
+      - "8766:8766"
     env_file: .env
     # depends_on:
     #   postgres:
