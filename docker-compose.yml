@@ -23,7 +23,7 @@ services:
     networks:
       tarkib:
         aliases:
-          - app_news
+          - app
     ports:
       - "8766:8766"
     env_file: .env
