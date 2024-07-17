@@ -30,10 +30,10 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "superadmin"
                 ],
                 "summary": "Create Admin",
-                "operationId": "create-admin",
+                "operationId": "superadmin-create-admin",
                 "parameters": [
                     {
                         "description": "Phone Number and Password to create Admin",
@@ -43,6 +43,62 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.AdminLoginRequest"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.AdminLoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/admin/delete": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "This method deletes admin.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "superadmin"
+                ],
+                "summary": "Delete Admin",
+                "operationId": "superadmin-delete-admin",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID of the admin to delete",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -83,10 +139,10 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "admin"
                 ],
                 "summary": "Login",
-                "operationId": "login-admin",
+                "operationId": "admin-login",
                 "parameters": [
                     {
                         "description": "Phone Number and Password",
@@ -136,10 +192,10 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "superadmin"
                 ],
                 "summary": "Super Admin Login",
-                "operationId": "login-super-admin",
+                "operationId": "superadmin-login",
                 "parameters": [
                     {
                         "description": "Phone Number and Password",

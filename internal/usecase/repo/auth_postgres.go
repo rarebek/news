@@ -76,3 +76,19 @@ func (a *AuthRepo) CreateAdmin(ctx context.Context, admin *entity.Admin) error {
 
 	return nil
 }
+
+func (a *AuthRepo) DeleteAdmin(ctx context.Context, id string) error {
+	sql, args, err := a.Builder.Delete("admins").
+		Where(squirrel.Eq{
+			"id": id,
+		}).ToSql()
+	if err != nil {
+		return err
+	}
+
+	if _, err = a.Pool.Exec(ctx, sql, args...); err != nil {
+		return err
+	}
+
+	return nil
+}

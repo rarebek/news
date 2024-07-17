@@ -24,13 +24,14 @@ func newAuthRoutes(handler *gin.RouterGroup, t usecase.Auth, l logger.Interface)
 		h.POST("/admin/login", r.login)
 		h.POST("/superadmin/login", r.superAdminLogin)
 		h.POST("/admin/create", r.createAdmin)
+		h.DELETE("/admin/delete/:id", r.deleteAdmin)
 	}
 }
 
 // @Summary     Login
 // @Description Authenticates an admin and returns an access token on successful login.
-// @ID          login-admin
-// @Tags  	    auth
+// @ID          admin-login
+// @Tags  	    admin
 // @Accept      json
 // @Produce     json
 // @Param       request body models.AdminLoginRequest true "Phone Number and Password"
@@ -74,8 +75,8 @@ func (r *authRoutes) login(c *gin.Context) {
 
 // @Summary     Super Admin Login
 // @Description Authenticates a super admin and returns an access token on successful login.
-// @ID          login-super-admin
-// @Tags  	    auth
+// @ID          superadmin-login
+// @Tags  	    superadmin
 // @Accept      json
 // @Produce     json
 // @Param       request body models.AdminLoginRequest true "Phone Number and Password"
@@ -119,8 +120,8 @@ func (r *authRoutes) superAdminLogin(c *gin.Context) {
 
 // @Summary     Create Admin
 // @Description Creates an admin
-// @ID          create-admin
-// @Tags  	    auth
+// @ID          superadmin-create-admin
+// @Tags  	    superadmin
 // @Accept      json
 // @Produce     json
 // @Param       request body models.AdminLoginRequest true "Phone Number and Password to create Admin"
@@ -149,5 +150,32 @@ func (r *authRoutes) createAdmin(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Admin muvaffaqiyatli yaratildi",
+	})
+}
+
+// @Summary     Delete Admin
+// @Description This method deletes admin.
+// @ID          superadmin-delete-admin
+// @Tags  	    superadmin
+// @Accept      json
+// @Produce     json
+// @Param       id path int true "ID of the admin to delete"
+// @Success     200 {object} models.AdminLoginResponse
+// @Failure     400 {object} response
+// @Failure     401 {object} response
+// @Failure     500 {object} response
+// @Security    BearerAuth
+// @Router      /auth/admin/delete [post]
+func (r *authRoutes) deleteAdmin(c *gin.Context) {
+	id := c.Param("id")
+
+	if err := r.t.DeleteAdmin(c.Request.Context(), id); err != nil {
+		r.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Admin muvaffaqiyatli o'chirildi",
 	})
 }

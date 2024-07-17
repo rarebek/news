@@ -91,3 +91,11 @@ func (uc *AuthUseCase) CreateAdmin(ctx context.Context, admin *entity.Admin) err
 
 	return nil
 }
+
+func (uc *AuthUseCase) DeleteAdmin(ctx context.Context, id string) error {
+	if err := uc.repo.DeleteAdmin(ctx, id); err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -82,7 +82,7 @@ paths:
       consumes:
       - application/json
       description: Creates an admin
-      operationId: create-admin
+      operationId: superadmin-create-admin
       parameters:
       - description: Phone Number and Password to create Admin
         in: body
@@ -113,14 +113,50 @@ paths:
       - BearerAuth: []
       summary: Create Admin
       tags:
-      - auth
+      - superadmin
+  /auth/admin/delete:
+    post:
+      consumes:
+      - application/json
+      description: This method deletes admin.
+      operationId: superadmin-delete-admin
+      parameters:
+      - description: ID of the admin to delete
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AdminLoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - BearerAuth: []
+      summary: Delete Admin
+      tags:
+      - superadmin
   /auth/admin/login:
     post:
       consumes:
       - application/json
       description: Authenticates an admin and returns an access token on successful
         login.
-      operationId: login-admin
+      operationId: admin-login
       parameters:
       - description: Phone Number and Password
         in: body
@@ -149,14 +185,14 @@ paths:
             $ref: '#/definitions/v1.response'
       summary: Login
       tags:
-      - auth
+      - admin
   /auth/superadmin/login:
     post:
       consumes:
       - application/json
       description: Authenticates a super admin and returns an access token on successful
         login.
-      operationId: login-super-admin
+      operationId: superadmin-login
       parameters:
       - description: Phone Number and Password
         in: body
@@ -185,7 +221,7 @@ paths:
             $ref: '#/definitions/v1.response'
       summary: Super Admin Login
       tags:
-      - auth
+      - superadmin
   /category/getall:
     get:
       consumes:

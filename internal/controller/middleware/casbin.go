@@ -108,7 +108,7 @@ func (a *JWTRoleAuth) RequireRefresh(c *gin.Context) {
 
 func (a *JWTRoleAuth) RequirePermission(c *gin.Context) {
 	c.JSON(http.StatusForbidden, gin.H{
-		"Error": "You have no access this page",
+		"Error": "Sizga bu sahifaga kirishga ruxsat yo'q",
 	})
 	c.AbortWithStatus(403)
 }
