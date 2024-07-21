@@ -101,6 +101,7 @@ services:
 
 networks:
   tarkib:
+    driver: bridge
 
 volumes:
   grafana-data:
