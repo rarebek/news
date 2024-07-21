@@ -1,53 +1,53 @@
 services:
-  loki:
-    image: grafana/loki:2.8.2
-    user: root
-    ports:
-      - "3100:3100"
-    volumes:
-      - ./loki-config.yaml:/etc/loki/local-config.yaml
-      - loki-data:/var/loki
-    networks:
-      tarkib:
-        aliases:
-          - loki
+  # loki:
+  #   image: grafana/loki:2.8.2
+  #   user: root
+  #   ports:
+  #     - "3100:3100"
+  #   volumes:
+  #     - ./loki-config.yaml:/etc/loki/local-config.yaml
+  #     - loki-data:/var/loki
+  #   networks:
+  #     tarkib:
+  #       aliases:
+  #         - loki
 
-  grafana:
-    image: grafana/grafana:9.5.2
-    ports:
-      - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    volumes:
-      - grafana-data:/var/lib/grafana
-    depends_on:
-      - loki
-    networks:
-      tarkib:
-        aliases:
-          - grafana
+  # grafana:
+  #   image: grafana/grafana:9.5.2
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - GF_SECURITY_ADMIN_USER=admin
+  #     - GF_SECURITY_ADMIN_PASSWORD=admin
+  #   volumes:
+  #     - grafana-data:/var/lib/grafana
+  #   depends_on:
+  #     - loki
+  #   networks:
+  #     tarkib:
+  #       aliases:
+  #         - grafana
 
-  promtail:
-    image: grafana/promtail:2.8.2
-    volumes:
-      - /var/log:/var/log
-      - /var/lib/docker/containers:/var/lib/docker/containers
-      - ./promtail-config.yaml:/etc/promtail/config.yml
-    depends_on:
-      - loki
-    networks:
-      tarkib:
-        aliases:
-          - promtail
+  # promtail:
+  #   image: grafana/promtail:2.8.2
+  #   volumes:
+  #     - /var/log:/var/log
+  #     - /var/lib/docker/containers:/var/lib/docker/containers
+  #     - ./promtail-config.yaml:/etc/promtail/config.yml
+  #   depends_on:
+  #     - loki
+  #   networks:
+  #     tarkib:
+  #       aliases:
+  #         - promtail
 
-  app:
+  app-news:
     build: .
     container_name: app-news
     networks:
       tarkib:
         aliases:
-          - app
+          - app-news
     env_file: 
       - .env
     ports:
