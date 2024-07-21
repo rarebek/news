@@ -43,7 +43,7 @@ services:
 
   app:
     build: .
-    container_name: app
+    container_name: app-news
     networks:
       tarkib:
         aliases:
