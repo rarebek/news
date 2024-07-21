@@ -41,6 +41,7 @@ func init() {
 		if err == nil {
 			break
 		}
+		pp.Println(databaseURL)
 
 		log.Printf("Migrate: postgres is trying to connect, attempts left: %d", attempts)
 		pp.Println("ERROR: ", err)
