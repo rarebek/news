@@ -56,6 +56,20 @@ services:
       - REDIS_URL=redis://redis:6379
       - MINIO_URL=http://minio:9000
 
+
+  postgres:
+    container_name: postgres
+    image: postgres
+    networks:
+      tarkib:
+        aliases:
+          - postgres
+    volumes:
+      - pg-data:/var/lib/postgresql/datatarkibuz
+    env_file: .env
+    ports:
+      - "5431:5432"
+
   # postgres-news:
   #   container_name: postgres-news
   #   image: postgres
@@ -101,7 +115,6 @@ services:
 
 networks:
   tarkib:
-    driver: bridge
 
 volumes:
   grafana-data:
