@@ -69,6 +69,14 @@ services:
     env_file: .env
     ports:
       - "5431:5432"
+    
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - "8889:8889"
+    networks:
+      - tarkib
 
   # postgres-news:
   #   container_name: postgres-news
