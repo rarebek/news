@@ -74,7 +74,7 @@ services:
     image: adminer
     container_name: adminer
     ports:
-      - "8889:8889"
+      - "8080:8080"
     networks:
       - tarkib
 
