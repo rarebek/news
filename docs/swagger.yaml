@@ -229,6 +229,40 @@ paths:
       summary: Get All Categories
       tags:
       - categories
+  /file/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Api for image upload
+      parameters:
+      - description: Image
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: Bucket type to put image
+        in: formData
+        name: type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Image upload
+      tags:
+      - file-upload
   /news/create:
     post:
       consumes:

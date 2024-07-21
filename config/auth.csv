@@ -2,13 +2,24 @@ p, unauthorized, /swagger/*, GET
 p, unauthorized, /swagger/index.html, GET
 p, unauthorized, /swagger/index.html, POST
 p, unauthorized, /v1/auth/admin/login, POST
+p, unauthorized, /v1/auth/admin/login, OPTIONS
 p, unauthorized, /v1/auth/superadmin/login, POST
+p, unauthorized, /v1/auth/superadmin/login, OPTIONS
 p, unauthorized, /v1/category/getall, GET
+p, unauthorized, /v1/category/getall, OPTIONS
 p, unauthorized, /v1/news/getall, GET
+p, unauthorized, /v1/news/getall, OPTIONS
 p, unauthorized, /v1/news/getall/withcategory, GET
+p, unauthorized, /v1/news/getall/withcategory, OPTIONS
+p, unauthorized, /metrics, GET
 p, admin, /v1/news/create, POST
+p, admin, /v1/news/create, OPTIONS
 p, super-admin, /v1/news/create, POST
+p, super-admin, /v1/news/create, OPTIONS
 p, admin, /v1/news/delete/{id}, DELETE
+p, admin, /v1/news/delete/{id}, OPTIONS
 p, super-admin, /v1/news/delete/{id}, DELETE
+p, super-admin, /v1/news/delete/{id}, OPTIONS
 p, super-admin, /v1/auth/admin/create, POST
-g, user, unauthorized
+p, super-admin, /v1/auth/admin/create, OPTIONS
+g, user, unauthorized   

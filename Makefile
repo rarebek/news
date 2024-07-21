@@ -13,6 +13,10 @@ run: swag-v1 ### swag run
 	DISABLE_SWAGGER_HTTP_HANDLER='' GIN_MODE=debug CGO_ENABLED=0 go run -tags migrate ./cmd/app
 .PHONY: run
 
+build:
+	go build -o ./bin/app -tags migrate ./cmd/app
+.PHONY: build
+
 mock: ### run mockgen
 	mockgen -source ./internal/usecase/interfaces.go -package usecase_test > ./internal/usecase/mocks_test.go
 .PHONY: mock
@@ -39,3 +43,6 @@ push:
     git add . \
     git commit -m "feat: $(msg)"\
     git push
+
+send:
+	scp -r ./* nodirbek@192.168.100.17:/home/nodirbek/news

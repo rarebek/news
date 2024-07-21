@@ -1,9 +1,19 @@
 package v1
 
 import (
+	"context"
+	"errors"
+	"fmt"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/k0kubun/pp"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 
 	"tarkib.uz/internal/controller/http/models"
 	"tarkib.uz/internal/entity"
@@ -25,6 +35,7 @@ func newAuthRoutes(handler *gin.RouterGroup, t usecase.Auth, l logger.Interface)
 		h.POST("/superadmin/login", r.superAdminLogin)
 		h.POST("/admin/create", r.createAdmin)
 		h.DELETE("/admin/delete/:id", r.deleteAdmin)
+		h.POST("/upload", r.upload)
 	}
 }
 
@@ -177,5 +188,94 @@ func (r *authRoutes) deleteAdmin(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Admin muvaffaqiyatli o'chirildi",
+	})
+}
+
+type File struct {
+	File *multipart.FileHeader `form:"file" binding:"required"`
+}
+
+// @Summary       Image upload
+// @Description   Api for image upload
+// @Tags          file-upload
+// @Accept        multipart/form-data
+// @Produce       json
+// @Param         file formData file true "Image"
+// @Param         type formData string true "Bucket type to put image"
+// @Success       200 {object} string
+// @Failure       400 {object} string
+// @Failure       500 {object} string
+// @Router        /file/upload [post]
+func (f *authRoutes) upload(c *gin.Context) {
+	pp.Println("This method")
+	// Parse form fields
+	err := c.Request.ParseMultipartForm(10 << 20) // 10 MB max
+	if err != nil {
+		f.l.Error(err, "http - v1 - fileupload - ParseMultipartForm")
+		errorResponse(c, http.StatusBadRequest, "Failed to parse multipart form")
+		return
+	}
+
+	// Extract type from form
+	bucketType := c.Request.FormValue("type")
+	if bucketType == "" {
+		errorResponse(c, http.StatusBadRequest, "Bucket type is required")
+		return
+	}
+	fmt.Println("a")
+	// Validate file field and retrieve file data
+	file, fileHeader, err := c.Request.FormFile("file")
+	if err != nil {
+		f.l.Error(err, "http - v1 - fileupload - FormFile")
+		errorResponse(c, http.StatusBadRequest, "Failed to retrieve file")
+		return
+	}
+	defer file.Close()
+
+	// Validate file extension
+	ext := filepath.Ext(fileHeader.Filename)
+	allowedExts := map[string]bool{".png": true, ".jpg": true, ".svg": true, ".jpeg": true, ".JPG": true, ".PNG": true}
+	if !allowedExts[ext] {
+		f.l.Error(errors.New("invalid file extension"), "http - v1 - fileupload - filepath.Ext")
+		errorResponse(c, http.StatusBadRequest, "Only PNG, JPG, JPEG, and SVG files are allowed")
+		return
+	}
+
+	// Prepare MinIO client and upload parameters
+	endpoint := os.Getenv("SERVER_IP")
+	accessKeyID := "nodirbek"
+	secretAccessKey := "nodirbek"
+	bucketName := bucketType
+	minioClient, err := minio.New("minio:9000", &minio.Options{
+		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+		Secure: false,
+	})
+	if err != nil {
+		f.l.Error(err, "http - v1 - fileupload - minio.New")
+		errorResponse(c, http.StatusInternalServerError, "Failed to initialize MinIO client")
+		return
+	}
+
+	// Generate unique object name
+	id := uuid.New().String()
+	objectName := id + ext
+	contentType := "image/jpeg"
+
+	// Upload file to MinIO
+	_, err = minioClient.PutObject(context.Background(), bucketName, objectName, file, fileHeader.Size, minio.PutObjectOptions{
+		ContentType: contentType,
+	})
+	if err != nil {
+		f.l.Error(err, "http - v1 - fileupload - minioClient.PutObject")
+		errorResponse(c, http.StatusInternalServerError, "Failed to upload file to MinIO")
+		return
+	}
+
+	// Construct MinIO URL
+	minioURL := fmt.Sprintf("https://%s/%s/%s", endpoint, bucketName, objectName)
+
+	// Respond with success message containing URL
+	c.JSON(http.StatusOK, gin.H{
+		"url": minioURL,
 	})
 }

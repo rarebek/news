@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/golang-migrate/migrate/v4"
+	"github.com/k0kubun/pp"
+
 	// migrate tools
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -21,6 +23,7 @@ const (
 
 func init() {
 	databaseURL, ok := os.LookupEnv("PG_URL")
+	pp.Println(databaseURL)
 	if !ok || len(databaseURL) == 0 {
 		log.Fatalf("migrate: environment variable not declared: PG_URL")
 	}
@@ -40,6 +43,7 @@ func init() {
 		}
 
 		log.Printf("Migrate: postgres is trying to connect, attempts left: %d", attempts)
+		pp.Println("ERROR: ", err)
 		time.Sleep(_defaultTimeout)
 		attempts--
 	}
