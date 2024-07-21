@@ -76,7 +76,7 @@ services:
       retries: 5
 
   minio:
-    container_name: minio
+    container_name: minio-news
     image: bitnami/minio:2022
     networks:
       tarkib:
