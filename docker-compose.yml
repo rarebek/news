@@ -51,7 +51,7 @@ services:
     env_file: 
       - .env
     ports:
-      - "8080:8080"
+      - "8888:8888"
     environment:
       - REDIS_URL=redis://redis:6379
       - MINIO_URL=http://minio:9000
@@ -75,28 +75,28 @@ services:
       timeout: 10s
       retries: 5
 
-  minio:
-    container_name: minio-news
-    image: bitnami/minio:2022
-    networks:
-      tarkib:
-        aliases:
-          - minio
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    env_file: .env
-    volumes:
-      - minio-data:/data
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "curl -f http://localhost:9000/minio/health/live || exit 1",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+  # minio:
+  #   container_name: minio-news
+  #   image: bitnami/minio:2022
+  #   networks:
+  #     tarkib:
+  #       aliases:
+  #         - minio
+  #   ports:
+  #     - "9000:9000"
+  #     - "9001:9001"
+  #   env_file: .env
+  #   volumes:
+  #     - minio-data:/data
+  #   healthcheck:
+  #     test:
+  #       [
+  #         "CMD-SHELL",
+  #         "curl -f http://localhost:9000/minio/health/live || exit 1",
+  #       ]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
 
 
 networks:
