@@ -56,24 +56,24 @@ services:
       - REDIS_URL=redis://redis:6379
       - MINIO_URL=http://minio:9000
 
-  postgres-news:
-    container_name: postgres-news
-    image: postgres
-    env_file:
-      - .env
-    networks:
-      tarkib:
-        aliases:
-          - postgres
-    volumes:
-      - pg-data:/var/lib/postgresql/data
-    ports:
-      - "5555:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+  # postgres-news:
+  #   container_name: postgres-news
+  #   image: postgres
+  #   env_file:
+  #     - .env
+  #   networks:
+  #     tarkib:
+  #       aliases:
+  #         - postgres
+  #   volumes:
+  #     - pg-data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5555:5432"
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
 
   # minio:
   #   container_name: minio-news
