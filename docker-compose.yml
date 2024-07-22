@@ -1,9 +1,11 @@
+version: '3.8'
+
 services:
   app-news:
     build: .
     container_name: app-news
     networks:
-      tarkib:
+      news:
         aliases:
           - app-news
     env_file: 
@@ -11,56 +13,56 @@ services:
     ports:
       - "8888:8888"
 
-
-  postgres:
-    container_name: postgres
-    image: postgres
+  postgres-news:
+    container_name: postgres-news
+    image: postgres:latest
     networks:
-      tarkib:
+      news:
         aliases:
-          - postgres
+          - postgres-news
     volumes:
-      - pg-data:/var/lib/postgresql/datatarkibuz
+      - pg-data:/var/lib/postgresql/data
     env_file: .env
     ports:
       - "5431:5432"
-    
-  adminer:
-    image: adminer
-    container_name: adminer
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  adminer-news:
+    image: adminer:latest
+    container_name: adminer-news
     ports:
       - "8889:8080"
     networks:
-      - tarkib
+      - news
 
-
-  # minio:
-  #   container_name: minio-news
-  #   image: bitnami/minio:2022
-  #   networks:
-  #     tarkib:
-  #       aliases:
-  #         - minio
-  #   ports:
-  #     - "9000:9000"
-  #     - "9001:9001"
-  #   env_file: .env
-  #   volumes:
-  #     - minio-data:/data
-  #   healthcheck:
-  #     test:
-  #       [
-  #         "CMD-SHELL",
-  #         "curl -f http://localhost:9000/minio/health/live || exit 1",
-  #       ]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 5
-
+  minio-news:
+    container_name: minio-news
+    image: bitnami/minio:latest
+    networks:
+      news:
+        aliases:
+          - minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    env_file: .env
+    volumes:
+      - minio-data:/data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/minio/health/live || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 networks:
-  tarkib:
+  news:
 
 volumes:
   pg-data:
-  # minio-data:
+  minio-data:
