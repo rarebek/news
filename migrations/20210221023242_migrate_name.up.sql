@@ -28,19 +28,19 @@ CREATE TABLE IF NOT EXISTS subcategory_news (
 
 CREATE TABLE IF NOT EXISTS admins (
     id UUID PRIMARY KEY,
-    phone_number TEXT,
+    username TEXT,
     password TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS superadmins (
     id UUID PRIMARY KEY,
-    phone_number TEXT,
+    username TEXT,
     password TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- INSERT INTO superadmins (id, phone_number, password) VALUES('acc98ad0-43a1-4ac5-ba90-7dc1f1a34d1e', 'test', 'test');
+-- INSERT INTO superadmins (id, username, password) VALUES('acc98ad0-43a1-4ac5-ba90-7dc1f1a34d1e', 'test', 'test');
 
 INSERT INTO categories(name)
 VALUES

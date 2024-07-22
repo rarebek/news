@@ -25,7 +25,7 @@ func NewAuthUseCase(r AuthRepo, cfg *config.Config) *AuthUseCase {
 }
 
 func (uc *AuthUseCase) Login(ctx context.Context, request *entity.Admin) (string, error) {
-	admin, err := uc.repo.GetAdminData(ctx, request.PhoneNumber)
+	admin, err := uc.repo.GetAdminData(ctx, request.Username)
 	if err != nil {
 		return "", err
 	}
@@ -54,7 +54,7 @@ func (uc *AuthUseCase) Login(ctx context.Context, request *entity.Admin) (string
 	return accessToken, nil
 }
 
-func (uc *AuthUseCase) SuperAdminLogin(ctx context.Context, request *entity.Admin) (string, error) {
+func (uc *AuthUseCase) SuperAdminLogin(ctx context.Context, request *entity.SuperAdmin) (string, error) {
 	admin, err := uc.repo.GetSuperAdminData(ctx, request.PhoneNumber)
 	if err != nil {
 		return "", err
@@ -98,4 +98,13 @@ func (uc *AuthUseCase) DeleteAdmin(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+func (uc *AuthUseCase) GetAllAdmins(ctx context.Context) ([]entity.Admin, error) {
+	admins, err := uc.repo.GetAllAdmins(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return admins, nil
 }

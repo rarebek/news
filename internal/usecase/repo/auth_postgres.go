@@ -17,12 +17,12 @@ func NewAuthRepo(pg *postgres.Postgres) *AuthRepo {
 	return &AuthRepo{pg}
 }
 
-func (a *AuthRepo) GetAdminData(ctx context.Context, PhoneNumber string) (*entity.Admin, error) {
+func (a *AuthRepo) GetAdminData(ctx context.Context, Username string) (*entity.Admin, error) {
 	var adminPostgres entity.Admin
-	sql, args, err := a.Builder.Select("id, phone_number, password").
+	sql, args, err := a.Builder.Select("id, username, password").
 		From("admins").
 		Where(squirrel.Eq{
-			"phone_number": PhoneNumber,
+			"username": Username,
 		}).ToSql()
 	if err != nil {
 		return nil, err
@@ -30,7 +30,7 @@ func (a *AuthRepo) GetAdminData(ctx context.Context, PhoneNumber string) (*entit
 
 	row := a.Pool.QueryRow(ctx, sql, args...)
 
-	if err = row.Scan(&adminPostgres.Id, &adminPostgres.PhoneNumber, &adminPostgres.Password); err != nil {
+	if err = row.Scan(&adminPostgres.Id, &adminPostgres.Username, &adminPostgres.Password); err != nil {
 		return nil, err
 	}
 
@@ -50,7 +50,7 @@ func (a *AuthRepo) GetSuperAdminData(ctx context.Context, PhoneNumber string) (*
 
 	row := a.Pool.QueryRow(ctx, sql, args...)
 
-	if err = row.Scan(&adminPostgres.Id, &adminPostgres.PhoneNumber, &adminPostgres.Password); err != nil {
+	if err = row.Scan(&adminPostgres.Id, &adminPostgres.Username, &adminPostgres.Password); err != nil {
 		return nil, err
 	}
 
@@ -59,9 +59,9 @@ func (a *AuthRepo) GetSuperAdminData(ctx context.Context, PhoneNumber string) (*
 
 func (a *AuthRepo) CreateAdmin(ctx context.Context, admin *entity.Admin) error {
 	data := map[string]interface{}{
-		"id":           uuid.NewString(),
-		"phone_number": admin.PhoneNumber,
-		"password":     admin.Password,
+		"id":       uuid.NewString(),
+		"username": admin.Username,
+		"password": admin.Password,
 	}
 
 	sql, args, err := a.Builder.Insert("admins").
@@ -91,4 +91,29 @@ func (a *AuthRepo) DeleteAdmin(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+func (a *AuthRepo) GetAllAdmins(ctx context.Context) ([]entity.Admin, error) {
+	var response []entity.Admin
+	sql, args, err := a.Builder.Select("id, username, password").
+		From("admins").ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := a.Pool.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		var admin entity.Admin
+		if err = rows.Scan(&admin.Id, &admin.Username, &admin.Password); err != nil {
+			return nil, err
+		}
+
+		response = append(response, admin)
+	}
+
+	return response, nil
 }

@@ -1,8 +1,13 @@
 package models
 
 type AdminLoginRequest struct {
-	PhoneNumber string `json:"phone_number" example:"+998889561006"`
-	Password    string `json:"password" example:"Nodirbek"`
+	Username string `json:"username" example:"test"`
+	Password string `json:"password" example:"test"`
+}
+
+type SuperAdminLoginRequest struct {
+	PhoneNumber string `json:"phone_number" example:"test"`
+	Password    string `json:"password" example:"test"`
 }
 
 type AdminLoginResponse struct {
@@ -12,8 +17,6 @@ type AdminLoginResponse struct {
 type Message struct {
 	Message string `json:"message"`
 }
-
-
 
 type SubCategoryResponse struct {
 	ID   int    `json:"id"`

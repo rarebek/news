@@ -35,6 +35,7 @@ func newAuthRoutes(handler *gin.RouterGroup, t usecase.Auth, l logger.Interface)
 		h.POST("/superadmin/login", r.superAdminLogin)
 		h.POST("/admin/create", r.createAdmin)
 		h.DELETE("/admin/delete/:id", r.deleteAdmin)
+		h.GET("/admin/getall", r.getAllAdmins)
 		h.POST("/upload", r.upload)
 	}
 }
@@ -60,8 +61,8 @@ func (r *authRoutes) login(c *gin.Context) {
 	}
 
 	token, err := r.t.Login(c.Request.Context(), &entity.Admin{
-		PhoneNumber: request.PhoneNumber,
-		Password:    request.Password,
+		Username: request.Username,
+		Password: request.Password,
 	})
 
 	if err != nil {
@@ -71,7 +72,7 @@ func (r *authRoutes) login(c *gin.Context) {
 			errorResponse(c, http.StatusBadRequest, "Bunday admin topilmadi.")
 		case "xato parol kiritdingiz":
 			r.l.Warn(err.Error())
-			errorResponse(c, http.StatusUnauthorized, "Telefon raqam yoki parol xato kiritildi.")
+			errorResponse(c, http.StatusUnauthorized, "Username yoki parol xato kiritildi.")
 		default:
 			r.l.Error(err)
 			errorResponse(c, http.StatusInternalServerError, models.ErrServerProblems)
@@ -97,14 +98,14 @@ func (r *authRoutes) login(c *gin.Context) {
 // @Failure     500 {object} response
 // @Router      /auth/superadmin/login [post]
 func (r *authRoutes) superAdminLogin(c *gin.Context) {
-	var request models.AdminLoginRequest
+	var request models.SuperAdminLoginRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		r.l.Error(err)
 		errorResponse(c, http.StatusBadRequest, models.InvalidRequestBody)
 		return
 	}
 
-	token, err := r.t.SuperAdminLogin(c.Request.Context(), &entity.Admin{
+	token, err := r.t.SuperAdminLogin(c.Request.Context(), &entity.SuperAdmin{
 		PhoneNumber: request.PhoneNumber,
 		Password:    request.Password,
 	})
@@ -151,8 +152,8 @@ func (r *authRoutes) createAdmin(c *gin.Context) {
 	}
 
 	if err := r.t.CreateAdmin(c.Request.Context(), &entity.Admin{
-		PhoneNumber: request.PhoneNumber,
-		Password:    request.Password,
+		Username: request.Username,
+		Password: request.Password,
 	}); err != nil {
 		r.l.Error(err)
 		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
@@ -189,6 +190,29 @@ func (r *authRoutes) deleteAdmin(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Admin muvaffaqiyatli o'chirildi",
 	})
+}
+
+// @Summary     Get All Admins
+// @Description Gets All Admins
+// @ID          get-all-admins
+// @Tags  	    superadmin
+// @Accept      json
+// @Produce     json
+// @Success     200 {object} []entity.Admin
+// @Failure     400 {object} response
+// @Failure     401 {object} response
+// @Failure     500 {object} response
+// @Security    BearerAuth
+// @Router      /auth/admin/getall [get]
+func (r *authRoutes) getAllAdmins(c *gin.Context) {
+	admins, err := r.t.GetAllAdmins(c.Request.Context())
+	if err != nil {
+		r.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		return
+	}
+
+	c.JSON(http.StatusOK, admins)
 }
 
 type File struct {

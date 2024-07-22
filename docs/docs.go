@@ -129,6 +129,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/admin/getall": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Gets All Admins",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "superadmin"
+                ],
+                "summary": "Get All Admins",
+                "operationId": "get-all-admins",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Admin"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/admin/login": {
             "post": {
                 "description": "Authenticates an admin and returns an access token on successful login.",
@@ -490,16 +540,30 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "entity.Admin": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "models.AdminLoginRequest": {
             "type": "object",
             "properties": {
                 "password": {
                     "type": "string",
-                    "example": "Nodirbek"
+                    "example": "test"
                 },
-                "phone_number": {
+                "username": {
                     "type": "string",
-                    "example": "+998889561006"
+                    "example": "test"
                 }
             }
         },

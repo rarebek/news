@@ -11,16 +11,18 @@ import (
 type (
 	Auth interface {
 		Login(ctx context.Context, admin *entity.Admin) (string, error)
-		SuperAdminLogin(ctx context.Context, admin *entity.Admin) (string, error)
+		SuperAdminLogin(ctx context.Context, admin *entity.SuperAdmin) (string, error)
 		CreateAdmin(ctx context.Context, admin *entity.Admin) error
 		DeleteAdmin(ctx context.Context, id string) error
+		GetAllAdmins(ctx context.Context) ([]entity.Admin, error)
 	}
 
 	AuthRepo interface {
-		GetAdminData(ctx context.Context, PhoneNumber string) (*entity.Admin, error)
+		GetAdminData(ctx context.Context, Username string) (*entity.Admin, error)
 		GetSuperAdminData(ctx context.Context, PhoneNumber string) (*entity.Admin, error)
 		CreateAdmin(ctx context.Context, admin *entity.Admin) error
 		DeleteAdmin(ctx context.Context, id string) error
+		GetAllAdmins(ctx context.Context) ([]entity.Admin, error)
 	}
 
 	News interface {
