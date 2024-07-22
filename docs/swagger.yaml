@@ -117,7 +117,7 @@ paths:
       summary: Create Admin
       tags:
       - superadmin
-  /auth/admin/delete:
+  /auth/admin/delete/:id:
     delete:
       consumes:
       - application/json

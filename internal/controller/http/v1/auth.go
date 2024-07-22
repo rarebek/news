@@ -176,7 +176,7 @@ func (r *authRoutes) createAdmin(c *gin.Context) {
 // @Failure     401 {object} response
 // @Failure     500 {object} response
 // @Security    BearerAuth
-// @Router      /auth/admin/delete [delete]
+// @Router      /auth/admin/delete/:id [delete]
 func (r *authRoutes) deleteAdmin(c *gin.Context) {
 	id := c.Param("id")
 
