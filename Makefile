@@ -46,3 +46,9 @@ push:
 
 send:
 	scp -r ./* nodirbek@192.168.100.17:/home/nodirbek/news
+
+rr:
+	sudo docker rm app-news -f
+	sudo docker rmi news-app-news -f
+	git pull
+	sudo docker compose up -d
