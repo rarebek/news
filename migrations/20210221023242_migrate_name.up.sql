@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS admins (
 
 CREATE TABLE IF NOT EXISTS superadmins (
     id UUID PRIMARY KEY,
-    username TEXT,
+    phone_number TEXT,
     password TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
