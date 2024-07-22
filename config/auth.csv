@@ -22,4 +22,6 @@ p, super-admin, /v1/news/delete/{id}, DELETE
 p, super-admin, /v1/news/delete/{id}, OPTIONS
 p, super-admin, /v1/auth/admin/create, POST
 p, super-admin, /v1/auth/admin/create, OPTIONS
+p, super-admin, /v1/auth/admin/getall, GET
+p, super-admin, /v1/auth/admin/getall, OPTIONS
 g, user, unauthorized   
