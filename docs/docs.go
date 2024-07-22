@@ -73,7 +73,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/admin/delete/:id": {
+        "/auth/admin/delete/{id}": {
             "delete": {
                 "security": [
                     {
