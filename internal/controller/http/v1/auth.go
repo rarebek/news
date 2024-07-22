@@ -91,7 +91,7 @@ func (r *authRoutes) login(c *gin.Context) {
 // @Tags  	    superadmin
 // @Accept      json
 // @Produce     json
-// @Param       request body models.AdminLoginRequest true "Phone Number and Password"
+// @Param       request body models.SuperAdminLoginRequest true "Phone Number and Password"
 // @Success     200 {object} models.AdminLoginResponse
 // @Failure     400 {object} response
 // @Failure     401 {object} response
@@ -109,7 +109,6 @@ func (r *authRoutes) superAdminLogin(c *gin.Context) {
 		PhoneNumber: request.PhoneNumber,
 		Password:    request.Password,
 	})
-
 	if err != nil {
 		switch err.Error() {
 		case "no rows in result set":

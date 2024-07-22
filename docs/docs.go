@@ -253,7 +253,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.AdminLoginRequest"
+                            "$ref": "#/definitions/models.SuperAdminLoginRequest"
                         }
                     }
                 ],
@@ -628,6 +628,19 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                }
+            }
+        },
+        "models.SuperAdminLoginRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "example": "test"
+                },
+                "phone_number": {
+                    "type": "string",
+                    "example": "test"
                 }
             }
         },

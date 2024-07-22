@@ -59,6 +59,15 @@ definitions:
       name:
         type: string
     type: object
+  models.SuperAdminLoginRequest:
+    properties:
+      password:
+        example: test
+        type: string
+      phone_number:
+        example: test
+        type: string
+    type: object
   v1.response:
     properties:
       error:
@@ -225,7 +234,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.AdminLoginRequest'
+          $ref: '#/definitions/models.SuperAdminLoginRequest'
       produces:
       - application/json
       responses:
