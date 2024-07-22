@@ -24,4 +24,6 @@ p, super-admin, /v1/auth/admin/create, POST
 p, super-admin, /v1/auth/admin/create, OPTIONS
 p, super-admin, /v1/auth/admin/getall, GET
 p, super-admin, /v1/auth/admin/getall, OPTIONS
+p, super-admin, /v1/auth/admin/delete/{id}, DELETE
+p, super-admin, /v1/auth/admin/delete/{id}, OPTIONS
 g, user, unauthorized   
