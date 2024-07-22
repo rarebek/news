@@ -170,7 +170,7 @@ func (r *authRoutes) createAdmin(c *gin.Context) {
 // @Tags  	    superadmin
 // @Accept      json
 // @Produce     json
-// @Param       id path int true "ID of the admin to delete"
+// @Param       id path string true "ID of the admin to delete"
 // @Success     200 {object} response
 // @Failure     400 {object} response
 // @Failure     401 {object} response

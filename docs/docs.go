@@ -94,7 +94,7 @@ const docTemplate = `{
                 "operationId": "superadmin-delete-admin",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "ID of the admin to delete",
                         "name": "id",
                         "in": "path",
