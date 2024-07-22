@@ -27,6 +27,7 @@ type authRoutes struct {
 
 func newAuthRoutes(handler *gin.RouterGroup, t usecase.Auth, l logger.Interface) {
 	r := &authRoutes{t, l}
+	handler.POST("/file/upload", r.upload)
 
 	h := handler.Group("/auth")
 	{
@@ -35,7 +36,6 @@ func newAuthRoutes(handler *gin.RouterGroup, t usecase.Auth, l logger.Interface)
 		h.POST("/admin/create", r.createAdmin)
 		h.DELETE("/admin/delete/:id", r.deleteAdmin)
 		h.GET("/admin/getall", r.getAllAdmins)
-		h.POST("/upload", r.upload)
 	}
 }
 

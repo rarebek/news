@@ -11,6 +11,8 @@ p, unauthorized, /v1/news/getall, GET
 p, unauthorized, /v1/news/getall, OPTIONS
 p, unauthorized, /v1/news/getall/withcategory, GET
 p, unauthorized, /v1/news/getall/withcategory, OPTIONS
+p, unauthorized, /v1/file/upload, POST
+p, unauthorized, /v1/file/upload, OPTIONS
 p, unauthorized, /metrics, GET
 p, admin, /v1/news/create, POST
 p, admin, /v1/news/create, OPTIONS
