@@ -206,10 +206,10 @@ func (r *authRoutes) deleteAdmin(c *gin.Context) {
 // @Failure     500 {object} response
 // @Security    BearerAuth
 // @Router      /auth/admin/{id} [get]
-func (r *authRoutes) getAdminData(c *gin.Context) {
+func (r *authRoutes) getAdminDat(c *gin.Context) {
 	id := c.Param("id")
 
-	admin, err := r.t.GetAdminByid(c.Request.Context(), id)
+	admin, err := r.t.GetAdminById(c.Request.Context(), id)
 	if err != nil {
 		r.l.Error(err)
 		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
