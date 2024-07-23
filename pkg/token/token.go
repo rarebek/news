@@ -1,7 +1,9 @@
 package tokens
 
 import (
+	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -44,11 +46,17 @@ func (jwtHandler *JWTHandler) GenerateAuthJWT() (access, refresh string, err err
 		claims       jwt.MapClaims
 		rtClaims     jwt.MapClaims
 	)
+
+	expUnix, err := strconv.ParseInt(jwtHandler.Exp, 10, 64)
+	if err != nil {
+		fmt.Println("Error converting expiration time:", err)
+		return "", "", err
+	}
 	accessToken = jwt.New(jwt.SigningMethodHS256)
 	refreshToken = jwt.New(jwt.SigningMethodHS256)
 	claims = accessToken.Claims.(jwt.MapClaims)
 	claims["sub"] = jwtHandler.Sub
-	claims["exp"] = jwtHandler.Exp
+	claims["exp"] = expUnix
 	claims["iat"] = time.Now().Unix()
 	claims["role"] = jwtHandler.Role
 	claims["aud"] = jwtHandler.Aud
