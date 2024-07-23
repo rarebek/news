@@ -31,12 +31,14 @@ type (
 		CreateNews(ctx context.Context, request *entity.News) error
 		GetAllNews(ctx context.Context, request *entity.GetAllNewsRequest) ([]entity.News, error)
 		DeleteNews(ctx context.Context, id string) error
+		GetFilteredNews(ctx context.Context, request *entity.GetFilteredNewsRequest) ([]entity.News, error)
 	}
 
 	NewsRepo interface {
 		CreateNews(ctx context.Context, request *entity.News) error
 		GetAllNews(ctx context.Context, request *entity.GetAllNewsRequest) ([]entity.News, error)
 		DeleteNews(ctx context.Context, id string) error
+		GetFilteredNews(ctx context.Context, request *entity.GetFilteredNewsRequest) ([]entity.News, error)
 	}
 
 	Category interface {

@@ -150,3 +150,86 @@ func (n *NewsRepo) GetAllNews(ctx context.Context, request *entity.GetAllNewsReq
 
 	return newsList, nil
 }
+
+func (n *NewsRepo) GetFilteredNews(ctx context.Context, request *entity.GetFilteredNewsRequest) ([]entity.News, error) {
+	var (
+		newsList []entity.News
+		ids      []string
+	)
+
+	// Base query
+	query := n.Builder.Select("news.*").
+		From("news").
+		Join("subcategory_news ON news.id = subcategory_news.news_id").
+		Where(squirrel.NotEq{"news.id": nil})
+
+	// Apply filters
+	if len(request.SubCategoryIDs) > 0 {
+		subCategoryFilter := squirrel.Eq{"subcategory_news.subcategory_id": request.SubCategoryIDs}
+		query = query.Where(subCategoryFilter)
+	}
+
+	if request.CategoryID != "" {
+		// Ensure that we include category ID in the filtering if provided
+		categoryFilter := squirrel.Eq{"category_id": request.CategoryID}
+		query = query.Where(categoryFilter)
+	}
+
+	// Apply pagination
+	offset := (request.Page - 1) * request.Limit
+	sql, args, err := query.
+		OrderBy("created_at DESC").
+		Limit(uint64(request.Limit)).
+		Offset(uint64(offset)).
+		ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := n.Pool.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var news entity.News
+		if err := rows.Scan(&news.ID, &news.Name, &news.Description, &news.ImageURL, &news.CreatedAt); err != nil {
+			return nil, err
+		}
+
+		// Fetch subcategory IDs for each news
+		subcategorySQL, subcategoryArgs, err := n.Builder.Select("subcategory_id").
+			From("subcategory_news").
+			Where(squirrel.Eq{"news_id": news.ID}).
+			ToSql()
+		if err != nil {
+			return nil, err
+		}
+
+		subcategoryRows, err := n.Pool.Query(ctx, subcategorySQL, subcategoryArgs...)
+		if err != nil {
+			return nil, err
+		}
+
+		for subcategoryRows.Next() {
+			var id string
+			if err = subcategoryRows.Scan(&id); err != nil {
+				return nil, err
+			}
+			ids = append(ids, id)
+		}
+		subcategoryRows.Close()
+
+		news.SubCategoryIDs = ids
+		newsList = append(newsList, news)
+
+		ids = nil
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return newsList, nil
+}

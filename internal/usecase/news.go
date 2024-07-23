@@ -37,3 +37,12 @@ func (n *NewsUseCase) GetAllNews(ctx context.Context, request *entity.GetAllNews
 func (n *NewsUseCase) DeleteNews(ctx context.Context, id string) error {
 	return n.repo.DeleteNews(ctx, id)
 }
+
+func (n *NewsUseCase) GetFilteredNews(ctx context.Context, request *entity.GetFilteredNewsRequest) ([]entity.News, error) {
+	news, err := n.repo.GetFilteredNews(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+
+	return news, nil
+}

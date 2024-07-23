@@ -138,3 +138,52 @@ func (n *newsRoutes) getAllNews(c *gin.Context) {
 
 	c.JSON(http.StatusOK, news)
 }
+
+// @Summary		Get Filtered News
+// @Description This method retrieves news based on optional filters (subcategory IDs and category ID) with pagination.
+// @ID          get-filtered-news
+// @Tags  	    news
+// @Accept      json
+// @Produce     json
+// @Param       sub_category_ids query []string false "List of subcategory IDs"
+// @Param       category_id     query string   false "Category ID"
+// @Param       page            query int      true  "Page number"
+// @Param       limit           query int      true  "Number of items per page"
+// @Success     200 {object} []models.News
+// @Failure     400 {object} response
+// @Failure     500 {object} response
+// @Router      /news/filtered [get]
+func (n *newsRoutes) getFilteredNews(c *gin.Context) {
+	subCategoryIDs := c.QueryArray("sub_category_ids")
+	categoryID := c.Query("category_id")
+	pageStr := c.Query("page")
+	limitStr := c.Query("limit")
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, "Invalid page number")
+		return
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, "Invalid limit number")
+		return
+	}
+
+	news, err := n.t.GetFilteredNews(c.Request.Context(), &entity.GetFilteredNewsRequest{
+		SubCategoryIDs: subCategoryIDs,
+		CategoryID:     categoryID,
+		Page:           page,
+		Limit:          limit,
+	})
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti")
+		return
+	}
+
+	c.JSON(http.StatusOK, news)
+}

@@ -31,3 +31,10 @@ type GetNewsBySubCategory struct {
 	Limit         int    `json:"limit"`
 	SubCategoryId string `json:"subcategory_id"`
 }
+
+type GetFilteredNewsRequest struct {
+	SubCategoryIDs []string `json:"sub_category_ids,omitempty"`
+	CategoryID     string   `json:"category_id,omitempty"`
+	Page           int      `json:"page"`
+	Limit          int      `json:"limit"`
+}
