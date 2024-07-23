@@ -46,12 +46,12 @@ func (n *categoryRoutes) getAllCategories(c *gin.Context) {
 		var subCategoryResponses []models.SubCategoryResponse
 		for _, subCategory := range category.SubCategories {
 			subCategoryResponses = append(subCategoryResponses, models.SubCategoryResponse{
-				ID:   subCategory.ID,
+				ID:   subCategory.ID, // Use string for UUID
 				Name: subCategory.Name,
 			})
 		}
 		categoryResponses = append(categoryResponses, models.CategoryResponse{
-			ID:            category.ID,
+			ID:            category.ID, // Use string for UUID
 			Name:          category.Name,
 			SubCategories: subCategoryResponses,
 		})

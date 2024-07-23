@@ -30,11 +30,11 @@ func (n *CategoryRepo) GetAllCategories(ctx context.Context) ([]entity.Category,
 	}
 	defer rows.Close()
 
-	categoriesMap := make(map[int]*entity.Category)
+	categoriesMap := make(map[string]*entity.Category)
 	for rows.Next() {
-		var categoryID int
+		var categoryID string
 		var categoryName string
-		var subCategoryID sql.NullInt32
+		var subCategoryID sql.NullString
 		var subCategoryName sql.NullString
 
 		if err := rows.Scan(&categoryID, &categoryName, &subCategoryID, &subCategoryName); err != nil {
@@ -51,7 +51,7 @@ func (n *CategoryRepo) GetAllCategories(ctx context.Context) ([]entity.Category,
 
 		if subCategoryID.Valid && subCategoryName.Valid {
 			categoriesMap[categoryID].SubCategories = append(categoriesMap[categoryID].SubCategories, entity.SubCategory{
-				ID:   int(subCategoryID.Int32),
+				ID:   subCategoryID.String,
 				Name: subCategoryName.String,
 			})
 		}

@@ -27,13 +27,13 @@ type Message struct {
 	Message string `json:"message"`
 }
 
-type SubCategoryResponse struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+type CategoryResponse struct {
+	ID            string                `json:"id"` // UUID as string
+	Name          string                `json:"name"`
+	SubCategories []SubCategoryResponse `json:"sub_categories"`
 }
 
-type CategoryResponse struct {
-	ID            int                   `json:"id"`
-	Name          string                `json:"name"`
-	SubCategories []SubCategoryResponse `json:"subcategories"`
+type SubCategoryResponse struct {
+	ID   string `json:"id"` // UUID as string
+	Name string `json:"name"`
 }
