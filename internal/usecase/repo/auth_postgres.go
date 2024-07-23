@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
@@ -19,6 +20,7 @@ func NewAuthRepo(pg *postgres.Postgres) *AuthRepo {
 
 func (a *AuthRepo) GetAdminData(ctx context.Context, Username string) (*entity.Admin, error) {
 	var adminPostgres entity.Admin
+	var avatar sql.NullString
 	sql, args, err := a.Builder.Select("id, username, password, avatar").
 		From("admins").
 		Where(squirrel.Eq{
@@ -30,8 +32,12 @@ func (a *AuthRepo) GetAdminData(ctx context.Context, Username string) (*entity.A
 
 	row := a.Pool.QueryRow(ctx, sql, args...)
 
-	if err = row.Scan(&adminPostgres.Id, &adminPostgres.Username, &adminPostgres.Password, &adminPostgres.Avatar); err != nil {
+	if err = row.Scan(&adminPostgres.Id, &adminPostgres.Username, &adminPostgres.Password, &avatar); err != nil {
 		return nil, err
+	}
+
+	if avatar.Valid {
+		adminPostgres.Avatar = avatar.String
 	}
 
 	return &adminPostgres, nil
@@ -39,6 +45,7 @@ func (a *AuthRepo) GetAdminData(ctx context.Context, Username string) (*entity.A
 
 func (a *AuthRepo) GetSuperAdminData(ctx context.Context, PhoneNumber string) (*entity.Admin, error) {
 	var adminPostgres entity.Admin
+	var avatarNull sql.NullString
 	sql, args, err := a.Builder.Select("id, phone_number, password, avatar").
 		From("superadmins").
 		Where(squirrel.Eq{
@@ -50,8 +57,12 @@ func (a *AuthRepo) GetSuperAdminData(ctx context.Context, PhoneNumber string) (*
 
 	row := a.Pool.QueryRow(ctx, sql, args...)
 
-	if err = row.Scan(&adminPostgres.Id, &adminPostgres.Username, &adminPostgres.Password, &adminPostgres.Avatar); err != nil {
+	if err = row.Scan(&adminPostgres.Id, &adminPostgres.Username, &adminPostgres.Password, &avatarNull); err != nil {
 		return nil, err
+	}
+
+	if avatarNull.Valid {
+		adminPostgres.Avatar = avatarNull.String
 	}
 
 	return &adminPostgres, nil
