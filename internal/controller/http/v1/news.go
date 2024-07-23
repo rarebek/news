@@ -25,6 +25,7 @@ func newNewsRoutes(handler *gin.RouterGroup, t usecase.NewsUseCase, l logger.Int
 		h.POST("/create", r.create)
 		h.GET("/getall", r.getAllNews)
 		h.DELETE("/delete/:id", r.deleteNews)
+		h.GET("/filtered", r.getFilteredNews)
 	}
 }
 

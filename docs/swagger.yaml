@@ -444,6 +444,55 @@ paths:
       summary: Delete News
       tags:
       - news
+  /news/filtered:
+    get:
+      consumes:
+      - application/json
+      description: This method retrieves news based on optional filters (subcategory
+        IDs and category ID) with pagination.
+      operationId: get-filtered-news
+      parameters:
+      - collectionFormat: csv
+        description: List of subcategory IDs
+        in: query
+        items:
+          type: string
+        name: sub_category_ids
+        type: array
+      - description: Category ID
+        in: query
+        name: category_id
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: limit
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.News'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Get Filtered News
+      tags:
+      - news
   /news/getall:
     get:
       consumes:
