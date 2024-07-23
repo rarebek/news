@@ -1,1 +1,1 @@
-**tarkib.uz** Backend - Nodirbek, Dostonbek
+**tarkib.uz** Backend - Nodirbek

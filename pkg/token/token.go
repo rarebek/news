@@ -3,7 +3,6 @@ package tokens
 import (
 	"fmt"
 	"log"
-	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -47,11 +46,14 @@ func (jwtHandler *JWTHandler) GenerateAuthJWT() (access, refresh string, err err
 		rtClaims     jwt.MapClaims
 	)
 
-	expUnix, err := strconv.ParseInt(jwtHandler.Exp, 10, 64)
+	expTime, err := time.Parse(time.RFC3339, jwtHandler.Exp) // Use correct layout if needed
 	if err != nil {
-		fmt.Println("Error converting expiration time:", err)
+		fmt.Println("Error parsing expiration time:", err)
 		return "", "", err
 	}
+	expUnix := expTime.Unix()
+
+	
 	accessToken = jwt.New(jwt.SigningMethodHS256)
 	refreshToken = jwt.New(jwt.SigningMethodHS256)
 	claims = accessToken.Claims.(jwt.MapClaims)
