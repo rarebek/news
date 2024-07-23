@@ -156,7 +156,7 @@ func (n *NewsRepo) GetFilteredNews(ctx context.Context, request *entity.GetFilte
 		newsList []entity.News
 	)
 
-	// Build the base query
+	// Initialize the base query
 	queryBuilder := n.Builder.Select("DISTINCT n.id, n.name, n.description, n.image_url, n.created_at").
 		From("news n")
 
