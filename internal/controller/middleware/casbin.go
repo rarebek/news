@@ -52,6 +52,9 @@ func (a *JWTRoleAuth) CheckPermission(r *http.Request, l logger.Interface) (bool
 	}
 
 	method := r.Method
+	if method == "OPTIONS" {
+		return true, nil
+	}
 	path := r.URL.Path
 
 	allowed, err := a.enforcer.Enforce(user, path, method)
