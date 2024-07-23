@@ -209,7 +209,7 @@ func (r *authRoutes) deleteAdmin(c *gin.Context) {
 func (r *authRoutes) getAdminData(c *gin.Context) {
 	id := c.Param("id")
 
-	admin, err := r.t.GetAdminData(c.Request.Context(), id)
+	admin, err := r.t.GetAdminByid(c.Request.Context(), id)
 	if err != nil {
 		r.l.Error(err)
 		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)

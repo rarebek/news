@@ -43,6 +43,31 @@ func (a *AuthRepo) GetAdminData(ctx context.Context, Username string) (*entity.A
 	return &adminPostgres, nil
 }
 
+func (a *AuthRepo) GetAdminById(ctx context.Context, id string) (*entity.Admin, error) {
+	var adminPostgres entity.Admin
+	var avatar sql.NullString
+	sql, args, err := a.Builder.Select("id, username, password, avatar").
+		From("admins").
+		Where(squirrel.Eq{
+			"id": id,
+		}).ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	row := a.Pool.QueryRow(ctx, sql, args...)
+
+	if err = row.Scan(&adminPostgres.Id, &adminPostgres.Username, &adminPostgres.Password, &avatar); err != nil {
+		return nil, err
+	}
+
+	if avatar.Valid {
+		adminPostgres.Avatar = avatar.String
+	}
+
+	return &adminPostgres, nil
+}
+
 func (a *AuthRepo) GetSuperAdminData(ctx context.Context, PhoneNumber string) (*entity.Admin, error) {
 	var adminPostgres entity.Admin
 	var avatarNull sql.NullString

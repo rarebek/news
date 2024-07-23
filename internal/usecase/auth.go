@@ -117,8 +117,8 @@ func (uc *AuthUseCase) EditAdmin(ctx context.Context, admin *entity.Admin) error
 	return nil
 }
 
-func (uc *AuthUseCase) GetAdminData(ctx context.Context, id string) (*entity.Admin, error) {
-	admin, err := uc.repo.GetAdminData(ctx, id)
+func (uc *AuthUseCase) GetAdminById(ctx context.Context, id string) (*entity.Admin, error) {
+	admin, err := uc.repo.GetAdminById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
