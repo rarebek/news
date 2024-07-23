@@ -662,12 +662,13 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "description": "UUID as string",
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
-                "subcategories": {
+                "sub_categories": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.SubCategoryResponse"
@@ -707,7 +708,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "integer"
+                    "description": "UUID as string",
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
