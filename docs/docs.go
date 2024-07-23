@@ -129,6 +129,64 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/admin/edit": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "ID of the admin to update and other fields will be updated.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "superadmin"
+                ],
+                "summary": "Edit Admin",
+                "operationId": "edit-admin",
+                "parameters": [
+                    {
+                        "description": "ID of the admin to edit",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Admin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Message"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/admin/getall": {
             "get": {
                 "security": [
@@ -543,6 +601,9 @@ const docTemplate = `{
         "entity.Admin": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -554,9 +615,31 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Admin": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "test"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "test"
+                }
+            }
+        },
         "models.AdminLoginRequest": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "type": "string"
+                },
                 "password": {
                     "type": "string",
                     "example": "test"
@@ -615,7 +698,7 @@ const docTemplate = `{
                 "subcategory_ids": {
                     "type": "array",
                     "items": {
-                        "type": "integer"
+                        "type": "string"
                     }
                 }
             }
@@ -634,6 +717,9 @@ const docTemplate = `{
         "models.SuperAdminLoginRequest": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "type": "string"
+                },
                 "password": {
                     "type": "string",
                     "example": "test"

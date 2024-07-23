@@ -58,36 +58,26 @@ func (n *NewsRepo) CreateNews(ctx context.Context, request *entity.News) error {
 }
 
 func (n *NewsRepo) DeleteNews(ctx context.Context, id string) error {
-	var count int
-	sql, args, err := n.Builder.Delete("news").
+	deleteSubcategoryNewsSQL, args, err := n.Builder.Delete("subcategory_news").
+		Where(squirrel.Eq{
+			"news_id": id,
+		}).ToSql()
+	if err != nil {
+		return err
+	}
+	if _, err = n.Pool.Exec(ctx, deleteSubcategoryNewsSQL, args...); err != nil {
+		return err
+	}
+
+	deleteNewsSQL, args, err := n.Builder.Delete("news").
 		Where(squirrel.Eq{
 			"id": id,
 		}).ToSql()
 	if err != nil {
 		return err
 	}
-
-	query := `SELECT COUNT(*) from subcategory_news WHERE news_id = $1`
-	if err = n.Pool.QueryRow(ctx, query, id).Scan(&count); err != nil {
+	if _, err = n.Pool.Exec(ctx, deleteNewsSQL, args...); err != nil {
 		return err
-	}
-
-	if _, err = n.Pool.Exec(ctx, sql, args...); err != nil {
-		return err
-	}
-
-	for i := 0; i < count; i++ {
-		sql, args, err = n.Builder.Delete("subcategory_news").
-			Where(squirrel.Eq{
-				"news_id": id,
-			}).ToSql()
-		if err != nil {
-			return err
-		}
-
-		if _, err = n.Pool.Exec(ctx, sql, args...); err != nil {
-			return err
-		}
 	}
 
 	return nil
@@ -97,7 +87,7 @@ func (n *NewsRepo) GetAllNews(ctx context.Context, request *entity.GetAllNewsReq
 	News, error) {
 	var (
 		newsList []entity.News
-		ids      []int
+		ids      []string
 	)
 	offset := (request.Page - 1) * request.Limit
 
@@ -138,7 +128,7 @@ func (n *NewsRepo) GetAllNews(ctx context.Context, request *entity.GetAllNewsReq
 		}
 
 		for rows.Next() {
-			var id int
+			var id string
 			if err = rows.Scan(&id); err != nil {
 				return nil, err
 			}

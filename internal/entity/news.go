@@ -8,7 +8,7 @@ type News struct {
 	Description    string    `json:"description"`
 	ImageURL       string    `json:"image_url"`
 	CreatedAt      time.Time `json:"created_at"`
-	SubCategoryIDs []int     `json:"subcategory_ids"`
+	SubCategoryIDs []string  `json:"subcategory_ids"`
 }
 
 type NewsWithCategoryNames struct {
@@ -27,7 +27,7 @@ type GetAllNewsRequest struct {
 }
 
 type GetNewsBySubCategory struct {
-	Page          int `json:"page"`
-	Limit         int `json:"limit"`
-	SubCategoryId int `json:"subcategory_id"`
+	Page          int    `json:"page"`
+	Limit         int    `json:"limit"`
+	SubCategoryId string `json:"subcategory_id"`
 }

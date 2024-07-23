@@ -2,6 +2,8 @@ basePath: /v1
 definitions:
   entity.Admin:
     properties:
+      avatar:
+        type: string
       id:
         type: string
       password:
@@ -9,8 +11,23 @@ definitions:
       username:
         type: string
     type: object
+  models.Admin:
+    properties:
+      avatar:
+        type: string
+      id:
+        type: string
+      password:
+        example: test
+        type: string
+      username:
+        example: test
+        type: string
+    type: object
   models.AdminLoginRequest:
     properties:
+      avatar:
+        type: string
       password:
         example: test
         type: string
@@ -49,7 +66,7 @@ definitions:
         type: string
       subcategory_ids:
         items:
-          type: integer
+          type: string
         type: array
     type: object
   models.SubCategoryResponse:
@@ -61,6 +78,8 @@ definitions:
     type: object
   models.SuperAdminLoginRequest:
     properties:
+      avatar:
+        type: string
       password:
         example: test
         type: string
@@ -151,6 +170,43 @@ paths:
       security:
       - BearerAuth: []
       summary: Delete Admin
+      tags:
+      - superadmin
+  /auth/admin/edit:
+    put:
+      consumes:
+      - application/json
+      description: ID of the admin to update and other fields will be updated.
+      operationId: edit-admin
+      parameters:
+      - description: ID of the admin to edit
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Admin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Message'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - BearerAuth: []
+      summary: Edit Admin
       tags:
       - superadmin
   /auth/admin/getall:

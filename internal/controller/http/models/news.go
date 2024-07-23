@@ -13,8 +13,8 @@ type NewsWithCategoryNames struct {
 }
 
 type News struct {
-	Name           string `json:"name"`
-	Description    string `json:"description"`
-	ImageURL       string `json:"image_url"`
-	SubCategoryIDs []int  `json:"subcategory_ids"`
+	Name           string   `json:"name"`
+	Description    string   `json:"description"`
+	ImageURL       string   `json:"image_url"`
+	SubCategoryIDs []string `json:"subcategory_ids"`
 }
