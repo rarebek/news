@@ -38,6 +38,7 @@ func newAuthRoutes(handler *gin.RouterGroup, t usecase.Auth, l logger.Interface)
 		h.DELETE("/admin/delete/:id", r.deleteAdmin)
 		h.GET("/admin/getall", r.getAllAdmins)
 		h.PUT("/admin/edit", r.editAdmin)
+		h.GET("/admin/:id", r.getAdminData)
 	}
 }
 
@@ -190,6 +191,32 @@ func (r *authRoutes) deleteAdmin(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Admin muvaffaqiyatli o'chirildi",
 	})
+}
+
+// @Summary		Get Admin Data
+// @Description This method is getting admin by its id
+// @ID          get-admin
+// @Tags  	    admin
+// @Accept      json
+// @Produce     json
+// @Param       id path string true "ID of the admin to get"
+// @Success     200 {object} models.Admin
+// @Failure     400 {object} response
+// @Failure     401 {object} response
+// @Failure     500 {object} response
+// @Security    BearerAuth
+// @Router      /auth/admin/{id} [get]
+func (r *authRoutes) getAdminData(c *gin.Context) {
+	id := c.Param("id")
+
+	admin, err := r.t.GetAdminData(c.Request.Context(), id)
+	if err != nil {
+		r.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		return
+	}
+
+	c.JSON(http.StatusOK, admin)
 }
 
 // @Summary     Get All Admins

@@ -156,11 +156,9 @@ func (n *NewsRepo) GetFilteredNews(ctx context.Context, request *entity.GetFilte
 		newsList []entity.News
 	)
 
-	// Initialize the base query
 	queryBuilder := n.Builder.Select("DISTINCT n.id, n.name, n.description, n.image_url, n.created_at").
 		From("news n")
 
-	// Join subcategory_news and subcategories tables if SubCategoryIDs are provided
 	if len(request.SubCategoryIDs) > 0 {
 		queryBuilder = queryBuilder.
 			Join("subcategory_news sn ON n.id = sn.news_id").
@@ -168,7 +166,6 @@ func (n *NewsRepo) GetFilteredNews(ctx context.Context, request *entity.GetFilte
 			Where(squirrel.Eq{"sc.id": request.SubCategoryIDs})
 	}
 
-	// Add filter for CategoryID if provided and not empty
 	if request.CategoryID != "" {
 		queryBuilder = queryBuilder.
 			Join("subcategory_news sn2 ON n.id = sn2.news_id").
@@ -176,14 +173,12 @@ func (n *NewsRepo) GetFilteredNews(ctx context.Context, request *entity.GetFilte
 			Where(squirrel.Eq{"sc2.category_id": request.CategoryID})
 	}
 
-	// Add pagination
 	offset := (request.Page - 1) * request.Limit
 	queryBuilder = queryBuilder.
 		OrderBy("n.created_at DESC").
 		Limit(uint64(request.Limit)).
 		Offset(uint64(offset))
 
-	// Generate SQL query
 	sql, args, err := queryBuilder.ToSql()
 	if err != nil {
 		return nil, err
@@ -195,14 +190,12 @@ func (n *NewsRepo) GetFilteredNews(ctx context.Context, request *entity.GetFilte
 	}
 	defer rows.Close()
 
-	// Fetch news and their subcategory IDs
 	for rows.Next() {
 		var news entity.News
 		if err := rows.Scan(&news.ID, &news.Name, &news.Description, &news.ImageURL, &news.CreatedAt); err != nil {
 			return nil, err
 		}
 
-		// Fetch subcategory IDs for each news item
 		subCategoryIDsSQL, subCategoryIDsArgs, err := n.Builder.Select("subcategory_id").
 			From("subcategory_news").
 			Where(squirrel.Eq{"news_id": news.ID}).
