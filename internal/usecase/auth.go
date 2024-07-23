@@ -108,3 +108,11 @@ func (uc *AuthUseCase) GetAllAdmins(ctx context.Context) ([]entity.Admin, error)
 
 	return admins, nil
 }
+
+func (uc *AuthUseCase) EditAdmin(ctx context.Context, admin *entity.Admin) error {
+	if err := uc.repo.EditAdmin(ctx, admin); err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -4,6 +4,7 @@ type Admin struct {
 	Id       string `json:"id"`
 	Username string `json:"username"`
 	Password string `json:"password"`
+	Avatar   string `json:"avatar"`
 }
 
 type SuperAdmin struct {

@@ -19,7 +19,7 @@ func NewAuthRepo(pg *postgres.Postgres) *AuthRepo {
 
 func (a *AuthRepo) GetAdminData(ctx context.Context, Username string) (*entity.Admin, error) {
 	var adminPostgres entity.Admin
-	sql, args, err := a.Builder.Select("id, username, password").
+	sql, args, err := a.Builder.Select("id, username, password, avatar").
 		From("admins").
 		Where(squirrel.Eq{
 			"username": Username,
@@ -30,7 +30,7 @@ func (a *AuthRepo) GetAdminData(ctx context.Context, Username string) (*entity.A
 
 	row := a.Pool.QueryRow(ctx, sql, args...)
 
-	if err = row.Scan(&adminPostgres.Id, &adminPostgres.Username, &adminPostgres.Password); err != nil {
+	if err = row.Scan(&adminPostgres.Id, &adminPostgres.Username, &adminPostgres.Password, &adminPostgres.Avatar); err != nil {
 		return nil, err
 	}
 
@@ -39,7 +39,7 @@ func (a *AuthRepo) GetAdminData(ctx context.Context, Username string) (*entity.A
 
 func (a *AuthRepo) GetSuperAdminData(ctx context.Context, PhoneNumber string) (*entity.Admin, error) {
 	var adminPostgres entity.Admin
-	sql, args, err := a.Builder.Select("id, phone_number, password").
+	sql, args, err := a.Builder.Select("id, phone_number, password, avatar").
 		From("superadmins").
 		Where(squirrel.Eq{
 			"phone_number": PhoneNumber,
@@ -50,7 +50,7 @@ func (a *AuthRepo) GetSuperAdminData(ctx context.Context, PhoneNumber string) (*
 
 	row := a.Pool.QueryRow(ctx, sql, args...)
 
-	if err = row.Scan(&adminPostgres.Id, &adminPostgres.Username, &adminPostgres.Password); err != nil {
+	if err = row.Scan(&adminPostgres.Id, &adminPostgres.Username, &adminPostgres.Password, &adminPostgres.Avatar); err != nil {
 		return nil, err
 	}
 
@@ -62,6 +62,7 @@ func (a *AuthRepo) CreateAdmin(ctx context.Context, admin *entity.Admin) error {
 		"id":       uuid.NewString(),
 		"username": admin.Username,
 		"password": admin.Password,
+		"avatar":   admin.Avatar,
 	}
 
 	sql, args, err := a.Builder.Insert("admins").
@@ -95,7 +96,7 @@ func (a *AuthRepo) DeleteAdmin(ctx context.Context, id string) error {
 
 func (a *AuthRepo) GetAllAdmins(ctx context.Context) ([]entity.Admin, error) {
 	var response []entity.Admin
-	sql, args, err := a.Builder.Select("id, username, password").
+	sql, args, err := a.Builder.Select("id, username, password, avatar").
 		From("admins").ToSql()
 	if err != nil {
 		return nil, err
@@ -108,7 +109,7 @@ func (a *AuthRepo) GetAllAdmins(ctx context.Context) ([]entity.Admin, error) {
 
 	for rows.Next() {
 		var admin entity.Admin
-		if err = rows.Scan(&admin.Id, &admin.Username, &admin.Password); err != nil {
+		if err = rows.Scan(&admin.Id, &admin.Username, &admin.Password, &admin.Avatar); err != nil {
 			return nil, err
 		}
 
@@ -116,4 +117,27 @@ func (a *AuthRepo) GetAllAdmins(ctx context.Context) ([]entity.Admin, error) {
 	}
 
 	return response, nil
+}
+
+func (a *AuthRepo) EditAdmin(ctx context.Context, admin *entity.Admin) error {
+	data := map[string]interface{}{
+		"username": admin.Username,
+		"password": admin.Password,
+		"avatar":   admin.Avatar,
+	}
+
+	sql, args, err := a.Builder.Update("admins").
+		SetMap(data).
+		Where(squirrel.Eq{
+			"id": admin.Id,
+		}).ToSql()
+	if err != nil {
+		return err
+	}
+
+	if _, err = a.Pool.Exec(ctx, sql, args...); err != nil {
+		return err
+	}
+
+	return nil
 }

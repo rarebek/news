@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/k0kubun/pp"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 
@@ -36,6 +37,7 @@ func newAuthRoutes(handler *gin.RouterGroup, t usecase.Auth, l logger.Interface)
 		h.POST("/admin/create", r.createAdmin)
 		h.DELETE("/admin/delete/:id", r.deleteAdmin)
 		h.GET("/admin/getall", r.getAllAdmins)
+		h.PUT("/admin/edit", r.editAdmin)
 	}
 }
 
@@ -203,6 +205,7 @@ func (r *authRoutes) deleteAdmin(c *gin.Context) {
 // @Security    BearerAuth
 // @Router      /auth/admin/getall [get]
 func (r *authRoutes) getAllAdmins(c *gin.Context) {
+	pp.Println(c.Request.Header.Get("Authorization"))
 	admins, err := r.t.GetAllAdmins(c.Request.Context())
 	if err != nil {
 		r.l.Error(err)
@@ -211,6 +214,44 @@ func (r *authRoutes) getAllAdmins(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, admins)
+}
+
+// @Summary     Edit Admin
+// @Description ID of the admin to update and other fields will be updated.
+// @ID          edit-admin
+// @Tags  	    superadmin
+// @Accept      json
+// @Produce     json
+// @Param       request body models.Admin true "ID of the admin to edit"
+// @Success     200 {object} models.Message
+// @Failure     400 {object} response
+// @Failure     401 {object} response
+// @Failure     500 {object} response
+// @Security    BearerAuth
+// @Router      /auth/admin/edit [put]
+func (r *authRoutes) editAdmin(c *gin.Context) {
+	var admin models.Admin
+
+	if err := c.ShouldBindJSON(&admin); err != nil {
+		r.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		return
+	}
+
+	if err := r.t.EditAdmin(c.Request.Context(), &entity.Admin{
+		Id:       admin.ID,
+		Username: admin.Username,
+		Password: admin.Password,
+		Avatar:   admin.Avatar,
+	}); err != nil {
+		r.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Admin muvaffaqiyatli yangilandi.",
+	})
 }
 
 type File struct {

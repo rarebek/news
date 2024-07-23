@@ -15,6 +15,7 @@ type (
 		CreateAdmin(ctx context.Context, admin *entity.Admin) error
 		DeleteAdmin(ctx context.Context, id string) error
 		GetAllAdmins(ctx context.Context) ([]entity.Admin, error)
+		EditAdmin(ctx context.Context, admin *entity.Admin) error
 	}
 
 	AuthRepo interface {
@@ -23,6 +24,7 @@ type (
 		CreateAdmin(ctx context.Context, admin *entity.Admin) error
 		DeleteAdmin(ctx context.Context, id string) error
 		GetAllAdmins(ctx context.Context) ([]entity.Admin, error)
+		EditAdmin(ctx context.Context, admin *entity.Admin) error
 	}
 
 	News interface {
