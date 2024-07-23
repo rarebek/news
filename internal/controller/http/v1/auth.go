@@ -206,7 +206,7 @@ func (r *authRoutes) deleteAdmin(c *gin.Context) {
 // @Failure     500 {object} response
 // @Security    BearerAuth
 // @Router      /auth/admin/{id} [get]
-func (r *authRoutes) getAdminDat(c *gin.Context) {
+func (r *authRoutes) getAdminData(c *gin.Context) {
 	id := c.Param("id")
 
 	admin, err := r.t.GetAdminById(c.Request.Context(), id)
