@@ -1,7 +1,6 @@
 package tokens
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -46,19 +45,11 @@ func (jwtHandler *JWTHandler) GenerateAuthJWT() (access, refresh string, err err
 		rtClaims     jwt.MapClaims
 	)
 
-	expTime, err := time.Parse(time.RFC3339, jwtHandler.Exp) // Use correct layout if needed
-	if err != nil {
-		fmt.Println("Error parsing expiration time:", err)
-		return "", "", err
-	}
-	expUnix := expTime.Unix()
-
-	
 	accessToken = jwt.New(jwt.SigningMethodHS256)
 	refreshToken = jwt.New(jwt.SigningMethodHS256)
 	claims = accessToken.Claims.(jwt.MapClaims)
 	claims["sub"] = jwtHandler.Sub
-	claims["exp"] = expUnix
+	claims["exp"] = jwtHandler.Exp
 	claims["iat"] = time.Now().Unix()
 	claims["role"] = jwtHandler.Role
 	claims["aud"] = jwtHandler.Aud

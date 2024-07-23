@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
-	"strconv"
+	"fmt"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -65,10 +65,15 @@ func (uc *AuthUseCase) SuperAdminLogin(ctx context.Context, request *entity.Supe
 		return "", errors.New("xato parol kiritdingiz")
 	}
 
+	expDuration := time.Duration(uc.cfg.Casbin.AccessTokenTimeOut) * time.Second
+	expTime := time.Now().Add(expDuration)
+
+	expTimeStr := fmt.Sprintf("%d", expTime.Unix())
+
 	jwtHandler := tokens.JWTHandler{
 		Sub:       admin.Id,
 		Iss:       time.Now().Format(time.RFC3339),
-		Exp:       strconv.FormatInt(time.Now().Add(24*time.Hour).Unix(), 10),
+		Exp:       expTimeStr,
 		Role:      "super-admin",
 		SigninKey: uc.cfg.Casbin.SigningKey,
 		Timeout:   uc.cfg.Casbin.AccessTokenTimeOut,
