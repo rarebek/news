@@ -168,7 +168,7 @@ func (n *NewsRepo) GetFilteredNews(ctx context.Context, request *entity.GetFilte
 			Where(squirrel.Eq{"sc.id": request.SubCategoryIDs})
 	}
 
-	// Add filter for CategoryID if provided
+	// Add filter for CategoryID if provided and not empty
 	if request.CategoryID != "" {
 		queryBuilder = queryBuilder.
 			Join("subcategory_news sn2 ON n.id = sn2.news_id").
