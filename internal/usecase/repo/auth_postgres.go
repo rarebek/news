@@ -68,8 +68,8 @@ func (a *AuthRepo) GetAdminById(ctx context.Context, id string) (*entity.Admin, 
 	return &adminPostgres, nil
 }
 
-func (a *AuthRepo) GetSuperAdminData(ctx context.Context, PhoneNumber string) (*entity.Admin, error) {
-	var adminPostgres entity.Admin
+func (a *AuthRepo) GetSuperAdminData(ctx context.Context, PhoneNumber string) (*entity.SuperAdmin, error) {
+	var adminPostgres entity.SuperAdmin
 	var avatarNull sql.NullString
 	sql, args, err := a.Builder.Select("id, phone_number, password, avatar").
 		From("superadmins").
@@ -82,7 +82,7 @@ func (a *AuthRepo) GetSuperAdminData(ctx context.Context, PhoneNumber string) (*
 
 	row := a.Pool.QueryRow(ctx, sql, args...)
 
-	if err = row.Scan(&adminPostgres.Id, &adminPostgres.Username, &adminPostgres.Password, &avatarNull); err != nil {
+	if err = row.Scan(&adminPostgres.Id, &adminPostgres.PhoneNumber, &adminPostgres.Password, &avatarNull); err != nil {
 		return nil, err
 	}
 

@@ -266,7 +266,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.AdminLoginResponse"
+                            "$ref": "#/definitions/entity.Admin"
                         }
                     },
                     "400": {
@@ -433,7 +433,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.AdminLoginResponse"
+                            "$ref": "#/definitions/entity.SuperAdmin"
                         }
                     },
                     "400": {
@@ -796,6 +796,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.SuperAdmin": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone_number": {
                     "type": "string"
                 }
             }

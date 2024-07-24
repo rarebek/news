@@ -25,14 +25,14 @@ func NewAuthUseCase(r AuthRepo, cfg *config.Config) *AuthUseCase {
 	}
 }
 
-func (uc *AuthUseCase) Login(ctx context.Context, request *entity.Admin) (string, error) {
+func (uc *AuthUseCase) Login(ctx context.Context, request *entity.Admin) (*entity.AdminLoginResponse, error) {
 	admin, err := uc.repo.GetAdminData(ctx, request.Username)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if admin.Password != request.Password {
-		return "", errors.New("xato parol kiritdingiz")
+		return nil, errors.New("xato parol kiritdingiz")
 	}
 
 	expDuration := time.Duration(uc.cfg.Casbin.AccessTokenTimeOut) * time.Second
@@ -49,20 +49,26 @@ func (uc *AuthUseCase) Login(ctx context.Context, request *entity.Admin) (string
 
 	accessToken, _, err := jwtHandler.GenerateAuthJWT()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return accessToken, nil
+	return &entity.AdminLoginResponse{
+		Id:          admin.Id,
+		Username:    admin.Username,
+		Password:    admin.Password,
+		Avatar:      admin.Avatar,
+		AccessToken: accessToken,
+	}, nil
 }
 
-func (uc *AuthUseCase) SuperAdminLogin(ctx context.Context, request *entity.SuperAdmin) (string, error) {
+func (uc *AuthUseCase) SuperAdminLogin(ctx context.Context, request *entity.SuperAdmin) (*entity.SuperAdminLoginResponse, error) {
 	admin, err := uc.repo.GetSuperAdminData(ctx, request.PhoneNumber)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if admin.Password != request.Password {
-		return "", errors.New("xato parol kiritdingiz")
+		return nil, errors.New("xato parol kiritdingiz")
 	}
 
 	expDuration := time.Duration(uc.cfg.Casbin.AccessTokenTimeOut) * time.Second
@@ -81,10 +87,16 @@ func (uc *AuthUseCase) SuperAdminLogin(ctx context.Context, request *entity.Supe
 
 	accessToken, _, err := jwtHandler.GenerateAuthJWT()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return accessToken, nil
+	return &entity.SuperAdminLoginResponse{
+		Id:          admin.Id,
+		PhoneNumber: admin.PhoneNumber,
+		Password:    admin.Password,
+		Avatar:      admin.Avatar,
+		AccessToken: accessToken,
+	}, nil
 }
 
 func (uc *AuthUseCase) CreateAdmin(ctx context.Context, admin *entity.Admin) error {

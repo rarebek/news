@@ -10,8 +10,8 @@ import (
 // //go:generate mockgen -source=interfaces.go -destination=./mocks_test.go -package=usecase_test
 type (
 	Auth interface {
-		Login(ctx context.Context, admin *entity.Admin) (string, error)
-		SuperAdminLogin(ctx context.Context, admin *entity.SuperAdmin) (string, error)
+		Login(ctx context.Context, admin *entity.Admin) (*entity.AdminLoginResponse, error)
+		SuperAdminLogin(ctx context.Context, admin *entity.SuperAdmin) (*entity.SuperAdminLoginResponse, error)
 		CreateAdmin(ctx context.Context, admin *entity.Admin) error
 		DeleteAdmin(ctx context.Context, id string) error
 		GetAllAdmins(ctx context.Context) ([]entity.Admin, error)
@@ -22,7 +22,7 @@ type (
 
 	AuthRepo interface {
 		GetAdminData(ctx context.Context, Username string) (*entity.Admin, error)
-		GetSuperAdminData(ctx context.Context, PhoneNumber string) (*entity.Admin, error)
+		GetSuperAdminData(ctx context.Context, PhoneNumber string) (*entity.SuperAdmin, error)
 		CreateAdmin(ctx context.Context, admin *entity.Admin) error
 		DeleteAdmin(ctx context.Context, id string) error
 		GetAllAdmins(ctx context.Context) ([]entity.Admin, error)

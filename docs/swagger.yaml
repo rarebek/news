@@ -11,6 +11,17 @@ definitions:
       username:
         type: string
     type: object
+  entity.SuperAdmin:
+    properties:
+      avatar:
+        type: string
+      id:
+        type: string
+      password:
+        type: string
+      phone_number:
+        type: string
+    type: object
   models.Admin:
     properties:
       avatar:
@@ -308,7 +319,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.AdminLoginResponse'
+            $ref: '#/definitions/entity.Admin'
         "400":
           description: Bad Request
           schema:
@@ -381,7 +392,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.AdminLoginResponse'
+            $ref: '#/definitions/entity.SuperAdmin'
         "400":
           description: Bad Request
           schema:

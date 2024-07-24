@@ -51,7 +51,7 @@ func newAuthRoutes(handler *gin.RouterGroup, t usecase.Auth, l logger.Interface)
 // @Accept      json
 // @Produce     json
 // @Param       request body models.AdminLoginRequest true "Phone Number and Password"
-// @Success     200 {object} models.AdminLoginResponse
+// @Success     200 {object} entity.Admin
 // @Failure     400 {object} response
 // @Failure     401 {object} response
 // @Failure     500 {object} response
@@ -64,7 +64,7 @@ func (r *authRoutes) login(c *gin.Context) {
 		return
 	}
 
-	token, err := r.t.Login(c.Request.Context(), &entity.Admin{
+	admin, err := r.t.Login(c.Request.Context(), &entity.Admin{
 		Username: request.Username,
 		Password: request.Password,
 	})
@@ -84,9 +84,7 @@ func (r *authRoutes) login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, models.AdminLoginResponse{
-		AccessToken: token,
-	})
+	c.JSON(http.StatusOK, admin)
 }
 
 // @Summary     Super Admin Login
@@ -96,7 +94,7 @@ func (r *authRoutes) login(c *gin.Context) {
 // @Accept      json
 // @Produce     json
 // @Param       request body models.SuperAdminLoginRequest true "Phone Number and Password"
-// @Success     200 {object} models.AdminLoginResponse
+// @Success     200 {object} entity.SuperAdmin
 // @Failure     400 {object} response
 // @Failure     401 {object} response
 // @Failure     500 {object} response
@@ -109,7 +107,7 @@ func (r *authRoutes) superAdminLogin(c *gin.Context) {
 		return
 	}
 
-	token, err := r.t.SuperAdminLogin(c.Request.Context(), &entity.SuperAdmin{
+	superAdmin, err := r.t.SuperAdminLogin(c.Request.Context(), &entity.SuperAdmin{
 		PhoneNumber: request.PhoneNumber,
 		Password:    request.Password,
 	})
@@ -128,9 +126,7 @@ func (r *authRoutes) superAdminLogin(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, models.AdminLoginResponse{
-		AccessToken: token,
-	})
+	c.JSON(http.StatusOK, superAdmin)
 }
 
 // @Summary     Create Admin
