@@ -187,7 +187,10 @@ func (a *AuthRepo) ChangeSuperAdminData(ctx context.Context, superAdmin *entity.
 		"avatar":       superAdmin.Avatar,
 	}
 	sql, args, err := a.Builder.Update("superadmins").
-		SetMap(data).ToSql()
+		SetMap(data).
+		Where(squirrel.Eq{
+			"id": superAdmin.Id,
+		}).ToSql()
 	if err != nil {
 		return err
 	}

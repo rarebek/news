@@ -302,7 +302,8 @@ func (r *authRoutes) editSuperAdmin(c *gin.Context) {
 	}
 
 	jwt := tokens.JWTHandler{
-		Token: c.Request.Header.Get("Authorization"),
+		Token:     c.Request.Header.Get("Authorization"),
+		SigninKey: "dfhdghkglioe",
 	}
 
 	claims, err := jwt.ExtractClaims()
