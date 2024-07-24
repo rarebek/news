@@ -177,3 +177,22 @@ func (a *AuthRepo) EditAdmin(ctx context.Context, admin *entity.Admin) error {
 
 	return nil
 }
+
+func (a *AuthRepo) ChangeSuperAdminData(ctx context.Context, superAdmin *entity.SuperAdmin) error {
+	data := map[string]interface{}{
+		"phone_number": superAdmin.PhoneNumber,
+		"password":     superAdmin.Password,
+		"avatar":       superAdmin.Avatar,
+	}
+	sql, args, err := a.Builder.Update("superadmins").
+		SetMap(data).ToSql()
+	if err != nil {
+		return err
+	}
+
+	if _, err := a.Pool.Exec(ctx, sql, args...); err != nil {
+		return err
+	}
+
+	return nil
+}

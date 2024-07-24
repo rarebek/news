@@ -17,6 +17,7 @@ type (
 		GetAllAdmins(ctx context.Context) ([]entity.Admin, error)
 		EditAdmin(ctx context.Context, admin *entity.Admin) error
 		GetAdminById(ctx context.Context, id string) (*entity.Admin, error)
+		ChangeSuperAdminData(ctx context.Context, superAdmin *entity.SuperAdmin) error
 	}
 
 	AuthRepo interface {
@@ -27,6 +28,7 @@ type (
 		GetAllAdmins(ctx context.Context) ([]entity.Admin, error)
 		EditAdmin(ctx context.Context, admin *entity.Admin) error
 		GetAdminById(ctx context.Context, id string) (*entity.Admin, error)
+		ChangeSuperAdminData(ctx context.Context, superAdmin *entity.SuperAdmin) error
 	}
 
 	News interface {

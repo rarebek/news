@@ -11,4 +11,5 @@ type SuperAdmin struct {
 	Id          string `json:"id"`
 	PhoneNumber string `json:"phone_number"`
 	Password    string `json:"password"`
+	Avatar      string `json:"avatar"`
 }

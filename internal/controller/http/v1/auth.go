@@ -39,6 +39,7 @@ func newAuthRoutes(handler *gin.RouterGroup, t usecase.Auth, l logger.Interface)
 		h.GET("/admin/getall", r.getAllAdmins)
 		h.PUT("/admin/edit", r.editAdmin)
 		h.GET("/admin/:id", r.getAdminData)
+		h.PUT("/superadmin/edit", r.editSuperAdmin)
 	}
 }
 
@@ -270,6 +271,44 @@ func (r *authRoutes) editAdmin(c *gin.Context) {
 		Username: admin.Username,
 		Password: admin.Password,
 		Avatar:   admin.Avatar,
+	}); err != nil {
+		r.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Admin muvaffaqiyatli yangilandi.",
+	})
+}
+
+// @Summary     Edit Super Admin
+// @Description Superadmin updates by its id.
+// @ID          edit-super-admin
+// @Tags  	    superadmin
+// @Accept      json
+// @Produce     json
+// @Param       request body models.SuperAdmin true "Superadmin data for update"
+// @Success     200 {object} models.Message
+// @Failure     400 {object} response
+// @Failure     401 {object} response
+// @Failure     500 {object} response
+// @Security    BearerAuth
+// @Router      /auth/superadmin/edit [put]
+func (r *authRoutes) editSuperAdmin(c *gin.Context) {
+	var admin models.SuperAdmin
+
+	if err := c.ShouldBindJSON(&admin); err != nil {
+		r.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		return
+	}
+
+	if err := r.t.ChangeSuperAdminData(c.Request.Context(), &entity.SuperAdmin{
+		Id:          admin.Id,
+		PhoneNumber: admin.PhoneNumber,
+		Password:    admin.Password,
+		Avatar:      admin.Avatar,
 	}); err != nil {
 		r.l.Error(err)
 		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
