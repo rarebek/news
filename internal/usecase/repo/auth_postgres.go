@@ -180,6 +180,7 @@ func (a *AuthRepo) EditAdmin(ctx context.Context, admin *entity.Admin) error {
 }
 
 func (a *AuthRepo) ChangeSuperAdminData(ctx context.Context, superAdmin *entity.SuperAdmin) error {
+	pp.Println(superAdmin)
 	data := map[string]interface{}{
 		"phone_number": superAdmin.PhoneNumber,
 		"password":     superAdmin.Password,
