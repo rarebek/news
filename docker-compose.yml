@@ -65,4 +65,4 @@ networks:
 
 volumes:
   pg-data:
-  minio-data:
+  news_minio-data:
