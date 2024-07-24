@@ -82,8 +82,6 @@ definitions:
     properties:
       avatar:
         type: string
-      id:
-        type: string
       password:
         type: string
       phone_number:

@@ -907,9 +907,6 @@ const docTemplate = `{
                 "avatar": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "string"
-                },
                 "password": {
                     "type": "string"
                 },
