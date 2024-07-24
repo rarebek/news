@@ -19,6 +19,7 @@ import (
 	"tarkib.uz/internal/entity"
 	"tarkib.uz/internal/usecase"
 	"tarkib.uz/pkg/logger"
+	tokens "tarkib.uz/pkg/token"
 )
 
 type authRoutes struct {
@@ -304,8 +305,21 @@ func (r *authRoutes) editSuperAdmin(c *gin.Context) {
 		return
 	}
 
+	jwt := tokens.JWTHandler{
+		Token: c.Request.Header.Get("Authorization"),
+	}
+
+	claims, err := jwt.ExtractClaims()
+	if err != nil {
+		r.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		return
+	}
+
+	id := claims["sub"]
+
 	if err := r.t.ChangeSuperAdminData(c.Request.Context(), &entity.SuperAdmin{
-		Id:          admin.Id,
+		Id:          id.(string),
 		PhoneNumber: admin.PhoneNumber,
 		Password:    admin.Password,
 		Avatar:      admin.Avatar,
