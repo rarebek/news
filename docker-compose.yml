@@ -50,7 +50,7 @@ services:
       - "9001:9001"
     env_file: .env
     volumes:
-      - minio-data:/data
+      - news_minio-data:/data
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
