@@ -114,7 +114,7 @@ definitions:
       error:
         example: message
         type: string
-      "true":
+      status:
         type: boolean
     type: object
 info:

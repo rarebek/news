@@ -6,7 +6,7 @@ import (
 
 type response struct {
 	Error  string `json:"error" example:"message"`
-	Status bool   `json:"true"`
+	Status bool   `json:"status"`
 }
 
 func errorResponse(c *gin.Context, code int, msg string, status bool) {

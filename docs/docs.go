@@ -955,7 +955,7 @@ const docTemplate = `{
                     "type": "string",
                     "example": "message"
                 },
-                "true": {
+                "status": {
                     "type": "boolean"
                 }
             }
