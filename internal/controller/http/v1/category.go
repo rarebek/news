@@ -37,7 +37,7 @@ func (n *categoryRoutes) getAllCategories(c *gin.Context) {
 	categories, err := n.t.GetAllCategories(c.Request.Context())
 	if err != nil {
 		n.l.Error(err)
-		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti")
+		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti", false)
 		return
 	}
 

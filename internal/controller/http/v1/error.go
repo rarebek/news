@@ -5,9 +5,10 @@ import (
 )
 
 type response struct {
-	Error string `json:"error" example:"message"`
+	Error  string `json:"error" example:"message"`
+	Status bool   `json:"true"`
 }
 
-func errorResponse(c *gin.Context, code int, msg string) {
-	c.AbortWithStatusJSON(code, response{msg})
+func errorResponse(c *gin.Context, code int, msg string, status bool) {
+	c.AbortWithStatusJSON(code, response{Error: msg, Status: status})
 }

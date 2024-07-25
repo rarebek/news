@@ -60,7 +60,7 @@ func (r *authRoutes) login(c *gin.Context) {
 	var request models.AdminLoginRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		r.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.InvalidRequestBody)
+		errorResponse(c, http.StatusBadRequest, models.InvalidRequestBody, false)
 		return
 	}
 
@@ -73,18 +73,18 @@ func (r *authRoutes) login(c *gin.Context) {
 		switch err.Error() {
 		case "no rows in result set":
 			r.l.Warn(err.Error())
-			errorResponse(c, http.StatusBadRequest, "Bunday admin topilmadi.")
+			errorResponse(c, http.StatusBadRequest, "Bunday admin topilmadi.", false)
 		case "xato parol kiritdingiz":
 			r.l.Warn(err.Error())
-			errorResponse(c, http.StatusUnauthorized, "Username yoki parol xato kiritildi.")
+			errorResponse(c, http.StatusUnauthorized, "Username yoki parol xato kiritildi.", false)
 		default:
 			r.l.Error(err)
-			errorResponse(c, http.StatusInternalServerError, models.ErrServerProblems)
+			errorResponse(c, http.StatusInternalServerError, models.ErrServerProblems, false)
 		}
 		return
 	}
 
-	c.JSON(http.StatusOK, admin)
+	c.JSON(http.StatusOK, gin.H{"admin": admin, "status": true})
 }
 
 // @Summary     Super Admin Login
@@ -103,7 +103,7 @@ func (r *authRoutes) superAdminLogin(c *gin.Context) {
 	var request models.SuperAdminLoginRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		r.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.InvalidRequestBody)
+		errorResponse(c, http.StatusBadRequest, models.InvalidRequestBody, false)
 		return
 	}
 
@@ -115,13 +115,13 @@ func (r *authRoutes) superAdminLogin(c *gin.Context) {
 		switch err.Error() {
 		case "no rows in result set":
 			r.l.Warn(err.Error())
-			errorResponse(c, http.StatusBadRequest, "Bunday admin topilmadi.")
+			errorResponse(c, http.StatusBadRequest, "Bunday admin topilmadi.", false)
 		case "xato parol kiritdingiz":
 			r.l.Warn(err.Error())
-			errorResponse(c, http.StatusUnauthorized, "Telefon raqam yoki parol xato kiritildi.")
+			errorResponse(c, http.StatusUnauthorized, "Telefon raqam yoki parol xato kiritildi.", false)
 		default:
 			r.l.Error(err)
-			errorResponse(c, http.StatusInternalServerError, models.ErrServerProblems)
+			errorResponse(c, http.StatusInternalServerError, models.ErrServerProblems, false)
 		}
 		return
 	}
@@ -146,7 +146,7 @@ func (r *authRoutes) createAdmin(c *gin.Context) {
 	var request models.AdminLoginRequest
 	if err := c.ShouldBindJSON(&request); err != nil {
 		r.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.InvalidRequestBody)
+		errorResponse(c, http.StatusBadRequest, models.InvalidRequestBody, false)
 		return
 	}
 
@@ -155,7 +155,7 @@ func (r *authRoutes) createAdmin(c *gin.Context) {
 		Password: request.Password,
 	}); err != nil {
 		r.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems, false)
 		return
 	}
 
@@ -182,7 +182,7 @@ func (r *authRoutes) deleteAdmin(c *gin.Context) {
 
 	if err := r.t.DeleteAdmin(c.Request.Context(), id); err != nil {
 		r.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems, false)
 		return
 	}
 
@@ -210,7 +210,7 @@ func (r *authRoutes) getAdminData(c *gin.Context) {
 	admin, err := r.t.GetAdminById(c.Request.Context(), id)
 	if err != nil {
 		r.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems, false)
 		return
 	}
 
@@ -234,7 +234,7 @@ func (r *authRoutes) getAllAdmins(c *gin.Context) {
 	admins, err := r.t.GetAllAdmins(c.Request.Context())
 	if err != nil {
 		r.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems, false)
 		return
 	}
 
@@ -259,7 +259,7 @@ func (r *authRoutes) editAdmin(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&admin); err != nil {
 		r.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems, false)
 		return
 	}
 
@@ -270,7 +270,7 @@ func (r *authRoutes) editAdmin(c *gin.Context) {
 		Avatar:   admin.Avatar,
 	}); err != nil {
 		r.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems, false)
 		return
 	}
 
@@ -297,7 +297,7 @@ func (r *authRoutes) editSuperAdmin(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&admin); err != nil {
 		r.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems, false)
 		return
 	}
 
@@ -309,7 +309,7 @@ func (r *authRoutes) editSuperAdmin(c *gin.Context) {
 	claims, err := jwt.ExtractClaims()
 	if err != nil {
 		r.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems, false)
 		return
 	}
 
@@ -322,7 +322,7 @@ func (r *authRoutes) editSuperAdmin(c *gin.Context) {
 		Avatar:      admin.Avatar,
 	}); err != nil {
 		r.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems, false)
 		return
 	}
 
@@ -350,19 +350,19 @@ func (f *authRoutes) upload(c *gin.Context) {
 	err := c.Request.ParseMultipartForm(10 << 20)
 	if err != nil {
 		f.l.Error(err, "http - v1 - fileupload - ParseMultipartForm")
-		errorResponse(c, http.StatusBadRequest, "Failed to parse multipart form")
+		errorResponse(c, http.StatusBadRequest, "Failed to parse multipart form", false)
 		return
 	}
 
 	bucketType := c.Request.FormValue("type")
 	if bucketType == "" {
-		errorResponse(c, http.StatusBadRequest, "Bucket type is required")
+		errorResponse(c, http.StatusBadRequest, "Bucket type is required", false)
 		return
 	}
 	file, fileHeader, err := c.Request.FormFile("file")
 	if err != nil {
 		f.l.Error(err, "http - v1 - fileupload - FormFile")
-		errorResponse(c, http.StatusBadRequest, "Failed to retrieve file")
+		errorResponse(c, http.StatusBadRequest, "Failed to retrieve file", false)
 		return
 	}
 	defer file.Close()
@@ -371,7 +371,7 @@ func (f *authRoutes) upload(c *gin.Context) {
 	allowedExts := map[string]bool{".png": true, ".jpg": true, ".svg": true, ".jpeg": true, ".JPG": true, ".PNG": true}
 	if !allowedExts[ext] {
 		f.l.Error(errors.New("invalid file extension"), "http - v1 - fileupload - filepath.Ext")
-		errorResponse(c, http.StatusBadRequest, "Only PNG, JPG, JPEG, and SVG files are allowed")
+		errorResponse(c, http.StatusBadRequest, "Only PNG, JPG, JPEG, and SVG files are allowed", false)
 		return
 	}
 
@@ -385,7 +385,7 @@ func (f *authRoutes) upload(c *gin.Context) {
 	})
 	if err != nil {
 		f.l.Error(err, "http - v1 - fileupload - minio.New")
-		errorResponse(c, http.StatusInternalServerError, "Failed to initialize MinIO client")
+		errorResponse(c, http.StatusInternalServerError, "Failed to initialize MinIO client", false)
 		return
 	}
 
@@ -398,7 +398,7 @@ func (f *authRoutes) upload(c *gin.Context) {
 	})
 	if err != nil {
 		f.l.Error(err, "http - v1 - fileupload - minioClient.PutObject")
-		errorResponse(c, http.StatusInternalServerError, "Failed to upload file to MinIO")
+		errorResponse(c, http.StatusInternalServerError, "Failed to upload file to MinIO", false)
 		return
 	}
 

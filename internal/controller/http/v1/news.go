@@ -46,7 +46,7 @@ func (n *newsRoutes) create(c *gin.Context) {
 	var body models.News
 	if err := c.ShouldBindJSON(&body); err != nil {
 		n.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, err.Error())
+		errorResponse(c, http.StatusBadRequest, err.Error(), false)
 		return
 	}
 
@@ -57,7 +57,7 @@ func (n *newsRoutes) create(c *gin.Context) {
 		SubCategoryIDs: body.SubCategoryIDs,
 	}); err != nil {
 		n.l.Error(err)
-		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti")
+		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti", false)
 		return
 	}
 
@@ -83,7 +83,7 @@ func (n *newsRoutes) deleteNews(c *gin.Context) {
 	id := c.Param("id")
 	if err := n.t.DeleteNews(c.Request.Context(), id); err != nil {
 		n.l.Error(err)
-		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti")
+		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti", false)
 		return
 	}
 
@@ -116,14 +116,14 @@ func (n *newsRoutes) getAllNews(c *gin.Context) {
 	pageInt, err := strconv.Atoi(page)
 	if err != nil {
 		n.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems, false)
 		return
 	}
 
 	limitInt, err := strconv.Atoi(limit)
 	if err != nil {
 		n.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems)
+		errorResponse(c, http.StatusBadRequest, models.ErrServerProblems, false)
 		return
 	}
 
@@ -133,7 +133,7 @@ func (n *newsRoutes) getAllNews(c *gin.Context) {
 	})
 	if err != nil {
 		n.l.Error(err)
-		errorResponse(c, http.StatusInternalServerError, models.ErrServerProblems)
+		errorResponse(c, http.StatusInternalServerError, models.ErrServerProblems, false)
 		return
 	}
 
@@ -163,14 +163,14 @@ func (n *newsRoutes) getFilteredNews(c *gin.Context) {
 	page, err := strconv.Atoi(pageStr)
 	if err != nil {
 		n.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, "Invalid page number")
+		errorResponse(c, http.StatusBadRequest, "Invalid page number", false)
 		return
 	}
 
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil {
 		n.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, "Invalid limit number")
+		errorResponse(c, http.StatusBadRequest, "Invalid limit number", false)
 		return
 	}
 
@@ -182,7 +182,7 @@ func (n *newsRoutes) getFilteredNews(c *gin.Context) {
 	})
 	if err != nil {
 		n.l.Error(err)
-		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti")
+		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti", false)
 		return
 	}
 

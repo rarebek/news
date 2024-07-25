@@ -954,6 +954,9 @@ const docTemplate = `{
                 "error": {
                     "type": "string",
                     "example": "message"
+                },
+                "true": {
+                    "type": "boolean"
                 }
             }
         }
