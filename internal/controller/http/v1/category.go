@@ -57,5 +57,8 @@ func (n *categoryRoutes) getAllCategories(c *gin.Context) {
 		})
 	}
 
-	c.JSON(http.StatusOK, categoryResponses)
+	c.JSON(http.StatusOK, gin.H{
+		"categories": categoryResponses,
+		"status": true,
+	})
 }

@@ -126,7 +126,10 @@ func (r *authRoutes) superAdminLogin(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, superAdmin)
+	c.JSON(http.StatusOK, gin.H{
+		"superadmin": superAdmin,
+		"status":     true,
+	})
 }
 
 // @Summary     Create Admin
@@ -161,6 +164,7 @@ func (r *authRoutes) createAdmin(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Admin muvaffaqiyatli yaratildi",
+		"status":  true,
 	})
 }
 
@@ -188,6 +192,7 @@ func (r *authRoutes) deleteAdmin(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Admin muvaffaqiyatli o'chirildi",
+		"status":  true,
 	})
 }
 
@@ -214,7 +219,10 @@ func (r *authRoutes) getAdminData(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, admin)
+	c.JSON(http.StatusOK, gin.H{
+		"admin":  admin,
+		"status": true,
+	})
 }
 
 // @Summary     Get All Admins
@@ -238,7 +246,10 @@ func (r *authRoutes) getAllAdmins(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, admins)
+	c.JSON(http.StatusOK, gin.H{
+		"admins": admins,
+		"status": true,
+	})
 }
 
 // @Summary     Edit Admin
@@ -276,6 +287,7 @@ func (r *authRoutes) editAdmin(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Admin muvaffaqiyatli yangilandi.",
+		"status":  true,
 	})
 }
 
@@ -328,6 +340,7 @@ func (r *authRoutes) editSuperAdmin(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Admin muvaffaqiyatli yangilandi.",
+		"status":  true,
 	})
 }
 
@@ -406,5 +419,6 @@ func (f *authRoutes) upload(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"url": minioURL,
+		"status": true,
 	})
 }

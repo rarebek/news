@@ -63,6 +63,7 @@ func (n *newsRoutes) create(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Yangilik muvaffaqiyatli yaratildi.",
+		"status":  true,
 	})
 }
 
@@ -89,6 +90,7 @@ func (n *newsRoutes) deleteNews(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Yangilik muvaffaqiyatli o'chirildi.",
+		"status":  true,
 	})
 }
 
@@ -137,7 +139,10 @@ func (n *newsRoutes) getAllNews(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, news)
+	c.JSON(http.StatusOK, gin.H{
+		"news":   news,
+		"status": true,
+	})
 }
 
 // @Summary		Get Filtered News
@@ -186,5 +191,8 @@ func (n *newsRoutes) getFilteredNews(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, news)
+	c.JSON(http.StatusOK, gin.H{
+		"news":   news,
+		"status": true,
+	})
 }
