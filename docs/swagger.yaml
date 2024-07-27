@@ -1,5 +1,24 @@
 basePath: /v1
 definitions:
+  entity.Ad:
+    properties:
+      description:
+        type: string
+      duration:
+        type: string
+      expiration_time:
+        type: string
+      id:
+        type: string
+      image_url:
+        type: string
+      options:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+    type: object
   entity.Admin:
     properties:
       avatar:
@@ -9,6 +28,13 @@ definitions:
       password:
         type: string
       username:
+        type: string
+    type: object
+  entity.Link:
+    properties:
+      link_name:
+        type: string
+      link_url:
         type: string
     type: object
   entity.SuperAdmin:
@@ -63,13 +89,6 @@ definitions:
           $ref: '#/definitions/models.SubCategoryResponse'
         type: array
     type: object
-  models.Link:
-    properties:
-      link_name:
-        type: string
-      link_url:
-        type: string
-    type: object
   models.Message:
     properties:
       message:
@@ -83,7 +102,7 @@ definitions:
         type: string
       links:
         items:
-          $ref: '#/definitions/models.Link'
+          $ref: '#/definitions/entity.Link'
         type: array
       name:
         type: string
@@ -134,6 +153,76 @@ info:
   title: news back-end
   version: "1.0"
 paths:
+  /ads:
+    post:
+      consumes:
+      - application/json
+      description: Create a new ad with the given details
+      parameters:
+      - description: Ad details
+        in: body
+        name: ad
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Ad'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Ad'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Create a new ad
+      tags:
+      - ads
+  /ads/{id}:
+    delete:
+      description: Delete an ad by ID
+      parameters:
+      - description: Ad ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Delete an ad
+      tags:
+      - ads
+  /ads/expired:
+    delete:
+      description: Delete all ads that have expired
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Delete expired ads
+      tags:
+      - ads
   /auth/admin/{id}:
     get:
       consumes:
@@ -248,7 +337,7 @@ paths:
       consumes:
       - application/json
       description: ID of the admin to update and other fields will be updated.
-      operationId: edit-admin
+      operationId: edit-admins
       parameters:
       - description: ID of the admin to edit
         in: body

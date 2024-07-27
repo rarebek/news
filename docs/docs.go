@@ -15,6 +15,113 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/ads": {
+            "post": {
+                "description": "Create a new ad with the given details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ads"
+                ],
+                "summary": "Create a new ad",
+                "parameters": [
+                    {
+                        "description": "Ad details",
+                        "name": "ad",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.Ad"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Ad"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/ads/expired": {
+            "delete": {
+                "description": "Delete all ads that have expired",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ads"
+                ],
+                "summary": "Delete expired ads",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/ads/{id}": {
+            "delete": {
+                "description": "Delete an ad by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ads"
+                ],
+                "summary": "Delete an ad",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ad ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/admin/create": {
             "post": {
                 "security": [
@@ -147,7 +254,7 @@ const docTemplate = `{
                     "superadmin"
                 ],
                 "summary": "Edit Admin",
-                "operationId": "edit-admin",
+                "operationId": "edit-admins",
                 "parameters": [
                     {
                         "description": "ID of the admin to edit",
@@ -783,6 +890,35 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "entity.Ad": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "duration": {
+                    "type": "string"
+                },
+                "expiration_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "options": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "entity.Admin": {
             "type": "object",
             "properties": {
@@ -796,6 +932,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.Link": {
+            "type": "object",
+            "properties": {
+                "link_name": {
+                    "type": "string"
+                },
+                "link_url": {
                     "type": "string"
                 }
             }
@@ -878,17 +1025,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Link": {
-            "type": "object",
-            "properties": {
-                "link_name": {
-                    "type": "string"
-                },
-                "link_url": {
-                    "type": "string"
-                }
-            }
-        },
         "models.Message": {
             "type": "object",
             "properties": {
@@ -909,7 +1045,7 @@ const docTemplate = `{
                 "links": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.Link"
+                        "$ref": "#/definitions/entity.Link"
                     }
                 },
                 "name": {

@@ -31,6 +31,22 @@ type (
 		ChangeSuperAdminData(ctx context.Context, superAdmin *entity.SuperAdmin) error
 	}
 
+	Ad interface {
+		CreateAd(ctx context.Context, ad *entity.Ad) error
+		DeleteAd(ctx context.Context, id string) error
+		GetAdById(ctx context.Context, id string) (*entity.Ad, error)
+		GetAllAds(ctx context.Context) ([]entity.Ad, error)
+		DeleteExpiredAds(ctx context.Context) error
+	}
+
+	AdRepo interface {
+		CreateAd(ctx context.Context, ad *entity.Ad) error
+		DeleteAd(ctx context.Context, id string) error
+		GetAdById(ctx context.Context, id string) (*entity.Ad, error)
+		GetAllAds(ctx context.Context) ([]entity.Ad, error)
+		DeleteExpiredAds(ctx context.Context) error
+	}
+
 	News interface {
 		CreateNews(ctx context.Context, request *entity.News) error
 		GetAllNews(ctx context.Context, request *entity.GetAllNewsRequest) ([]entity.News, error)

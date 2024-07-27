@@ -254,7 +254,7 @@ func (r *authRoutes) getAllAdmins(c *gin.Context) {
 
 // @Summary     Edit Admin
 // @Description ID of the admin to update and other fields will be updated.
-// @ID          edit-admin
+// @ID          edit-admins
 // @Tags  	    superadmin
 // @Accept      json
 // @Produce     json

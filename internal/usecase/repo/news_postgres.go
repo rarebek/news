@@ -24,13 +24,10 @@ func (n *NewsRepo) CreateNews(ctx context.Context, request *entity.News) error {
 		newsID = uuid.NewString()
 	)
 
-	// Marshal Links to JSON
 	linksJSON, err := json.Marshal(request.Links)
 	if err != nil {
 		return err
 	}
-
-	pp.Println(string(linksJSON))
 
 	data := map[string]interface{}{
 		"id":          newsID,

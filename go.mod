@@ -13,13 +13,13 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-migrate/migrate/v4 v4.17.1
-	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.6.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgx/v4 v4.18.3
 	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/minio/minio-go/v7 v7.0.73
 	github.com/prometheus/client_golang v1.19.1
+	github.com/robfig/cron v1.2.0
 	github.com/rs/zerolog v1.33.0
 	github.com/spf13/cast v1.6.0
 	github.com/streadway/amqp v1.1.0

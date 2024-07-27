@@ -29,7 +29,7 @@ import (
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
-func NewRouter(handler *gin.Engine, l logger.Interface, authUseCase *usecase.AuthUseCase, newsUseCase *usecase.NewsUseCase, categoryUseCase *usecase.CategoryUseCase, enforcer *casbin.Enforcer, cfg *config.Config) {
+func NewRouter(handler *gin.Engine, l logger.Interface, authUseCase *usecase.AuthUseCase, newsUseCase *usecase.NewsUseCase, categoryUseCase *usecase.CategoryUseCase, adUseCase *usecase.AdUseCase, enforcer *casbin.Enforcer, cfg *config.Config) {
 	// Options
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
@@ -63,5 +63,6 @@ func NewRouter(handler *gin.Engine, l logger.Interface, authUseCase *usecase.Aut
 		newAuthRoutes(h, authUseCase, l)
 		newNewsRoutes(h, *newsUseCase, l)
 		newCategoryRoutes(h, *categoryUseCase, l)
+		newAdRoutes(h, *adUseCase, l)
 	}
 }
