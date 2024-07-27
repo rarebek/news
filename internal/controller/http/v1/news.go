@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/k0kubun/pp"
 
 	"tarkib.uz/internal/controller/http/models"
 	"tarkib.uz/internal/entity"
@@ -60,6 +61,8 @@ func (n *newsRoutes) create(c *gin.Context) {
 		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti", false)
 		return
 	}
+
+	pp.Println(body)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Yangilik muvaffaqiyatli yaratildi.",
