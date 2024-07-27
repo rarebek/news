@@ -6,6 +6,7 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
+	"github.com/k0kubun/pp"
 	"tarkib.uz/internal/entity"
 	"tarkib.uz/pkg/postgres"
 )
@@ -115,6 +116,8 @@ func (n *NewsRepo) GetAllNews(ctx context.Context, request *entity.GetAllNewsReq
 		if err := rows.Scan(&news.ID, &news.Name, &news.Description, &news.ImageURL, &news.CreatedAt, &linksJSON); err != nil {
 			return nil, err
 		}
+
+		pp.Println(linksJSON)
 
 		var links []entity.Link
 		if err := json.Unmarshal(linksJSON, &links); err != nil {
