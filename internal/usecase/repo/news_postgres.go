@@ -24,17 +24,20 @@ func (n *NewsRepo) CreateNews(ctx context.Context, request *entity.News) error {
 		newsID = uuid.NewString()
 	)
 
-	jsonLinks, err := json.Marshal(&request.Links)
+	// Marshal Links to JSON
+	linksJSON, err := json.Marshal(request.Links)
 	if err != nil {
 		return err
 	}
+
+	pp.Println(linksJSON)
 
 	data := map[string]interface{}{
 		"id":          newsID,
 		"name":        request.Name,
 		"description": request.Description,
 		"image_url":   request.ImageURL,
-		"links":       jsonLinks,
+		"links":       linksJSON, // Store JSONB data
 	}
 	sql, args, err := n.Builder.Insert("news").
 		SetMap(data).ToSql()
