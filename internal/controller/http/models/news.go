@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"tarkib.uz/internal/entity"
+)
 
 type NewsWithCategoryNames struct {
 	ID              string    `json:"id"`
@@ -13,11 +17,11 @@ type NewsWithCategoryNames struct {
 }
 
 type News struct {
-	Name           string   `json:"name"`
-	Description    string   `json:"description"`
-	ImageURL       string   `json:"image_url"`
-	SubCategoryIDs []string `json:"subcategory_ids"`
-	Links          []Link   `json:"links"`
+	Name           string        `json:"name"`
+	Description    string        `json:"description"`
+	ImageURL       string        `json:"image_url"`
+	SubCategoryIDs []string      `json:"subcategory_ids"`
+	Links          []entity.Link `json:"links"`
 }
 
 type Link struct {

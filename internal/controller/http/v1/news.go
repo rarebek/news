@@ -56,6 +56,7 @@ func (n *newsRoutes) create(c *gin.Context) {
 		Description:    body.Description,
 		ImageURL:       body.ImageURL,
 		SubCategoryIDs: body.SubCategoryIDs,
+		Links:          body.Links,
 	}); err != nil {
 		n.l.Error(err)
 		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti", false)
