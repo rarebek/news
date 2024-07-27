@@ -46,3 +46,16 @@ func (n *NewsUseCase) GetFilteredNews(ctx context.Context, request *entity.GetFi
 
 	return news, nil
 }
+
+func (n *NewsUseCase) UpdateNews(ctx context.Context, id string, request *entity.News) error {
+	return n.repo.UpdateNews(ctx, id, request)
+}
+
+func (n *NewsUseCase) GetNewsByID(ctx context.Context, id string) (*entity.News, error) {
+	news, err := n.repo.GetNewsByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return news, nil
+}

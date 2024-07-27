@@ -23,4 +23,9 @@ p, super-admin, /v1/auth/admin/getall, GET
 p, super-admin, /v1/auth/admin/delete/{id}, DELETE
 p, super-admin, /v1/auth/admin/{id}, GET
 p, admin, /v1/auth/admin/{id}, GET
+p, admin, /v1/news/update/{id}, PUT
+p, super-admin, /v1/news/update/{id}, PUT
+p, unauthorized, /v1/news/get/{id}, GET
+p, admin, /v1/news/get/{id}, GET
+p, super-admin, /v1/news/get/{id}, GET
 g, user, unauthorized   

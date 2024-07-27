@@ -688,6 +688,36 @@ paths:
       summary: Get Filtered News
       tags:
       - news
+  /news/get/{id}:
+    get:
+      consumes:
+      - application/json
+      description: This method retrieves a news item by its ID
+      operationId: get-news-by-id
+      parameters:
+      - description: ID of the news to retrieve
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.News'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Get News By ID
+      tags:
+      - news
   /news/getall:
     get:
       consumes:
@@ -723,6 +753,48 @@ paths:
           schema:
             $ref: '#/definitions/v1.response'
       summary: Get All News
+      tags:
+      - news
+  /news/update/{id}:
+    put:
+      consumes:
+      - application/json
+      description: This method updates an existing news item
+      operationId: update-news
+      parameters:
+      - description: ID of the news to update
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated news details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.News'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Message'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - BearerAuth: []
+      summary: Update News
       tags:
       - news
 securityDefinitions:

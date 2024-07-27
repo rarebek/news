@@ -52,6 +52,8 @@ type (
 		GetAllNews(ctx context.Context, request *entity.GetAllNewsRequest) ([]entity.News, error)
 		DeleteNews(ctx context.Context, id string) error
 		GetFilteredNews(ctx context.Context, request *entity.GetFilteredNewsRequest) ([]entity.News, error)
+		UpdateNews(ctx context.Context, id string, request *entity.News) error
+		GetNewsByID(crx context.Context, id string) (*entity.News, error)
 	}
 
 	NewsRepo interface {
@@ -59,6 +61,8 @@ type (
 		GetAllNews(ctx context.Context, request *entity.GetAllNewsRequest) ([]entity.News, error)
 		DeleteNews(ctx context.Context, id string) error
 		GetFilteredNews(ctx context.Context, request *entity.GetFilteredNewsRequest) ([]entity.News, error)
+		UpdateNews(ctx context.Context, id string, request *entity.News) error
+		GetNewsByID(crx context.Context, id string) (*entity.News, error)
 	}
 
 	Category interface {

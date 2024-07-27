@@ -27,6 +27,8 @@ func newNewsRoutes(handler *gin.RouterGroup, t usecase.NewsUseCase, l logger.Int
 		h.GET("/getall", r.getAllNews)
 		h.DELETE("/delete/:id", r.deleteNews)
 		h.GET("/filtered", r.getFilteredNews)
+		h.PUT("/update/:id", r.updateNews)
+		h.GET("/get/:id", r.getNewsByID)
 	}
 }
 
@@ -189,6 +191,75 @@ func (n *newsRoutes) getFilteredNews(c *gin.Context) {
 		Page:           page,
 		Limit:          limit,
 	})
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti", false)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"news":   news,
+		"status": true,
+	})
+}
+
+// @Summary     Update News
+// @Description This method updates an existing news item
+// @ID          update-news
+// @Tags  	    news
+// @Accept      json
+// @Produce     json
+// @Param       id      path   string      true  "ID of the news to update"
+// @Param       request body   models.News true  "Updated news details"
+// @Success     200 {object} models.Message
+// @Failure     400 {object} response
+// @Failure     401 {object} response
+// @Failure     500 {object} response
+// @Security    BearerAuth
+// @Router      /news/update/{id} [put]
+func (n *newsRoutes) updateNews(c *gin.Context) {
+	id := c.Param("id")
+	var body models.News
+	if err := c.ShouldBindJSON(&body); err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, err.Error(), false)
+		return
+	}
+
+	if err := n.t.UpdateNews(c.Request.Context(), id, &entity.News{
+		Name:           body.Name,
+		Description:    body.Description,
+		ImageURL:       body.ImageURL,
+		SubCategoryIDs: body.SubCategoryIDs,
+		Links:          body.Links,
+	}); err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti", false)
+		return
+	}
+
+	pp.Println(body)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Yangilik muvaffaqiyatli yangilandi.",
+		"status":  true,
+	})
+}
+
+// @Summary     Get News By ID
+// @Description This method retrieves a news item by its ID
+// @ID          get-news-by-id
+// @Tags  	    news
+// @Accept      json
+// @Produce     json
+// @Param       id path string true "ID of the news to retrieve"
+// @Success     200 {object} models.News
+// @Failure     400 {object} response
+// @Failure     500 {object} response
+// @Router      /news/get/{id} [get]
+func (n *newsRoutes) getNewsByID(c *gin.Context) {
+	id := c.Param("id")
+	news, err := n.t.GetNewsByID(c.Request.Context(), id)
 	if err != nil {
 		n.l.Error(err)
 		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti", false)
