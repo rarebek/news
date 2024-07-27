@@ -20,4 +20,7 @@ p, super-admin, /v1/auth/admin/getall, GET
 p, super-admin, /v1/auth/admin/delete/{id}, DELETE
 p, super-admin, /v1/auth/admin/{id}, GET
 p, admin, /v1/auth/admin/{id}, GET
+p, unauthorized, /v1/ads, POST
+p, unauthorized, /v1/ads/{id}, DELETE
+p, unauthorized, /v1/ads/expired, DELETE
 g, user, unauthorized   
