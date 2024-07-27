@@ -30,7 +30,7 @@ func (n *NewsRepo) CreateNews(ctx context.Context, request *entity.News) error {
 		return err
 	}
 
-	pp.Println(linksJSON)
+	pp.Println(string(linksJSON))
 
 	data := map[string]interface{}{
 		"id":          newsID,
