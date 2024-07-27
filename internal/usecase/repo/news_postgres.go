@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
@@ -109,9 +110,17 @@ func (n *NewsRepo) GetAllNews(ctx context.Context, request *entity.GetAllNewsReq
 
 	for rows.Next() {
 		var news entity.News
-		if err := rows.Scan(&news.ID, &news.Name, &news.Description, &news.ImageURL, &news.CreatedAt, &news.Links); err != nil {
+		var linksJSON []byte
+
+		if err := rows.Scan(&news.ID, &news.Name, &news.Description, &news.ImageURL, &news.CreatedAt, &linksJSON); err != nil {
 			return nil, err
 		}
+
+		var links []entity.Link
+		if err := json.Unmarshal(linksJSON, &links); err != nil {
+			return nil, err
+		}
+		news.Links = links
 
 		sql, args, err = n.Builder.Select("subcategory_id").
 			From("subcategory_news").
@@ -192,9 +201,17 @@ func (n *NewsRepo) GetFilteredNews(ctx context.Context, request *entity.GetFilte
 
 	for rows.Next() {
 		var news entity.News
-		if err := rows.Scan(&news.ID, &news.Name, &news.Description, &news.ImageURL, &news.CreatedAt, &news.Links); err != nil {
+		var linksJSON []byte
+
+		if err := rows.Scan(&news.ID, &news.Name, &news.Description, &news.ImageURL, &news.CreatedAt, &linksJSON); err != nil {
 			return nil, err
 		}
+
+		var links []entity.Link
+		if err := json.Unmarshal(linksJSON, &links); err != nil {
+			return nil, err
+		}
+		news.Links = links
 
 		subCategoryIDsSQL, subCategoryIDsArgs, err := n.Builder.Select("subcategory_id").
 			From("subcategory_news").
