@@ -63,6 +63,13 @@ definitions:
           $ref: '#/definitions/models.SubCategoryResponse'
         type: array
     type: object
+  models.Link:
+    properties:
+      link_name:
+        type: string
+      link_url:
+        type: string
+    type: object
   models.Message:
     properties:
       message:
@@ -74,6 +81,10 @@ definitions:
         type: string
       image_url:
         type: string
+      link:
+        items:
+          $ref: '#/definitions/models.Link'
+        type: array
       name:
         type: string
       subcategory_ids:

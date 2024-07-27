@@ -878,6 +878,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Link": {
+            "type": "object",
+            "properties": {
+                "link_name": {
+                    "type": "string"
+                },
+                "link_url": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Message": {
             "type": "object",
             "properties": {
@@ -894,6 +905,12 @@ const docTemplate = `{
                 },
                 "image_url": {
                     "type": "string"
+                },
+                "link": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Link"
+                    }
                 },
                 "name": {
                     "type": "string"
