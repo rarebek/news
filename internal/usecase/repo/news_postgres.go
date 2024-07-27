@@ -26,6 +26,7 @@ func (n *NewsRepo) CreateNews(ctx context.Context, request *entity.News) error {
 		"name":        request.Name,
 		"description": request.Description,
 		"image_url":   request.ImageURL,
+		"links":       request.Links, // Add this line to handle links
 	}
 	sql, args, err := n.Builder.Insert("news").
 		SetMap(data).ToSql()
@@ -83,8 +84,7 @@ func (n *NewsRepo) DeleteNews(ctx context.Context, id string) error {
 	return nil
 }
 
-func (n *NewsRepo) GetAllNews(ctx context.Context, request *entity.GetAllNewsRequest) ([]entity.
-	News, error) {
+func (n *NewsRepo) GetAllNews(ctx context.Context, request *entity.GetAllNewsRequest) ([]entity.News, error) {
 	var (
 		newsList []entity.News
 		ids      []string
@@ -109,7 +109,7 @@ func (n *NewsRepo) GetAllNews(ctx context.Context, request *entity.GetAllNewsReq
 
 	for rows.Next() {
 		var news entity.News
-		if err := rows.Scan(&news.ID, &news.Name, &news.Description, &news.ImageURL, &news.CreatedAt); err != nil {
+		if err := rows.Scan(&news.ID, &news.Name, &news.Description, &news.ImageURL, &news.CreatedAt, &news.Links); err != nil {
 			return nil, err
 		}
 
@@ -122,20 +122,20 @@ func (n *NewsRepo) GetAllNews(ctx context.Context, request *entity.GetAllNewsReq
 			return nil, err
 		}
 
-		rows, err := n.Pool.Query(ctx, sql, args...)
+		subCategoryRows, err := n.Pool.Query(ctx, sql, args...)
 		if err != nil {
 			return nil, err
 		}
 
-		for rows.Next() {
+		for subCategoryRows.Next() {
 			var id string
-			if err = rows.Scan(&id); err != nil {
+			if err = subCategoryRows.Scan(&id); err != nil {
 				return nil, err
 			}
 
 			ids = append(ids, id)
-
 		}
+		subCategoryRows.Close()
 
 		news.SubCategoryIDs = ids
 
@@ -156,7 +156,7 @@ func (n *NewsRepo) GetFilteredNews(ctx context.Context, request *entity.GetFilte
 		newsList []entity.News
 	)
 
-	queryBuilder := n.Builder.Select("DISTINCT n.id, n.name, n.description, n.image_url, n.created_at").
+	queryBuilder := n.Builder.Select("DISTINCT n.id, n.name, n.description, n.image_url, n.created_at, n.links").
 		From("news n")
 
 	if len(request.SubCategoryIDs) > 0 {
@@ -192,7 +192,7 @@ func (n *NewsRepo) GetFilteredNews(ctx context.Context, request *entity.GetFilte
 
 	for rows.Next() {
 		var news entity.News
-		if err := rows.Scan(&news.ID, &news.Name, &news.Description, &news.ImageURL, &news.CreatedAt); err != nil {
+		if err := rows.Scan(&news.ID, &news.Name, &news.Description, &news.ImageURL, &news.CreatedAt, &news.Links); err != nil {
 			return nil, err
 		}
 

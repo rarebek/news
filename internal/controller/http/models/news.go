@@ -17,4 +17,10 @@ type News struct {
 	Description    string   `json:"description"`
 	ImageURL       string   `json:"image_url"`
 	SubCategoryIDs []string `json:"subcategory_ids"`
+	Links          []Link   `json:"link"`
+}
+
+type Link struct {
+	LinkName string `json:"link_name"`
+	LinkURL  string `json:"link_url"`
 }

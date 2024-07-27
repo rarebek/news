@@ -418,7 +418,7 @@ func (f *authRoutes) upload(c *gin.Context) {
 	minioURL := fmt.Sprintf("https://%s/%s/%s", endpoint, bucketName, objectName)
 
 	c.JSON(http.StatusOK, gin.H{
-		"url": minioURL,
+		"url":    minioURL,
 		"status": true,
 	})
 }

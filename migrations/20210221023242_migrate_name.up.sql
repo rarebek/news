@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS news (
     description TEXT,
     image_url TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    links JSONB
 );
 
 CREATE TABLE IF NOT EXISTS admins (

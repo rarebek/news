@@ -9,6 +9,12 @@ type News struct {
 	ImageURL       string    `json:"image_url"`
 	CreatedAt      time.Time `json:"created_at"`
 	SubCategoryIDs []string  `json:"subcategory_ids"`
+	Links          []Link    `json:"link"`
+}
+
+type Link struct {
+	LinkName string `json:"link_name"`
+	LinkURL  string `json:"link_url"`
 }
 
 type NewsWithCategoryNames struct {
