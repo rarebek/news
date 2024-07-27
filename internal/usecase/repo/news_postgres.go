@@ -117,7 +117,7 @@ func (n *NewsRepo) GetAllNews(ctx context.Context, request *entity.GetAllNewsReq
 			return nil, err
 		}
 
-		pp.Println(linksJSON)
+		pp.Println(string(linksJSON))
 
 		var links []entity.Link
 		if err := json.Unmarshal(linksJSON, &links); err != nil {
