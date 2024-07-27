@@ -81,7 +81,7 @@ definitions:
         type: string
       image_url:
         type: string
-      link:
+      links:
         items:
           $ref: '#/definitions/models.Link'
         type: array

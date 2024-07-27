@@ -906,7 +906,7 @@ const docTemplate = `{
                 "image_url": {
                     "type": "string"
                 },
-                "link": {
+                "links": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.Link"
