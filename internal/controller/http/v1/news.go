@@ -161,6 +161,7 @@ func (n *newsRoutes) getAllNews(c *gin.Context) {
 // @Param       category_id     query string   false "Category ID"
 // @Param       page            query int      true  "Page number"
 // @Param       limit           query int      true  "Number of items per page"
+// @Param       search          query string   false  "Search term"
 // @Success     200 {object} []models.News
 // @Failure     400 {object} response
 // @Failure     500 {object} response

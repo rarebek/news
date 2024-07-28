@@ -191,6 +191,15 @@ func (n *NewsRepo) GetFilteredNews(ctx context.Context, request *entity.GetFilte
 			Where(squirrel.Eq{"sc2.category_id": request.CategoryID})
 	}
 
+	if request.SearchTerm != "" {
+		searchTerm := "%" + request.SearchTerm + "%"
+		queryBuilder = queryBuilder.
+			Where(squirrel.Or{
+				squirrel.Like{"n.name": searchTerm},
+				squirrel.Like{"n.description": searchTerm},
+			})
+	}
+
 	offset := (request.Page - 1) * request.Limit
 	queryBuilder = queryBuilder.
 		OrderBy("n.created_at DESC").

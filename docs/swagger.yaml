@@ -668,6 +668,10 @@ paths:
         name: limit
         required: true
         type: integer
+      - description: Search term
+        in: query
+        name: search
+        type: string
       produces:
       - application/json
       responses:

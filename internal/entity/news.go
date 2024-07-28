@@ -43,4 +43,5 @@ type GetFilteredNewsRequest struct {
 	CategoryID     string   `json:"category_id,omitempty"`
 	Page           int      `json:"page"`
 	Limit          int      `json:"limit"`
+	SearchTerm     string
 }
