@@ -97,13 +97,13 @@ func (n *NewsRepo) GetAllNews(ctx context.Context, request *entity.GetAllNewsReq
 		newsList []entity.News
 		ids      []string
 	)
-	offset := (request.Page - 1) * request.Limit
+	// offset := (request.Page - 1) * request.Limit
 
 	sql, args, err := n.Builder.Select("*").
 		From("news").
 		OrderBy("created_at DESC").
-		Limit(uint64(request.Limit)).
-		Offset(uint64(offset)).
+		// Limit(uint64(request.Limit)).
+		// Offset(uint64(offset)).
 		ToSql()
 	if err != nil {
 		return nil, err
