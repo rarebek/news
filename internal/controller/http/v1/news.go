@@ -171,6 +171,7 @@ func (n *newsRoutes) getFilteredNews(c *gin.Context) {
 	categoryID := c.Query("category_id")
 	pageStr := c.Query("page")
 	limitStr := c.Query("limit")
+	searchTerm := c.Query("search")
 
 	page, err := strconv.Atoi(pageStr)
 	if err != nil {
@@ -191,6 +192,7 @@ func (n *newsRoutes) getFilteredNews(c *gin.Context) {
 		CategoryID:     categoryID,
 		Page:           page,
 		Limit:          limit,
+		SearchTerm:     searchTerm,
 	})
 	if err != nil {
 		n.l.Error(err)

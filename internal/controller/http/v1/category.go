@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"sort"
 
 	"github.com/gin-gonic/gin"
 
@@ -41,8 +42,17 @@ func (n *categoryRoutes) getAllCategories(c *gin.Context) {
 		return
 	}
 
+	// Sort categories by name
+	sort.Slice(categories, func(i, j int) bool {
+		return categories[i].Name < categories[j].Name
+	})
+
 	var categoryResponses []models.CategoryResponse
 	for _, category := range categories {
+		// Sort subcategories by name
+		sort.Slice(category.SubCategories, func(i, j int) bool {
+			return category.SubCategories[i].Name < category.SubCategories[j].Name
+		})
 		var subCategoryResponses []models.SubCategoryResponse
 		for _, subCategory := range category.SubCategories {
 			subCategoryResponses = append(subCategoryResponses, models.SubCategoryResponse{
@@ -59,6 +69,6 @@ func (n *categoryRoutes) getAllCategories(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"categories": categoryResponses,
-		"status": true,
+		"status":     true,
 	})
 }
