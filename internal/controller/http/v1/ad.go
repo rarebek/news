@@ -137,7 +137,7 @@ func (r *adRoutes) getAd(c *gin.Context) {
 
 		if err != nil {
 			r.l.Error(err)
-			errorResponse(c, http.StatusInternalServerError, "Failed to delete ad", false)
+			errorResponse(c, http.StatusInternalServerError, "Failed to get ad"+err.Error(), false)
 			return
 		}
 
@@ -156,7 +156,7 @@ func (r *adRoutes) getAd(c *gin.Context) {
 		})
 		if err != nil {
 			r.l.Error(err)
-			errorResponse(c, http.StatusInternalServerError, "Failed to delete ad", false)
+			errorResponse(c, http.StatusInternalServerError, "Failed to get ad", false)
 			return
 		}
 
