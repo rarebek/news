@@ -22,6 +22,15 @@ definitions:
       username:
         type: string
     type: object
+  entity.CreateAdRequest:
+    properties:
+      description:
+        type: string
+      image_url:
+        type: string
+      title:
+        type: string
+    type: object
   entity.Link:
     properties:
       link_name:
@@ -156,7 +165,7 @@ paths:
         name: ad
         required: true
         schema:
-          $ref: '#/definitions/entity.Ad'
+          $ref: '#/definitions/entity.CreateAdRequest'
       produces:
       - application/json
       responses:
@@ -172,6 +181,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.response'
+      security:
+      - BearerAuth: []
       summary: Create a new ad
       tags:
       - ads
@@ -197,7 +208,29 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.response'
+      security:
+      - BearerAuth: []
       summary: Delete an ad
+      tags:
+      - ads
+    put:
+      description: Edits ad by ID
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - BearerAuth: []
+      summary: Update Ad
       tags:
       - ads
   /auth/admin/{id}:

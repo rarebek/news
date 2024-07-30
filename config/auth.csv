@@ -8,9 +8,8 @@ p, unauthorized, /v1/news/getall, GET
 p, unauthorized, /v1/news/filtered, GET
 p, unauthorized, /v1/news/getall/withcategory, GET
 p, unauthorized, /v1/file/upload, POST
-p, unauthorized, /v1/ads/, POST
-p, unauthorized, /v1/ads/{id}, DELETE
-p, unauthorized, /v1/ads/expired, DELETE
+p, super-admin, /v1/ads/, POST
+p, super-admin, /v1/ads/{id}, DELETE
 p, unauthorized, /metrics, GET
 p, admin, /v1/news/create, POST
 p, super-admin, /v1/news/create, POST

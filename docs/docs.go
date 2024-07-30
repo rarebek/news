@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/ads": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create a new ad with the given details",
                 "consumes": [
                     "application/json"
@@ -35,7 +40,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entity.Ad"
+                            "$ref": "#/definitions/entity.CreateAdRequest"
                         }
                     }
                 ],
@@ -62,7 +67,44 @@ const docTemplate = `{
             }
         },
         "/ads/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Edits ad by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ads"
+                ],
+                "summary": "Update Ad",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Delete an ad by ID",
                 "produces": [
                     "application/json"
@@ -1013,6 +1055,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.CreateAdRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "title": {
                     "type": "string"
                 }
             }

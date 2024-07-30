@@ -3,6 +3,7 @@ package v1
 import (
 	"net/http"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"tarkib.uz/internal/entity"
@@ -15,12 +16,19 @@ type adRoutes struct {
 	l logger.Interface
 }
 
+type Claims struct {
+	Role string `json:"role"`
+	jwt.StandardClaims
+}
+
 func newAdRoutes(handler *gin.RouterGroup, t usecase.AdUseCase, l logger.Interface) {
 	r := &adRoutes{t, l}
 	h := handler.Group("/ads")
 	{
 		h.POST("/", r.createAd)
 		h.DELETE("/:id", r.deleteAd)
+		h.PUT("/:id", r.updateAd)
+		h.GET("/", r.getAd)
 	}
 }
 
@@ -33,6 +41,7 @@ func newAdRoutes(handler *gin.RouterGroup, t usecase.AdUseCase, l logger.Interfa
 // @Success     201 {object} entity.Ad
 // @Failure     400 {object} response
 // @Failure     500 {object} response
+// @Security    BearerAuth
 // @Router      /ads [post]
 func (r *adRoutes) createAd(c *gin.Context) {
 	var ad entity.CreateAdRequest
@@ -70,6 +79,7 @@ func (r *adRoutes) createAd(c *gin.Context) {
 // @Success     204
 // @Failure     400 {object} response
 // @Failure     500 {object} response
+// @Security    BearerAuth
 // @Router      /ads/{id} [delete]
 func (r *adRoutes) deleteAd(c *gin.Context) {
 	id := c.Param("id")
@@ -81,4 +91,94 @@ func (r *adRoutes) deleteAd(c *gin.Context) {
 	}
 
 	c.Status(http.StatusNoContent)
+}
+
+// @Summary		Update Ad
+// @Description Edits ad by ID
+// @Tags        ads
+// @Produce     json
+// @Success     204
+// @Failure     400 {object} response
+// @Failure     500 {object} response
+// @Security    BearerAuth
+// @Router      /ads/{id} [put]
+func (r *adRoutes) updateAd(c *gin.Context) {
+	var ad entity.Ad
+
+	if err := c.ShouldBindJSON(&ad); err != nil {
+		r.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, "Request body not matched", false)
+		return
+	}
+	if err := r.t.UpdateAd(c.Request.Context(), &ad); err != nil {
+		r.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Failed to delete ad", false)
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
+// @Summary		Gets ad details
+// @Description returns ads
+// @Tags        ads
+// @Produce     json
+// @Success     200
+// @Failure     400 {object} response
+// @Failure     500 {object} response
+// @Security    BearerAuth
+// @Router      /ads [get]
+func (r *adRoutes) getAd(c *gin.Context) {
+	tokenStr := c.Request.Header.Get("Authorization")
+	if tokenStr == "" {
+		ad, err := r.t.GetAd(c.Request.Context(), &entity.GetAdRequest{
+			IsAdmin: false,
+		})
+
+		if err != nil {
+			r.l.Error(err)
+			errorResponse(c, http.StatusInternalServerError, "Failed to delete ad", false)
+			return
+		}
+
+		c.JSON(http.StatusOK, ad)
+	}
+
+	claims, err := parseToken(tokenStr)
+	if err != nil {
+		r.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Failed to parse token", false)
+		return
+	}
+	if claims.Role == "super-admin" {
+		ad, err := r.t.GetAd(c.Request.Context(), &entity.GetAdRequest{
+			IsAdmin: true,
+		})
+		if err != nil {
+			r.l.Error(err)
+			errorResponse(c, http.StatusInternalServerError, "Failed to delete ad", false)
+			return
+		}
+
+		c.JSON(http.StatusOK, ad)
+	}
+}
+
+var jwtKey = []byte("dfhdghkglioe")
+
+func parseToken(tokenStr string) (*Claims, error) {
+	claims := &Claims{}
+
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+	if !token.Valid {
+		return nil, http.ErrNoLocation
+	}
+
+	return claims, nil
 }

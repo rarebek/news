@@ -34,17 +34,15 @@ type (
 	Ad interface {
 		CreateAd(ctx context.Context, ad *entity.Ad) error
 		DeleteAd(ctx context.Context, id string) error
-		GetAdById(ctx context.Context, id string) (*entity.Ad, error)
-		GetAllAds(ctx context.Context) ([]entity.Ad, error)
-		DeleteExpiredAds(ctx context.Context) error
+		UpdateAd(ctx context.Context, ad *entity.Ad) error
+		GetAd(ctx context.Context, request *entity.GetAdRequest) (*entity.Ad, error)
 	}
 
 	AdRepo interface {
 		CreateAd(ctx context.Context, ad *entity.Ad) error
 		DeleteAd(ctx context.Context, id string) error
-		GetAdById(ctx context.Context, id string) (*entity.Ad, error)
-		GetAllAds(ctx context.Context) ([]entity.Ad, error)
-		DeleteExpiredAds(ctx context.Context) error
+		UpdateAd(ctx context.Context, ad *entity.Ad) error
+		GetAd(ctx context.Context, request *entity.GetAdRequest) (*entity.Ad, error)
 	}
 
 	News interface {
