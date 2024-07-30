@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
@@ -130,6 +131,7 @@ func (r *adRoutes) updateAd(c *gin.Context) {
 // @Router      /ads [get]
 func (r *adRoutes) getAd(c *gin.Context) {
 	tokenStr := c.Request.Header.Get("Authorization")
+	fmt.Println(tokenStr)
 	if tokenStr == "" {
 		ad, err := r.t.GetAd(c.Request.Context(), &entity.GetAdRequest{
 			IsAdmin: false,
