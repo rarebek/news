@@ -105,14 +105,14 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 		// Debug log to verify new view count
 		fmt.Printf("New view count after update: %d\n", newViewCount)
 
-		query := a.Builder.Select("id, title, description, image_url").From("ads")
+		query := a.Builder.Select("id, title, description, image_url, view_count").From("ads")
 		sql, args, err := query.ToSql()
 		if err != nil {
 			return nil, fmt.Errorf("failed to build SQL query: %w", err)
 		}
 
 		row := a.Pool.QueryRow(ctx, sql, args...)
-		if err := row.Scan(&ad.ID, &ad.Title, &ad.Description, &ad.ImageURL); err != nil {
+		if err := row.Scan(&ad.ID, &ad.Title, &ad.Description, &ad.ImageURL, &ad.ViewCount); err != nil {
 			return nil, fmt.Errorf("failed to scan ad for non-admin: %w", err)
 		}
 
