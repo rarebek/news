@@ -10,6 +10,7 @@ import (
 	"tarkib.uz/internal/entity"
 	"tarkib.uz/internal/usecase"
 	"tarkib.uz/pkg/logger"
+	tokens "tarkib.uz/pkg/token"
 )
 
 type adRoutes struct {
@@ -146,13 +147,19 @@ func (r *adRoutes) getAd(c *gin.Context) {
 		c.JSON(http.StatusOK, ad)
 	}
 
-	claims, err := parseToken(tokenStr)
+	jwt := tokens.JWTHandler{
+		SigninKey: "dfhdghkglioe",
+		Token:     tokenStr,
+	}
+
+	claims, err := jwt.ExtractClaims()
 	if err != nil {
 		r.l.Error(err)
-		errorResponse(c, http.StatusInternalServerError, "Failed to parse token", false)
+		errorResponse(c, http.StatusInternalServerError, "Failed to get ad"+err.Error(), false)
 		return
 	}
-	if claims.Role == "super-admin" {
+
+	if claims["role"] == "super-admin" {
 		ad, err := r.t.GetAd(c.Request.Context(), &entity.GetAdRequest{
 			IsAdmin: true,
 		})
@@ -164,23 +171,4 @@ func (r *adRoutes) getAd(c *gin.Context) {
 
 		c.JSON(http.StatusOK, ad)
 	}
-}
-
-var jwtKey = []byte("dfhdghkglioe")
-
-func parseToken(tokenStr string) (*Claims, error) {
-	claims := &Claims{}
-
-	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
-	})
-
-	if err != nil {
-		return nil, err
-	}
-	if !token.Valid {
-		return nil, http.ErrNoLocation
-	}
-
-	return claims, nil
 }
