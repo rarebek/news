@@ -81,8 +81,9 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 	var (
 		ad entity.Ad
 	)
+
 	if request.IsAdmin {
-		query := a.Builder.Select("id, title, description, image_url, view_count")
+		query := a.Builder.Select("id, title, description, image_url, view_count").From("ads")
 		sql, args, err := query.ToSql()
 		if err != nil {
 			return nil, err
@@ -95,7 +96,13 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 
 		return &ad, nil
 	} else {
-		query := a.Builder.Select("id, title, description, image_url")
+		updateQuery := "UPDATE ads SET view_count = view_count + 1 RETURNING view_count"
+		var newViewCount int
+		if err := a.Pool.QueryRow(ctx, updateQuery).Scan(&newViewCount); err != nil {
+			return nil, err
+		}
+
+		query := a.Builder.Select("id, title, description, image_url").From("ads")
 		sql, args, err := query.ToSql()
 		if err != nil {
 			return nil, err
@@ -107,5 +114,4 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 		}
 		return &ad, nil
 	}
-
 }
