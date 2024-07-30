@@ -2,16 +2,13 @@
 package app
 
 import (
-	"context"
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/casbin/casbin/v2"
 	"github.com/gin-gonic/gin"
-	"github.com/robfig/cron"
 
 	"tarkib.uz/config"
 	v1 "tarkib.uz/internal/controller/http/v1"
@@ -54,21 +51,6 @@ func Run(cfg *config.Config) {
 
 	categoryUseCase := usecase.NewCategoryUseCase(repo.NewCategoryRepo(pg), cfg)
 
-	c := cron.New()
-	err = c.AddFunc("@daily", func() {
-		ctx := context.Background()
-		if err := adRepo.DeleteExpiredAds(ctx); err != nil {
-			log.Printf("Error deleting expired ads: %v", err)
-		} else {
-			log.Println("Expired ads deleted successfully")
-		}
-	})
-	if err != nil {
-		log.Fatalf("Error adding cron job: %v", err)
-	}
-
-	// Start the cron scheduler
-	c.Start()
 	// HTTP Server
 	handler := gin.New()
 	v1.NewRouter(handler, l, authUseCase, newsUseCase, categoryUseCase, adsUseCase, casbinEnforcer, cfg)

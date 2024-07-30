@@ -277,10 +277,3 @@ UPDATE subcategories SET name = 'Sport' WHERE id = 'c38327f6-5492-4d56-8d69-efb6
 UPDATE subcategories SET name = 'Oʻyinlar' WHERE id = 'cfd2e8e4-3bfb-4f16-8554-f54ea865a2dc';
 UPDATE subcategories SET name = 'Koʻngilochar' WHERE id = 'e45888f6-d0d7-48a4-9184-d27f67d0b7a4';
 UPDATE subcategories SET name = 'TOP 10' WHERE id = 'dfbdbf6e-9c93-44bc-a302-cfc1ac16e75b';
-
-
-
-
-
-CREATE EXTENSION pg_cron;
-SELECT cron.schedule('delete_expired_ads', '0 * * * *', $$DELETE FROM ads WHERE expiration_time < NOW()$$);

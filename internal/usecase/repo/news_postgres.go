@@ -34,7 +34,7 @@ func (n *NewsRepo) CreateNews(ctx context.Context, request *entity.News) error {
 		"name":        request.Name,
 		"description": request.Description,
 		"image_url":   request.ImageURL,
-		"links":       linksJSON, // Store JSONB data
+		"links":       linksJSON,
 	}
 	sql, args, err := n.Builder.Insert("news").
 		SetMap(data).ToSql()

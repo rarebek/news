@@ -61,29 +61,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/ads/expired": {
-            "delete": {
-                "description": "Delete all ads that have expired",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ads"
-                ],
-                "summary": "Delete expired ads",
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/v1.response"
-                        }
-                    }
-                }
-            }
-        },
         "/ads/{id}": {
             "delete": {
                 "description": "Delete an ad by ID",
@@ -1012,23 +989,11 @@ const docTemplate = `{
                 "description": {
                     "type": "string"
                 },
-                "duration": {
-                    "type": "string"
-                },
-                "expiration_time": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
                 "image_url": {
                     "type": "string"
-                },
-                "options": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "title": {
                     "type": "string"
