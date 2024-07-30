@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
@@ -82,6 +83,7 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 	var ad entity.Ad
 
 	if request.IsAdmin {
+		var viewCount sql.NullInt64
 		query := a.Builder.Select("id, title, description, image_url, view_count").From("ads")
 		sql, args, err := query.ToSql()
 		if err != nil {
@@ -89,30 +91,33 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 		}
 
 		row := a.Pool.QueryRow(ctx, sql, args...)
-		if err := row.Scan(&ad.ID, &ad.Title, &ad.Description, &ad.ImageURL, &ad.ViewCount); err != nil {
+		if err := row.Scan(&ad.ID, &ad.Title, &ad.Description, &ad.ImageURL, &viewCount); err != nil {
 			return nil, fmt.Errorf("failed to scan ad for admin: %w", err)
+		}
+		if viewCount.Valid {
+			ad.ViewCount = int(viewCount.Int64)
 		}
 
 		return &ad, nil
 	} else {
 		// Update view count for non-admin users
-		updateQuery := "UPDATE ads SET view_count = view_count + 1 RETURNING view_count"
+		updateQuery := "UPDATE ads SET view_count = view_count + 1"
 		var newViewCount int
-		if err := a.Pool.QueryRow(ctx, updateQuery).Scan(&newViewCount); err != nil {
+		if _, err := a.Pool.Exec(ctx, updateQuery); err != nil {
 			return nil, fmt.Errorf("failed to update view count: %w", err)
 		}
 
 		// Debug log to verify new view count
 		fmt.Printf("New view count after update: %d\n", newViewCount)
 
-		query := a.Builder.Select("id, title, description, image_url, view_count").From("ads")
+		query := a.Builder.Select("id, title, description, image_url").From("ads")
 		sql, args, err := query.ToSql()
 		if err != nil {
 			return nil, fmt.Errorf("failed to build SQL query: %w", err)
 		}
 
 		row := a.Pool.QueryRow(ctx, sql, args...)
-		if err := row.Scan(&ad.ID, &ad.Title, &ad.Description, &ad.ImageURL, &ad.ViewCount); err != nil {
+		if err := row.Scan(&ad.ID, &ad.Title, &ad.Description, &ad.ImageURL); err != nil {
 			return nil, fmt.Errorf("failed to scan ad for non-admin: %w", err)
 		}
 
