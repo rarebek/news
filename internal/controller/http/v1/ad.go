@@ -155,7 +155,7 @@ func (r *adRoutes) getAd(c *gin.Context) {
 	claims, err := jwt.ExtractClaims()
 	if err != nil {
 		r.l.Error(err)
-		errorResponse(c, http.StatusInternalServerError, "Failed to get ad"+err.Error(), false)
+		errorResponse(c, http.StatusInternalServerError, "Failed to get aaad"+err.Error(), false)
 		return
 	}
 
