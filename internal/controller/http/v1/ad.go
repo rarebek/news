@@ -29,7 +29,7 @@ func newAdRoutes(handler *gin.RouterGroup, t usecase.AdUseCase, l logger.Interfa
 // @Tags        ads
 // @Accept      json
 // @Produce     json
-// @Param       ad body entity.Ad true "Ad details"
+// @Param       ad body entity.CreateAdRequest true "Ad details"
 // @Success     201 {object} entity.Ad
 // @Failure     400 {object} response
 // @Failure     500 {object} response
@@ -41,9 +41,9 @@ func (r *adRoutes) createAd(c *gin.Context) {
 		errorResponse(c, http.StatusBadRequest, "Invalid request body", false)
 		return
 	}
-
+	id := uuid.NewString()
 	if err := r.t.CreateAd(c.Request.Context(), &entity.Ad{
-		ID:          uuid.NewString(),
+		ID:          id,
 		Title:       ad.Title,
 		Description: ad.Description,
 		ImageURL:    ad.ImageURL,
@@ -53,7 +53,13 @@ func (r *adRoutes) createAd(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, ad)
+	var response entity.Ad
+	response.ID = id
+	response.Description = ad.Description
+	response.ImageURL = ad.ImageURL
+	response.Title = ad.Title
+
+	c.JSON(http.StatusCreated, response)
 }
 
 // @Summary     Delete an ad
