@@ -99,6 +99,7 @@ func (r *adRoutes) deleteAd(c *gin.Context) {
 // @Description Edits ad by ID
 // @Tags        ads
 // @Produce     json
+// @Param       ad body entity.CreateAdRequest true "Ad details"
 // @Success     204
 // @Failure     400 {object} response
 // @Failure     500 {object} response

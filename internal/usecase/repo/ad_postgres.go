@@ -104,13 +104,9 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 	} else {
 		// Update view count for non-admin users
 		updateQuery := "UPDATE ads SET view_count = view_count + 1"
-		var newViewCount int
 		if _, err := a.Pool.Exec(ctx, updateQuery); err != nil {
 			return nil, fmt.Errorf("failed to update view count: %w", err)
 		}
-
-		// Debug log to verify new view count
-		fmt.Printf("New view count after update: %d\n", newViewCount)
 
 		query := a.Builder.Select("id, title, description, image_url").From("ads")
 		sql, args, err := query.ToSql()

@@ -113,6 +113,17 @@ const docTemplate = `{
                     "ads"
                 ],
                 "summary": "Update Ad",
+                "parameters": [
+                    {
+                        "description": "Ad details",
+                        "name": "ad",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entity.CreateAdRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "204": {
                         "description": "No Content"

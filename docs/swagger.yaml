@@ -237,6 +237,13 @@ paths:
       - ads
     put:
       description: Edits ad by ID
+      parameters:
+      - description: Ad details
+        in: body
+        name: ad
+        required: true
+        schema:
+          $ref: '#/definitions/entity.CreateAdRequest'
       produces:
       - application/json
       responses:
