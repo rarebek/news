@@ -145,30 +145,32 @@ func (r *adRoutes) getAd(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusOK, ad)
-	}
+	} else {
 
-	jwt := tokens.JWTHandler{
-		SigninKey: "dfhdghkglioe",
-		Token:     tokenStr,
-	}
+		jwt := tokens.JWTHandler{
+			SigninKey: "dfhdghkglioe",
+			Token:     tokenStr,
+		}
 
-	claims, err := jwt.ExtractClaims()
-	if err != nil {
-		r.l.Error(err)
-		errorResponse(c, http.StatusInternalServerError, "Failed to get aaad"+err.Error(), false)
-		return
-	}
-
-	if claims["role"] == "super-admin" {
-		ad, err := r.t.GetAd(c.Request.Context(), &entity.GetAdRequest{
-			IsAdmin: true,
-		})
+		claims, err := jwt.ExtractClaims()
 		if err != nil {
 			r.l.Error(err)
-			errorResponse(c, http.StatusInternalServerError, "Failed to get ad", false)
+			errorResponse(c, http.StatusInternalServerError, "Failed to get aaad"+err.Error(), false)
 			return
 		}
 
-		c.JSON(http.StatusOK, ad)
+		if claims["role"] == "super-admin" {
+			ad, err := r.t.GetAd(c.Request.Context(), &entity.GetAdRequest{
+				IsAdmin: true,
+			})
+			if err != nil {
+				r.l.Error(err)
+				errorResponse(c, http.StatusInternalServerError, "Failed to get ad", false)
+				return
+			}
+
+			c.JSON(http.StatusOK, ad)
+		}
 	}
+
 }
