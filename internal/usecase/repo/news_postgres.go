@@ -195,8 +195,8 @@ func (n *NewsRepo) GetFilteredNews(ctx context.Context, request *entity.GetFilte
 		searchTerm := "%" + request.SearchTerm + "%"
 		queryBuilder = queryBuilder.
 			Where(squirrel.Or{
-				squirrel.Like{"n.name": searchTerm},
-				squirrel.Like{"n.description": searchTerm},
+				squirrel.ILike{"n.name": searchTerm},
+				squirrel.ILike{"n.description": searchTerm},
 			})
 	}
 
