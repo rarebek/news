@@ -798,6 +798,57 @@ paths:
       summary: Get All News
       tags:
       - news
+  /news/search:
+    get:
+      consumes:
+      - application/json
+      description: This method for searching globally and from our data.
+      operationId: get-filtered-news-global
+      parameters:
+      - collectionFormat: csv
+        description: List of subcategory IDs
+        in: query
+        items:
+          type: string
+        name: sub_category_ids
+        type: array
+      - description: Category ID
+        in: query
+        name: category_id
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: Search term
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns news, global_link, and status
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Global search
+      tags:
+      - news
   /news/update/{id}:
     put:
       consumes:

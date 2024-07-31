@@ -278,7 +278,7 @@ func (n *newsRoutes) getNewsByID(c *gin.Context) {
 }
 
 // @Summary		Global search
-// @Description This method for searching global and from our data.
+// @Description This method for searching globally and from our data.
 // @ID          get-filtered-news-global
 // @Tags  	    news
 // @Accept      json
@@ -288,10 +288,10 @@ func (n *newsRoutes) getNewsByID(c *gin.Context) {
 // @Param       page            query int      true  "Page number"
 // @Param       limit           query int      true  "Number of items per page"
 // @Param       search          query string   false  "Search term"
-// @Success     200 {object} []models.News
-// @Failure     400 {object} response
-// @Failure     500 {object} response
-// @Router      /news/filtered [get]
+// @Success     200 {object} map[string]interface{} "Returns news, global_link, and status"
+// @Failure     400 {object} response "Bad request"
+// @Failure     500 {object} response "Internal server error"
+// @Router      /news/search [get]
 func (n *newsRoutes) searchGlobalWithLocal(c *gin.Context) {
 	subCategoryIDs := c.QueryArray("sub_category_ids")
 	categoryID := c.Query("category_id")
