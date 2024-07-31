@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -29,6 +30,7 @@ func newNewsRoutes(handler *gin.RouterGroup, t usecase.NewsUseCase, l logger.Int
 		h.GET("/filtered", r.getFilteredNews)
 		h.PUT("/update/:id", r.updateNews)
 		h.GET("/get/:id", r.getNewsByID)
+		h.GET("search", r.searchGlobalWithLocal)
 	}
 }
 
@@ -272,5 +274,67 @@ func (n *newsRoutes) getNewsByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"news":   news,
 		"status": true,
+	})
+}
+
+// @Summary		Global search
+// @Description This method for searching global and from our data.
+// @ID          get-filtered-news-global
+// @Tags  	    news
+// @Accept      json
+// @Produce     json
+// @Param       sub_category_ids query []string false "List of subcategory IDs"
+// @Param       category_id     query string   false "Category ID"
+// @Param       page            query int      true  "Page number"
+// @Param       limit           query int      true  "Number of items per page"
+// @Param       search          query string   false  "Search term"
+// @Success     200 {object} []models.News
+// @Failure     400 {object} response
+// @Failure     500 {object} response
+// @Router      /news/filtered [get]
+func (n *newsRoutes) searchGlobalWithLocal(c *gin.Context) {
+	subCategoryIDs := c.QueryArray("sub_category_ids")
+	categoryID := c.Query("category_id")
+	pageStr := c.Query("page")
+	limitStr := c.Query("limit")
+	searchTerm := c.Query("search")
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, "Invalid page number", false)
+		return
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, "Invalid limit number", false)
+		return
+	}
+
+	news, err := n.t.GetFilteredNews(c.Request.Context(), &entity.GetFilteredNewsRequest{
+		SubCategoryIDs: subCategoryIDs,
+		CategoryID:     categoryID,
+		Page:           page,
+		Limit:          limit,
+		SearchTerm:     searchTerm,
+	})
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti", false)
+		return
+	}
+
+	// Create the global search URL
+	var globalLink string
+	if searchTerm != "" {
+		globalLink = "https://www.google.com/search?q=" + url.QueryEscape(searchTerm)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"news":        news,
+		"global_link": globalLink,
+		"status":      true,
 	})
 }
