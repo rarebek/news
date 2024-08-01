@@ -7,6 +7,7 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
+	"github.com/k0kubun/pp"
 	"tarkib.uz/internal/entity"
 	"tarkib.uz/pkg/postgres"
 )
@@ -99,7 +100,6 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 	var ad entity.Ad
 
 	if request.IsAdmin {
-		// Admin request: Get ad details including view count
 		var viewCount ssq.NullInt64
 		query := a.Builder.Select("id, link, image_url, view_count").From("ads").Limit(1)
 		sql, args, err := query.ToSql()
@@ -115,13 +115,11 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 		if viewCount.Valid {
 			ad.ViewCount = int(viewCount.Int64)
 		} else {
-			ad.ViewCount = 0 // Or some default value
+			ad.ViewCount = 0
 		}
 
 		return &ad, nil
 	} else {
-		// Non-admin request: Update view count and get ad details
-		// First, select the ad
 		selectQuery := a.Builder.Select("id, link, image_url, view_count").From("ads").Limit(1)
 		sql, args, err := selectQuery.ToSql()
 		if err != nil {
@@ -134,15 +132,18 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 			return nil, fmt.Errorf("failed to scan ad for non-admin: %w", err)
 		}
 
+		pp.Println("SCANNED AD: ", ad)
+
 		if viewCount.Valid {
 			ad.ViewCount = int(viewCount.Int64)
 		} else {
-			ad.ViewCount = 0 // Or some default value
+			ad.ViewCount = 0
 		}
 
-		// Now, update the view count
-		updateQuery := "UPDATE ads SET view_count = view_count + 1 WHERE id = $1"
-		_, err = a.Pool.Exec(ctx, updateQuery, ad.ID)
+		ad.ViewCount += 1
+
+		updateQuery := "UPDATE ads SET view_count = $1"
+		_, err = a.Pool.Exec(ctx, updateQuery, ad.ViewCount)
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute update query: %w", err)
 		}
