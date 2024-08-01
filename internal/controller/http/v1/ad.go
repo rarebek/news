@@ -30,7 +30,7 @@ func newAdRoutes(handler *gin.RouterGroup, t usecase.AdUseCase, l logger.Interfa
 	{
 		h.POST("/", r.createAd)
 		h.DELETE("/:id", r.deleteAd)
-		h.PUT("/:id", r.updateAd)
+		h.PUT("/", r.updateAd)
 		h.GET("/:id", r.getAd)
 	}
 }

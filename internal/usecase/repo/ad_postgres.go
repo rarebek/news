@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
-	"github.com/google/uuid"
 	"tarkib.uz/internal/entity"
 	"tarkib.uz/pkg/postgres"
 )
@@ -20,12 +19,8 @@ func NewAdRepo(pg *postgres.Postgres) *AdRepo {
 }
 
 func (a *AdRepo) CreateAd(ctx context.Context, request *entity.Ad) error {
-	var (
-		adID = uuid.NewString()
-	)
-
 	data := map[string]interface{}{
-		"id":        adID,
+		"id":        request.ID,
 		"link":      request.Link,
 		"image_url": request.ImageURL,
 	}
