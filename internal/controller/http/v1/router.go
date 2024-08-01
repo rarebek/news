@@ -42,9 +42,10 @@ func NewRouter(handler *gin.Engine, l logger.Interface, authUseCase *usecase.Aut
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowAllOrigins = true
 	corsConfig.AllowCredentials = true
-	corsConfig.AllowHeaders = []string{"*"}
+	corsConfig.AllowHeaders = []string{"Authorization", "Content-Type", "Accept"}
+	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
 	corsConfig.AllowBrowserExtensions = true
-	corsConfig.AllowMethods = []string{"*"}
+
 	handler.Use(cors.New(corsConfig))
 
 	// Swagger
