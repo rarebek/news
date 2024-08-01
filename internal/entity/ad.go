@@ -7,6 +7,7 @@ type Ad struct {
 	ViewCount int    `json:"view_count"`
 }
 
+// comment
 type CreateAdRequest struct {
 	Link     string `json:"link"`
 	ImageURL string `json:"image_url"`

@@ -118,10 +118,20 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 
 		return &ad, nil
 	} else {
-		// Update view count for non-admin users
+		pp.Println("non admin")
 		updateQuery := "UPDATE ads SET view_count = view_count + 1"
-		if _, err := a.Pool.Exec(ctx, updateQuery); err != nil {
-			return nil, fmt.Errorf("failed to update view count: %w", err)
+
+		result, err := a.Pool.Exec(ctx, updateQuery)
+		if err != nil {
+			return nil, fmt.Errorf("failed to execute update query: %w", err)
+		}
+
+		rowsAffected := result.RowsAffected()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get affected rows count: %w", err)
+		}
+		if rowsAffected == 0 {
+			return nil, fmt.Errorf("no rows updated, check if the ad exists")
 		}
 
 		query := a.Builder.Select("id, link, image_url").From("ads")
