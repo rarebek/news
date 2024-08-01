@@ -335,6 +335,8 @@ func (n *newsRoutes) searchGlobalWithLocal(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"global_link": globalLink,
 		})
+
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
