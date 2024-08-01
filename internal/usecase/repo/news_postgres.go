@@ -273,7 +273,7 @@ func (n *NewsRepo) UpdateNews(ctx context.Context, id string, request *entity.Ne
 		"name":        request.Name,
 		"description": request.Description,
 		"image_url":   request.ImageURL,
-		"links":       linksJSON, // Store JSONB data
+		"links":       linksJSON, 
 	}
 
 	sql, args, err := n.Builder.Update("news").

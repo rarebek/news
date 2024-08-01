@@ -326,15 +326,19 @@ func (n *newsRoutes) searchGlobalWithLocal(c *gin.Context) {
 		return
 	}
 
-	// Create the global search URL
-	var globalLink string
-	if searchTerm != "" {
-		globalLink = "https://www.google.com/search?q=" + url.QueryEscape(searchTerm)
+	if news == nil {
+		var globalLink string
+		if searchTerm != "" {
+			globalLink = "https://www.google.com/search?q=" + url.QueryEscape(searchTerm)
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"global_link": globalLink,
+		})
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"news":        news,
-		"global_link": globalLink,
-		"status":      true,
+		"news":   news,
+		"status": true,
 	})
 }
