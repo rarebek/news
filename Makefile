@@ -51,4 +51,4 @@ rr:
 	sudo docker rm app-news -f
 	sudo docker rmi news-app-news -f
 	git pull
-	sudo docker compose up -d
+	sudo docker compose up

@@ -6,7 +6,6 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
-	"github.com/k0kubun/pp"
 	"tarkib.uz/internal/entity"
 	"tarkib.uz/pkg/postgres"
 )
@@ -180,7 +179,6 @@ func (a *AuthRepo) EditAdmin(ctx context.Context, admin *entity.Admin) error {
 }
 
 func (a *AuthRepo) ChangeSuperAdminData(ctx context.Context, superAdmin *entity.SuperAdmin) error {
-	pp.Println(superAdmin)
 	data := map[string]interface{}{
 		"phone_number": superAdmin.PhoneNumber,
 		"password":     superAdmin.Password,
@@ -194,7 +192,6 @@ func (a *AuthRepo) ChangeSuperAdminData(ctx context.Context, superAdmin *entity.
 	if err != nil {
 		return err
 	}
-	pp.Println(superAdmin)
 
 	if _, err := a.Pool.Exec(ctx, sql, args...); err != nil {
 		return err

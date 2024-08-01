@@ -6,7 +6,6 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
-	"github.com/k0kubun/pp"
 	"tarkib.uz/internal/entity"
 	"tarkib.uz/pkg/postgres"
 )
@@ -122,8 +121,6 @@ func (n *NewsRepo) GetAllNews(ctx context.Context, request *entity.GetAllNewsReq
 		if err := rows.Scan(&news.ID, &news.Name, &news.Description, &news.ImageURL, &news.CreatedAt, &linksJSON); err != nil {
 			return nil, err
 		}
-
-		pp.Println(string(linksJSON))
 
 		var links []entity.Link
 		if err := json.Unmarshal(linksJSON, &links); err != nil {
@@ -273,7 +270,7 @@ func (n *NewsRepo) UpdateNews(ctx context.Context, id string, request *entity.Ne
 		"name":        request.Name,
 		"description": request.Description,
 		"image_url":   request.ImageURL,
-		"links":       linksJSON, 
+		"links":       linksJSON,
 	}
 
 	sql, args, err := n.Builder.Update("news").

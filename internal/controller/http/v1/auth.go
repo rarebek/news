@@ -11,7 +11,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/k0kubun/pp"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 
@@ -238,7 +237,6 @@ func (r *authRoutes) getAdminData(c *gin.Context) {
 // @Security    BearerAuth
 // @Router      /auth/admin/getall [get]
 func (r *authRoutes) getAllAdmins(c *gin.Context) {
-	pp.Println(c.Request.Header.Get("Authorization"))
 	admins, err := r.t.GetAllAdmins(c.Request.Context())
 	if err != nil {
 		r.l.Error(err)
