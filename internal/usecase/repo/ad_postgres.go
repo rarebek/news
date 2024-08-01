@@ -5,6 +5,7 @@ import (
 	ssq "database/sql"
 	"fmt"
 
+	"github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
 	"tarkib.uz/internal/entity"
 	"tarkib.uz/pkg/postgres"
@@ -60,9 +61,9 @@ func (a *AdRepo) CreateAd(ctx context.Context, request *entity.Ad) error {
 }
 
 func (a *AdRepo) DeleteAd(ctx context.Context, id string) error {
-	query := "DELETE FROM ads"
+	query := "DELETE FROM ads WHERE id = $1"
 
-	if _, err := a.Pool.Exec(ctx, query); err != nil {
+	if _, err := a.Pool.Exec(ctx, query, id); err != nil {
 		return err
 	}
 
@@ -75,7 +76,9 @@ func (a *AdRepo) UpdateAd(ctx context.Context, request *entity.Ad) error {
 		"image_url": request.ImageURL,
 	}
 	sql, args, err := a.Builder.Update("ads").
-		SetMap(data).ToSql()
+		SetMap(data).Where(squirrel.Eq{
+		"id": request.ID,
+	}).ToSql()
 	if err != nil {
 		return err
 	}
@@ -92,7 +95,9 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 
 	if request.IsAdmin {
 		var viewCount ssq.NullInt64
-		query := a.Builder.Select("id, link, image_url, view_count").From("ads").Limit(1)
+		query := a.Builder.Select("id, link, image_url, view_count").From("ads").Where(squirrel.Eq{
+			"id": request.ID,
+		})
 		sql, args, err := query.ToSql()
 		if err != nil {
 			return nil, fmt.Errorf("failed to build SQL query: %w", err)
@@ -111,7 +116,9 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 
 		return &ad, nil
 	} else {
-		selectQuery := a.Builder.Select("id, link, image_url, view_count").From("ads").Limit(1)
+		selectQuery := a.Builder.Select("id, link, image_url, view_count").From("ads").Where(squirrel.Eq{
+			"id": request.ID,
+		})
 		sql, args, err := selectQuery.ToSql()
 		if err != nil {
 			return nil, fmt.Errorf("failed to build SQL query: %w", err)

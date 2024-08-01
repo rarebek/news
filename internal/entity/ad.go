@@ -11,8 +11,10 @@ type Ad struct {
 type CreateAdRequest struct {
 	Link     string `json:"link"`
 	ImageURL string `json:"image_url"`
+	ID       string `json:"id"`
 }
 
 type GetAdRequest struct {
 	IsAdmin bool
+	ID      string `json:"id"`
 }

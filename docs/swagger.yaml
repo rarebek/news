@@ -24,6 +24,8 @@ definitions:
     type: object
   entity.CreateAdRequest:
     properties:
+      id:
+        type: string
       image_url:
         type: string
       link:
@@ -153,46 +155,6 @@ info:
   version: "1.0"
 paths:
   /ads:
-    delete:
-      description: Delete an ad
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/v1.response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.response'
-      security:
-      - BearerAuth: []
-      summary: Delete an ad
-      tags:
-      - ads
-    get:
-      description: returns ads
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/v1.response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.response'
-      security:
-      - BearerAuth: []
-      summary: Gets ad details
-      tags:
-      - ads
     post:
       consumes:
       - application/json
@@ -222,6 +184,54 @@ paths:
       security:
       - BearerAuth: []
       summary: Create a new ad
+      tags:
+      - ads
+  /ads/{id}:
+    delete:
+      description: Delete an ad
+      parameters:
+      - description: ID of the ads to delete
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - BearerAuth: []
+      summary: Delete an ad
+      tags:
+      - ads
+  /ads{id}:
+    get:
+      description: returns ads
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - BearerAuth: []
+      summary: Gets ad details
       tags:
       - ads
     put:

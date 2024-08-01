@@ -29,9 +29,9 @@ func newAdRoutes(handler *gin.RouterGroup, t usecase.AdUseCase, l logger.Interfa
 	h := handler.Group("/ads")
 	{
 		h.POST("/", r.createAd)
-		h.DELETE("/", r.deleteAd)
-		h.PUT("/", r.updateAd)
-		h.GET("/", r.getAd)
+		h.DELETE("/:id", r.deleteAd)
+		h.PUT("/:id", r.updateAd)
+		h.GET("/:id", r.getAd)
 	}
 }
 
@@ -82,11 +82,12 @@ func (r *adRoutes) createAd(c *gin.Context) {
 // @Description Delete an ad
 // @Tags        ads
 // @Produce     json
+// @Param       id path string true "ID of the ads to delete"
 // @Success     204
 // @Failure     400 {object} response
 // @Failure     500 {object} response
 // @Security    BearerAuth
-// @Router      /ads [delete]
+// @Router      /ads/{id} [delete]
 func (r *adRoutes) deleteAd(c *gin.Context) {
 	id := c.Param("id")
 
@@ -108,7 +109,7 @@ func (r *adRoutes) deleteAd(c *gin.Context) {
 // @Failure     400 {object} response
 // @Failure     500 {object} response
 // @Security    BearerAuth
-// @Router      /ads [put]
+// @Router      /ads{id} [put]
 func (r *adRoutes) updateAd(c *gin.Context) {
 	var ad entity.Ad
 
@@ -134,13 +135,15 @@ func (r *adRoutes) updateAd(c *gin.Context) {
 // @Failure     400 {object} response
 // @Failure     500 {object} response
 // @Security    BearerAuth
-// @Router      /ads [get]
+// @Router      /ads{id} [get]
 func (r *adRoutes) getAd(c *gin.Context) {
+	id := c.Param("id")
 	tokenStr := c.Request.Header.Get("Authorization")
 	fmt.Println(tokenStr)
 	if tokenStr == "" {
 		ad, err := r.t.GetAd(c.Request.Context(), &entity.GetAdRequest{
 			IsAdmin: false,
+			ID:      id,
 		})
 
 		if err != nil {
@@ -167,6 +170,7 @@ func (r *adRoutes) getAd(c *gin.Context) {
 		if claims["role"] == "super-admin" {
 			ad, err := r.t.GetAd(c.Request.Context(), &entity.GetAdRequest{
 				IsAdmin: true,
+				ID:      id,
 			})
 			if err != nil {
 				r.l.Error(err)
