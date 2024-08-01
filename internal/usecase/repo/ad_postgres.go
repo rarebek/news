@@ -2,7 +2,7 @@ package repo
 
 import (
 	"context"
-	"database/sql"
+	ssq "database/sql"
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
@@ -100,7 +100,7 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 
 	if request.IsAdmin {
 		// Admin request: Get ad details including view count
-		var viewCount sql.NullInt64
+		var viewCount ssq.NullInt64
 		query := a.Builder.Select("id, link, image_url, view_count").From("ads").Limit(1)
 		sql, args, err := query.ToSql()
 		if err != nil {
@@ -114,6 +114,8 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 
 		if viewCount.Valid {
 			ad.ViewCount = int(viewCount.Int64)
+		} else {
+			ad.ViewCount = 0 // Or some default value
 		}
 
 		return &ad, nil
@@ -127,8 +129,15 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 		}
 
 		row := a.Pool.QueryRow(ctx, sql, args...)
-		if err := row.Scan(&ad.ID, &ad.Link, &ad.ImageURL, &ad.ViewCount); err != nil {
+		var viewCount ssq.NullInt64
+		if err := row.Scan(&ad.ID, &ad.Link, &ad.ImageURL, &viewCount); err != nil {
 			return nil, fmt.Errorf("failed to scan ad for non-admin: %w", err)
+		}
+
+		if viewCount.Valid {
+			ad.ViewCount = int(viewCount.Int64)
+		} else {
+			ad.ViewCount = 0 // Or some default value
 		}
 
 		// Now, update the view count
