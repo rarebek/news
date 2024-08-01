@@ -155,12 +155,6 @@ paths:
   /ads:
     delete:
       description: Delete an ad
-      parameters:
-      - description: Ad ID
-        in: path
-        name: id
-        required: true
-        type: string
       produces:
       - application/json
       responses:

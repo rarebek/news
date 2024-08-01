@@ -82,7 +82,6 @@ func (r *adRoutes) createAd(c *gin.Context) {
 // @Description Delete an ad
 // @Tags        ads
 // @Produce     json
-// @Param       id path string true "Ad ID"
 // @Success     204
 // @Failure     400 {object} response
 // @Failure     500 {object} response

@@ -154,15 +154,6 @@ const docTemplate = `{
                     "ads"
                 ],
                 "summary": "Delete an ad",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Ad ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "204": {
                         "description": "No Content"
