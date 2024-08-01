@@ -7,7 +7,6 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
-	"github.com/k0kubun/pp"
 	"tarkib.uz/internal/entity"
 	"tarkib.uz/pkg/postgres"
 )
@@ -131,8 +130,6 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 		if err := row.Scan(&ad.ID, &ad.Link, &ad.ImageURL, &viewCount); err != nil {
 			return nil, fmt.Errorf("failed to scan ad for non-admin: %w", err)
 		}
-
-		pp.Println("SCANNED AD: ", ad)
 
 		if viewCount.Valid {
 			ad.ViewCount = int(viewCount.Int64)

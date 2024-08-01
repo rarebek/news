@@ -29,7 +29,7 @@ func newAdRoutes(handler *gin.RouterGroup, t usecase.AdUseCase, l logger.Interfa
 	{
 		h.POST("/", r.createAd)
 		h.DELETE("/:id", r.deleteAd)
-		h.PUT("/:id", r.updateAd)
+		h.PUT("/", r.updateAd)
 		h.GET("/", r.getAd)
 	}
 }
@@ -108,7 +108,7 @@ func (r *adRoutes) deleteAd(c *gin.Context) {
 // @Failure     400 {object} response
 // @Failure     500 {object} response
 // @Security    BearerAuth
-// @Router      /ads/{id} [put]
+// @Router      /ads [put]
 func (r *adRoutes) updateAd(c *gin.Context) {
 	var ad entity.Ad
 
