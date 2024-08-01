@@ -125,4 +125,43 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 
 		return &ad, nil
 	}
+
+}
+
+func (a *AdRepo) GetAllAds(ctx context.Context) ([]*entity.Ad, error) {
+	var ads []*entity.Ad
+
+	query := a.Builder.Select("id, link, image_url, view_count").From("ads")
+	sql, args, err := query.ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build SQL query: %w", err)
+	}
+
+	rows, err := a.Pool.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute query: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var ad entity.Ad
+		var viewCount ssq.NullInt64
+		if err := rows.Scan(&ad.ID, &ad.Link, &ad.ImageURL, &viewCount); err != nil {
+			return nil, fmt.Errorf("failed to scan ad: %w", err)
+		}
+
+		if viewCount.Valid {
+			ad.ViewCount = int(viewCount.Int64)
+		} else {
+			ad.ViewCount = 0
+		}
+
+		ads = append(ads, &ad)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error occurred during rows iteration: %w", err)
+	}
+
+	return ads, nil
 }

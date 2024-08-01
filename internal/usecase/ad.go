@@ -33,3 +33,7 @@ func (uc *AdUseCase) UpdateAd(ctx context.Context, ad *entity.Ad) error {
 func (uc *AdUseCase) GetAd(ctx context.Context, request *entity.GetAdRequest) (*entity.Ad, error) {
 	return uc.repo.GetAd(ctx, request)
 }
+
+func (uc *AdUseCase) GetAllAds(ctx context.Context) ([]*entity.Ad, error) {
+	return uc.repo.GetAllAds(ctx)
+}

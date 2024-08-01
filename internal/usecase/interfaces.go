@@ -36,6 +36,7 @@ type (
 		DeleteAd(ctx context.Context, id string) error
 		UpdateAd(ctx context.Context, ad *entity.Ad) error
 		GetAd(ctx context.Context, request *entity.GetAdRequest) (*entity.Ad, error)
+		GetAllAds(ctx context.Context) ([]*entity.Ad, error)
 	}
 
 	AdRepo interface {
@@ -43,6 +44,7 @@ type (
 		DeleteAd(ctx context.Context, id string) error
 		UpdateAd(ctx context.Context, ad *entity.Ad) error
 		GetAd(ctx context.Context, request *entity.GetAdRequest) (*entity.Ad, error)
+		GetAllAds(ctx context.Context) ([]*entity.Ad, error)
 	}
 
 	News interface {

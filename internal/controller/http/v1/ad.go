@@ -184,3 +184,47 @@ func (r *adRoutes) getAd(c *gin.Context) {
 	}
 
 }
+
+// @Summary     Get all ads
+// @Description Get all ads with view count for admins
+// @Tags        ads
+// @Produce     json
+// @Success     200 {array} entity.Ad
+// @Failure     400 {object} response
+// @Failure     500 {object} response
+// @Security    BearerAuth
+// @Router      /ads [get]
+func (r *adRoutes) getAllAds(c *gin.Context) {
+	tokenStr := c.Request.Header.Get("Authorization")
+	fmt.Println(tokenStr)
+	if tokenStr == "" {
+		errorResponse(c, http.StatusForbidden, "Unauthorized", false)
+		return
+	}
+
+	jwt := tokens.JWTHandler{
+		SigninKey: "dfhdghkglioe",
+		Token:     tokenStr,
+	}
+
+	claims, err := jwt.ExtractClaims()
+	if err != nil {
+		r.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Failed to extract claims: "+err.Error(), false)
+		return
+	}
+
+	if claims["role"] != "super-admin" {
+		errorResponse(c, http.StatusForbidden, "Forbidden", false)
+		return
+	}
+
+	ads, err := r.t.GetAllAds(c.Request.Context())
+	if err != nil {
+		r.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Failed to get all ads: "+err.Error(), false)
+		return
+	}
+
+	c.JSON(http.StatusOK, ads)
+}
