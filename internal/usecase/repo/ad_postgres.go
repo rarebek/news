@@ -20,7 +20,25 @@ func NewAdRepo(pg *postgres.Postgres) *AdRepo {
 	return &AdRepo{pg}
 }
 
+func (a *AdRepo) adExists(ctx context.Context) (bool, error) {
+	var count int
+	query := "SELECT COUNT(*) FROM ads"
+	err := a.Pool.QueryRow(ctx, query).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
 func (a *AdRepo) CreateAd(ctx context.Context, request *entity.Ad) error {
+	exists, err := a.adExists(ctx)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return fmt.Errorf("an ad already exists")
+	}
+
 	var (
 		adID = uuid.NewString()
 	)

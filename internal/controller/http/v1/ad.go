@@ -53,12 +53,18 @@ func (r *adRoutes) createAd(c *gin.Context) {
 		return
 	}
 	id := uuid.NewString()
-	if err := r.t.CreateAd(c.Request.Context(), &entity.Ad{
+	err := r.t.CreateAd(c.Request.Context(), &entity.Ad{
 		ID:          id,
 		Title:       ad.Title,
 		Description: ad.Description,
 		ImageURL:    ad.ImageURL,
-	}); err != nil {
+	})
+	if err != nil {
+		if err.Error() == "an ad already exists" {
+			r.l.Error(err)
+			errorResponse(c, http.StatusConflict, "ad is already exists", false)
+			return
+		}
 		r.l.Error(err)
 		errorResponse(c, http.StatusInternalServerError, "Failed to create ad", false)
 		return
