@@ -54,10 +54,9 @@ func (r *adRoutes) createAd(c *gin.Context) {
 	}
 	id := uuid.NewString()
 	err := r.t.CreateAd(c.Request.Context(), &entity.Ad{
-		ID:          id,
-		Title:       ad.Title,
-		Description: ad.Description,
-		ImageURL:    ad.ImageURL,
+		ID:       id,
+		Link:     ad.Link,
+		ImageURL: ad.ImageURL,
 	})
 	if err != nil {
 		if err.Error() == "an ad already exists" {
@@ -72,9 +71,8 @@ func (r *adRoutes) createAd(c *gin.Context) {
 
 	var response entity.Ad
 	response.ID = id
-	response.Description = ad.Description
 	response.ImageURL = ad.ImageURL
-	response.Title = ad.Title
+	response.Link = ad.Link
 
 	c.JSON(http.StatusCreated, response)
 }

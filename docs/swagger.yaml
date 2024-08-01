@@ -2,13 +2,11 @@ basePath: /v1
 definitions:
   entity.Ad:
     properties:
-      description:
-        type: string
       id:
         type: string
       image_url:
         type: string
-      title:
+      link:
         type: string
       view_count:
         type: integer
@@ -26,11 +24,9 @@ definitions:
     type: object
   entity.CreateAdRequest:
     properties:
-      description:
-        type: string
       image_url:
         type: string
-      title:
+      link:
         type: string
     type: object
   entity.Link:

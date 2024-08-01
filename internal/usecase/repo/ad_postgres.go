@@ -44,10 +44,9 @@ func (a *AdRepo) CreateAd(ctx context.Context, request *entity.Ad) error {
 	)
 
 	data := map[string]interface{}{
-		"id":          adID,
-		"title":       request.Title,
-		"description": request.Description,
-		"image_url":   request.ImageURL,
+		"id":        adID,
+		"link":      request.Link,
+		"image_url": request.ImageURL,
 	}
 	sql, args, err := a.Builder.Insert("ads").
 		SetMap(data).ToSql()
@@ -79,9 +78,8 @@ func (a *AdRepo) DeleteAd(ctx context.Context, id string) error {
 
 func (a *AdRepo) UpdateAd(ctx context.Context, request *entity.Ad) error {
 	data := map[string]interface{}{
-		"title":       request.Title,
-		"description": request.Description,
-		"image_url":   request.ImageURL,
+		"link":      request.Link,
+		"image_url": request.ImageURL,
 	}
 	sql, args, err := a.Builder.Update("ads").
 		SetMap(data).Where(squirrel.Eq{
@@ -103,14 +101,14 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 
 	if request.IsAdmin {
 		var viewCount sql.NullInt64
-		query := a.Builder.Select("id, title, description, image_url, view_count").From("ads")
+		query := a.Builder.Select("id, link, image_url, view_count").From("ads")
 		sql, args, err := query.ToSql()
 		if err != nil {
 			return nil, fmt.Errorf("failed to build SQL query: %w", err)
 		}
 
 		row := a.Pool.QueryRow(ctx, sql, args...)
-		if err := row.Scan(&ad.ID, &ad.Title, &ad.Description, &ad.ImageURL, &viewCount); err != nil {
+		if err := row.Scan(&ad.ID, &ad.Link, &ad.ImageURL, &viewCount); err != nil {
 			return nil, fmt.Errorf("failed to scan ad for admin: %w", err)
 		}
 		pp.Println(viewCount)
@@ -133,7 +131,7 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 		}
 
 		row := a.Pool.QueryRow(ctx, sql, args...)
-		if err := row.Scan(&ad.ID, &ad.Title, &ad.Description, &ad.ImageURL); err != nil {
+		if err := row.Scan(&ad.ID, &ad.Link, &ad.ImageURL); err != nil {
 			return nil, fmt.Errorf("failed to scan ad for non-admin: %w", err)
 		}
 

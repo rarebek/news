@@ -1146,16 +1146,13 @@ const docTemplate = `{
         "entity.Ad": {
             "type": "object",
             "properties": {
-                "description": {
-                    "type": "string"
-                },
                 "id": {
                     "type": "string"
                 },
                 "image_url": {
                     "type": "string"
                 },
-                "title": {
+                "link": {
                     "type": "string"
                 },
                 "view_count": {
@@ -1183,13 +1180,10 @@ const docTemplate = `{
         "entity.CreateAdRequest": {
             "type": "object",
             "properties": {
-                "description": {
-                    "type": "string"
-                },
                 "image_url": {
                     "type": "string"
                 },
-                "title": {
+                "link": {
                     "type": "string"
                 }
             }
