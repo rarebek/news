@@ -379,7 +379,27 @@ func (f *authRoutes) upload(c *gin.Context) {
 	defer file.Close()
 
 	ext := filepath.Ext(fileHeader.Filename)
-	allowedExts := map[string]bool{".png": true, ".jpg": true, ".svg": true, ".jpeg": true, ".JPG": true, ".PNG": true}
+	allowedExts := map[string]bool{
+		".png":  true,
+		".jpg":  true,
+		".jpeg": true,
+		".svg":  true,
+		".gif":  true,
+		".bmp":  true,
+		".webp": true,
+		".tiff": true,
+		".ico":  true,
+		".JPG":  true,
+		".PNG":  true,
+		".JPEG": true,
+		".SVG":  true,
+		".GIF":  true,
+		".BMP":  true,
+		".WEBP": true,
+		".TIFF": true,
+		".ICO":  true,
+	}
+
 	if !allowedExts[ext] {
 		f.l.Error(errors.New("invalid file extension"), "http - v1 - fileupload - filepath.Ext")
 		errorResponse(c, http.StatusBadRequest, "Only PNG, JPG, JPEG, and SVG files are allowed", false)
