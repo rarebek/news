@@ -155,30 +155,6 @@ info:
   version: "1.0"
 paths:
   /ads:
-    get:
-      description: Get all ads with view count for admins
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/entity.Ad'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/v1.response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.response'
-      security:
-      - BearerAuth: []
-      summary: Get all ads
-      tags:
-      - ads
     post:
       consumes:
       - application/json
@@ -288,6 +264,31 @@ paths:
       security:
       - BearerAuth: []
       summary: Gets ad details
+      tags:
+      - ads
+  /ads/all:
+    get:
+      description: Get all ads with view count for admins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Ad'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - BearerAuth: []
+      summary: Get all ads
       tags:
       - ads
   /auth/admin/{id}:
