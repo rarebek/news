@@ -109,7 +109,7 @@ func (r *adRoutes) deleteAd(c *gin.Context) {
 // @Failure     400 {object} response
 // @Failure     500 {object} response
 // @Security    BearerAuth
-// @Router      /ads{id} [put]
+// @Router      /ads [put]
 func (r *adRoutes) updateAd(c *gin.Context) {
 	var ad entity.Ad
 
@@ -131,6 +131,7 @@ func (r *adRoutes) updateAd(c *gin.Context) {
 // @Description returns ads
 // @Tags        ads
 // @Produce     json
+// @Param       ad body entity.CreateAdRequest true "Ad details"
 // @Success     200
 // @Failure     400 {object} response
 // @Failure     500 {object} response

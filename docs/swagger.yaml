@@ -186,6 +186,33 @@ paths:
       summary: Create a new ad
       tags:
       - ads
+    put:
+      description: Edits ad by ID
+      parameters:
+      - description: Ad details
+        in: body
+        name: ad
+        required: true
+        schema:
+          $ref: '#/definitions/entity.CreateAdRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - BearerAuth: []
+      summary: Update Ad
+      tags:
+      - ads
   /ads/{id}:
     delete:
       description: Delete an ad
@@ -216,6 +243,13 @@ paths:
   /ads{id}:
     get:
       description: returns ads
+      parameters:
+      - description: Ad details
+        in: body
+        name: ad
+        required: true
+        schema:
+          $ref: '#/definitions/entity.CreateAdRequest'
       produces:
       - application/json
       responses:
@@ -232,33 +266,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Gets ad details
-      tags:
-      - ads
-    put:
-      description: Edits ad by ID
-      parameters:
-      - description: Ad details
-        in: body
-        name: ad
-        required: true
-        schema:
-          $ref: '#/definitions/entity.CreateAdRequest'
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/v1.response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.response'
-      security:
-      - BearerAuth: []
-      summary: Update Ad
       tags:
       - ads
   /auth/admin/{id}:
