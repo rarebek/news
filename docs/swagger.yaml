@@ -240,7 +240,6 @@ paths:
       summary: Delete an ad
       tags:
       - ads
-  /ads{id}:
     get:
       description: returns ads
       parameters:

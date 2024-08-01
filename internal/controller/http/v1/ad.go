@@ -136,7 +136,7 @@ func (r *adRoutes) updateAd(c *gin.Context) {
 // @Failure     400 {object} response
 // @Failure     500 {object} response
 // @Security    BearerAuth
-// @Router      /ads{id} [get]
+// @Router      /ads/{id} [get]
 func (r *adRoutes) getAd(c *gin.Context) {
 	id := c.Param("id")
 	tokenStr := c.Request.Header.Get("Authorization")
