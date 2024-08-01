@@ -32,6 +32,7 @@ func newAdRoutes(handler *gin.RouterGroup, t usecase.AdUseCase, l logger.Interfa
 		h.DELETE("/:id", r.deleteAd)
 		h.PUT("/", r.updateAd)
 		h.GET("/:id", r.getAd)
+		h.GET("/all", r.getAllAds)
 	}
 }
 
@@ -193,7 +194,7 @@ func (r *adRoutes) getAd(c *gin.Context) {
 // @Failure     400 {object} response
 // @Failure     500 {object} response
 // @Security    BearerAuth
-// @Router      /ads [get]
+// @Router      /ads/all [get]
 func (r *adRoutes) getAllAds(c *gin.Context) {
 	tokenStr := c.Request.Header.Get("Authorization")
 	fmt.Println(tokenStr)
