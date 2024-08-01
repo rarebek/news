@@ -142,11 +142,13 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 
 		ad.ViewCount += 1
 
-		updateQuery := "UPDATE ads SET view_count = $1"
-		_, err = a.Pool.Exec(ctx, updateQuery, ad.ViewCount)
+		updateQuery := "UPDATE ads SET view_count = $1 WHERE id = $2"
+		_, err = a.Pool.Exec(ctx, updateQuery, ad.ViewCount, ad.ID)
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute update query: %w", err)
 		}
+
+		ad.ViewCount = 0
 
 		return &ad, nil
 	}
