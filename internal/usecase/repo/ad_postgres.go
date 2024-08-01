@@ -5,7 +5,6 @@ import (
 	ssq "database/sql"
 	"fmt"
 
-	"github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
 	"tarkib.uz/internal/entity"
 	"tarkib.uz/pkg/postgres"
@@ -61,14 +60,9 @@ func (a *AdRepo) CreateAd(ctx context.Context, request *entity.Ad) error {
 }
 
 func (a *AdRepo) DeleteAd(ctx context.Context, id string) error {
-	deleteAdSQL, args, err := a.Builder.Delete("ads").
-		Where(squirrel.Eq{
-			"id": id,
-		}).ToSql()
-	if err != nil {
-		return err
-	}
-	if _, err = a.Pool.Exec(ctx, deleteAdSQL, args...); err != nil {
+	query := "DELETE FROM ads"
+
+	if _, err := a.Pool.Exec(ctx, query); err != nil {
 		return err
 	}
 
@@ -81,9 +75,7 @@ func (a *AdRepo) UpdateAd(ctx context.Context, request *entity.Ad) error {
 		"image_url": request.ImageURL,
 	}
 	sql, args, err := a.Builder.Update("ads").
-		SetMap(data).Where(squirrel.Eq{
-		"id": request.ID,
-	}).ToSql()
+		SetMap(data).ToSql()
 	if err != nil {
 		return err
 	}

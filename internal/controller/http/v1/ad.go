@@ -28,7 +28,7 @@ func newAdRoutes(handler *gin.RouterGroup, t usecase.AdUseCase, l logger.Interfa
 	h := handler.Group("/ads")
 	{
 		h.POST("/", r.createAd)
-		h.DELETE("/:id", r.deleteAd)
+		h.DELETE("/", r.deleteAd)
 		h.PUT("/", r.updateAd)
 		h.GET("/", r.getAd)
 	}
@@ -78,7 +78,7 @@ func (r *adRoutes) createAd(c *gin.Context) {
 }
 
 // @Summary     Delete an ad
-// @Description Delete an ad by ID
+// @Description Delete an ad
 // @Tags        ads
 // @Produce     json
 // @Param       id path string true "Ad ID"
@@ -86,7 +86,7 @@ func (r *adRoutes) createAd(c *gin.Context) {
 // @Failure     400 {object} response
 // @Failure     500 {object} response
 // @Security    BearerAuth
-// @Router      /ads/{id} [delete]
+// @Router      /ads [delete]
 func (r *adRoutes) deleteAd(c *gin.Context) {
 	id := c.Param("id")
 
@@ -119,7 +119,7 @@ func (r *adRoutes) updateAd(c *gin.Context) {
 	}
 	if err := r.t.UpdateAd(c.Request.Context(), &ad); err != nil {
 		r.l.Error(err)
-		errorResponse(c, http.StatusInternalServerError, "Failed to delete ad", false)
+		errorResponse(c, http.StatusInternalServerError, "Failed to update ad", false)
 		return
 	}
 

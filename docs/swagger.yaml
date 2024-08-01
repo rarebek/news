@@ -153,6 +153,32 @@ info:
   version: "1.0"
 paths:
   /ads:
+    delete:
+      description: Delete an ad
+      parameters:
+      - description: Ad ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.response'
+      security:
+      - BearerAuth: []
+      summary: Delete an ad
+      tags:
+      - ads
     get:
       description: returns ads
       produces:
@@ -229,33 +255,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Update Ad
-      tags:
-      - ads
-  /ads/{id}:
-    delete:
-      description: Delete an ad by ID
-      parameters:
-      - description: Ad ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/v1.response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.response'
-      security:
-      - BearerAuth: []
-      summary: Delete an ad
       tags:
       - ads
   /auth/admin/{id}:

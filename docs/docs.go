@@ -139,16 +139,14 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/ads/{id}": {
+            },
             "delete": {
                 "security": [
                     {
                         "BearerAuth": []
                     }
                 ],
-                "description": "Delete an ad by ID",
+                "description": "Delete an ad",
                 "produces": [
                     "application/json"
                 ],
