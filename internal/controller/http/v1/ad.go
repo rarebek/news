@@ -7,6 +7,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/k0kubun/pp"
 	"tarkib.uz/internal/entity"
 	"tarkib.uz/internal/usecase"
 	"tarkib.uz/pkg/logger"
@@ -151,7 +152,7 @@ func (r *adRoutes) getAd(c *gin.Context) {
 
 		c.JSON(http.StatusOK, ad)
 	} else {
-
+		pp.Println(tokenStr)
 		jwt := tokens.JWTHandler{
 			SigninKey: "dfhdghkglioe",
 			Token:     tokenStr,
