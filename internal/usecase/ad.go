@@ -20,10 +20,6 @@ func NewAdUseCase(repo repo.AdRepo, cfg config.Config) *AdUseCase {
 }
 
 func (uc *AdUseCase) CreateAd(ctx context.Context, ad *entity.Ad) error {
-	if ad.Title == "" || ad.Description == "" {
-		return errors.New("title and description are required")
-	}
-
 	return uc.repo.CreateAd(ctx, ad)
 }
 
@@ -36,10 +32,6 @@ func (uc *AdUseCase) DeleteAd(ctx context.Context, id string) error {
 }
 
 func (uc *AdUseCase) UpdateAd(ctx context.Context, ad *entity.Ad) error {
-	if ad.Title == "" || ad.Description == "" {
-		return errors.New("title and description are required")
-	}
-
 	return uc.repo.UpdateAd(ctx, ad)
 }
 
