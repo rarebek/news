@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"errors"
 
 	"tarkib.uz/config"
 	"tarkib.uz/internal/entity"
@@ -24,10 +23,6 @@ func (uc *AdUseCase) CreateAd(ctx context.Context, ad *entity.Ad) error {
 }
 
 func (uc *AdUseCase) DeleteAd(ctx context.Context, id string) error {
-	if id == "" {
-		return errors.New("ad ID is required")
-	}
-
 	return uc.repo.DeleteAd(ctx, id)
 }
 
