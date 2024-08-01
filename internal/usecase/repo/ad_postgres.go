@@ -7,7 +7,6 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
-	"github.com/k0kubun/pp"
 	"tarkib.uz/internal/entity"
 	"tarkib.uz/pkg/postgres"
 )
@@ -100,8 +99,9 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 	var ad entity.Ad
 
 	if request.IsAdmin {
+		// Admin request: Get ad details including view count
 		var viewCount sql.NullInt64
-		query := a.Builder.Select("id, link, image_url, view_count").From("ads")
+		query := a.Builder.Select("id, link, image_url, view_count").From("ads").Limit(1)
 		sql, args, err := query.ToSql()
 		if err != nil {
 			return nil, fmt.Errorf("failed to build SQL query: %w", err)
@@ -111,38 +111,31 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 		if err := row.Scan(&ad.ID, &ad.Link, &ad.ImageURL, &viewCount); err != nil {
 			return nil, fmt.Errorf("failed to scan ad for admin: %w", err)
 		}
-		pp.Println(viewCount)
+
 		if viewCount.Valid {
 			ad.ViewCount = int(viewCount.Int64)
 		}
 
 		return &ad, nil
 	} else {
-		pp.Println("non admin")
-		updateQuery := "UPDATE ads SET view_count = view_count + 1"
-
-		result, err := a.Pool.Exec(ctx, updateQuery)
-		if err != nil {
-			return nil, fmt.Errorf("failed to execute update query: %w", err)
-		}
-
-		rowsAffected := result.RowsAffected()
-		if err != nil {
-			return nil, fmt.Errorf("failed to get affected rows count: %w", err)
-		}
-		if rowsAffected == 0 {
-			return nil, fmt.Errorf("no rows updated, check if the ad exists")
-		}
-
-		query := a.Builder.Select("id, link, image_url").From("ads")
-		sql, args, err := query.ToSql()
+		// Non-admin request: Update view count and get ad details
+		// First, select the ad
+		selectQuery := a.Builder.Select("id, link, image_url, view_count").From("ads").Limit(1)
+		sql, args, err := selectQuery.ToSql()
 		if err != nil {
 			return nil, fmt.Errorf("failed to build SQL query: %w", err)
 		}
 
 		row := a.Pool.QueryRow(ctx, sql, args...)
-		if err := row.Scan(&ad.ID, &ad.Link, &ad.ImageURL); err != nil {
+		if err := row.Scan(&ad.ID, &ad.Link, &ad.ImageURL, &ad.ViewCount); err != nil {
 			return nil, fmt.Errorf("failed to scan ad for non-admin: %w", err)
+		}
+
+		// Now, update the view count
+		updateQuery := "UPDATE ads SET view_count = view_count + 1 WHERE id = $1"
+		_, err = a.Pool.Exec(ctx, updateQuery, ad.ID)
+		if err != nil {
+			return nil, fmt.Errorf("failed to execute update query: %w", err)
 		}
 
 		return &ad, nil
