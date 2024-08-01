@@ -244,12 +244,11 @@ paths:
     get:
       description: returns ads
       parameters:
-      - description: Ad details
-        in: body
-        name: ad
+      - description: ID of the ads to get
+        in: path
+        name: id
         required: true
-        schema:
-          $ref: '#/definitions/entity.CreateAdRequest'
+        type: string
       produces:
       - application/json
       responses:

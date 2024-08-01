@@ -169,13 +169,11 @@ const docTemplate = `{
                 "summary": "Gets ad details",
                 "parameters": [
                     {
-                        "description": "Ad details",
-                        "name": "ad",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entity.CreateAdRequest"
-                        }
+                        "type": "string",
+                        "description": "ID of the ads to get",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {

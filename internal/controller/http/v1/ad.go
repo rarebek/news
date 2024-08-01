@@ -131,7 +131,7 @@ func (r *adRoutes) updateAd(c *gin.Context) {
 // @Description returns ads
 // @Tags        ads
 // @Produce     json
-// @Param       ad body entity.CreateAdRequest true "Ad details"
+// @Param       id path string true "ID of the ads to get"
 // @Success     200
 // @Failure     400 {object} response
 // @Failure     500 {object} response
