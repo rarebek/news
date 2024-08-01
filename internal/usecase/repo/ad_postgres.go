@@ -124,7 +124,7 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 			return nil, fmt.Errorf("failed to update view count: %w", err)
 		}
 
-		query := a.Builder.Select("id, title, description, image_url").From("ads")
+		query := a.Builder.Select("id, link, image_url").From("ads")
 		sql, args, err := query.ToSql()
 		if err != nil {
 			return nil, fmt.Errorf("failed to build SQL query: %w", err)
