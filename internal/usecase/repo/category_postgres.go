@@ -3,6 +3,7 @@ package repo
 import (
 	"context"
 	"database/sql"
+	"sort"
 
 	"tarkib.uz/internal/entity"
 	"tarkib.uz/pkg/postgres"
@@ -61,6 +62,10 @@ func (n *CategoryRepo) GetAllCategories(ctx context.Context) ([]entity.Category,
 	for _, category := range categoriesMap {
 		categories = append(categories, *category)
 	}
+
+	sort.Slice(categories, func(i, j int) bool {
+		return categories[i].ID < categories[j].ID
+	})
 
 	return categories, nil
 }
