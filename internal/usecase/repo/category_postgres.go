@@ -58,7 +58,6 @@ func (n *CategoryRepo) GetAllCategories(ctx context.Context) ([]entity.Category,
 		}
 	}
 
-	// Define the exact order based on the provided list
 	order := []string{
 		"b1d7357d-1d92-4e77-a8d0-1d394c5b2ef2",
 		"99d0724b-2d49-4140-8b60-0c41fe214b82",
@@ -74,11 +73,9 @@ func (n *CategoryRepo) GetAllCategories(ctx context.Context) ([]entity.Category,
 		"7e27d7bb-258d-4df5-810d-9b5c3146a606",
 	}
 
-	// Convert the map to a slice and sort it based on the defined order
 	var categories []entity.Category
 	for _, id := range order {
 		if category, exists := categoriesMap[id]; exists {
-			// Sort subcategories for each category
 			sort.Slice(category.SubCategories, func(i, j int) bool {
 				return category.SubCategories[i].ID < category.SubCategories[j].ID
 			})

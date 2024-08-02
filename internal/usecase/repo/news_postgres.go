@@ -6,6 +6,7 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
+	"github.com/k0kubun/pp"
 	"tarkib.uz/internal/entity"
 	"tarkib.uz/pkg/postgres"
 )
@@ -50,6 +51,8 @@ func (n *NewsRepo) CreateNews(ctx context.Context, request *entity.News) error {
 			"subcategory_id": v,
 			"news_id":        newsID,
 		}
+
+		pp.Println(v)
 
 		sql, args, err = n.Builder.Insert("subcategory_news").
 			SetMap(data).ToSql()
