@@ -58,11 +58,17 @@ func (n *CategoryRepo) GetAllCategories(ctx context.Context) ([]entity.Category,
 		}
 	}
 
+	// Convert the map to a slice and sort it
 	var categories []entity.Category
 	for _, category := range categoriesMap {
+		// Sort subcategories for each category
+		sort.Slice(category.SubCategories, func(i, j int) bool {
+			return category.SubCategories[i].ID < category.SubCategories[j].ID
+		})
 		categories = append(categories, *category)
 	}
 
+	// Sort categories by ID
 	sort.Slice(categories, func(i, j int) bool {
 		return categories[i].ID < categories[j].ID
 	})
