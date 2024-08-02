@@ -11,6 +11,6 @@ type Category struct {
 	ID            string        `json:"id"`
 	Name          string        `json:"name"`
 	Description   string        `json:"description"`
-	SubCategories []SubCategory `json:"subcategories"`
+	SubCategories []SubCategory `json:"sub_categories"`
 	CreatedAt     time.Time     `json:"created_at`
 }

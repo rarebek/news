@@ -1315,7 +1315,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
-                    "description": "UUID as string",
                     "type": "string"
                 },
                 "name": {

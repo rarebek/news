@@ -81,7 +81,6 @@ definitions:
   models.CategoryResponse:
     properties:
       id:
-        description: UUID as string
         type: string
       name:
         type: string

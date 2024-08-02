@@ -28,7 +28,7 @@ type Message struct {
 }
 
 type CategoryResponse struct {
-	ID            string                `json:"id"` // UUID as string
+	ID            string                `json:"id"`
 	Name          string                `json:"name"`
 	SubCategories []SubCategoryResponse `json:"sub_categories"`
 }
