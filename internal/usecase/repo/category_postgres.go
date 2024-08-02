@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"sort"
+	"time"
 
 	"tarkib.uz/internal/entity"
 	"tarkib.uz/pkg/postgres"
@@ -19,10 +20,10 @@ func NewCategoryRepo(pg *postgres.Postgres) *CategoryRepo {
 
 func (n *CategoryRepo) GetAllCategories(ctx context.Context) ([]entity.Category, error) {
 	query := `
-		SELECT c.id, c.name, sc.id, sc.name
+		SELECT c.id, c.name, c.created_at, sc.id, sc.name
 		FROM categories c
 		LEFT JOIN subcategories sc ON c.id = sc.category_id
-		ORDER BY c.id, sc.id
+		ORDER BY c.created_at, c.id, sc.id
 	`
 
 	rows, err := n.Pool.Query(ctx, query)
@@ -35,10 +36,11 @@ func (n *CategoryRepo) GetAllCategories(ctx context.Context) ([]entity.Category,
 	for rows.Next() {
 		var categoryID string
 		var categoryName string
+		var createdAt time.Time
 		var subCategoryID sql.NullString
 		var subCategoryName sql.NullString
 
-		if err := rows.Scan(&categoryID, &categoryName, &subCategoryID, &subCategoryName); err != nil {
+		if err := rows.Scan(&categoryID, &categoryName, &createdAt, &subCategoryID, &subCategoryName); err != nil {
 			return nil, err
 		}
 
@@ -46,6 +48,7 @@ func (n *CategoryRepo) GetAllCategories(ctx context.Context) ([]entity.Category,
 			categoriesMap[categoryID] = &entity.Category{
 				ID:            categoryID,
 				Name:          categoryName,
+				CreatedAt:     createdAt,
 				SubCategories: []entity.SubCategory{},
 			}
 		}
@@ -58,7 +61,7 @@ func (n *CategoryRepo) GetAllCategories(ctx context.Context) ([]entity.Category,
 		}
 	}
 
-	// Convert the map to a slice and sort it
+	// Convert the map to a slice
 	var categories []entity.Category
 	for _, category := range categoriesMap {
 		// Sort subcategories for each category
@@ -68,9 +71,12 @@ func (n *CategoryRepo) GetAllCategories(ctx context.Context) ([]entity.Category,
 		categories = append(categories, *category)
 	}
 
-	// Sort categories by ID
+	// Sort categories by creation time and then by ID
 	sort.Slice(categories, func(i, j int) bool {
-		return categories[i].ID < categories[j].ID
+		if categories[i].CreatedAt.Equal(categories[j].CreatedAt) {
+			return categories[i].ID < categories[j].ID
+		}
+		return categories[i].CreatedAt.Before(categories[j].CreatedAt)
 	})
 
 	return categories, nil
