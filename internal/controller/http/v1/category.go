@@ -2,11 +2,9 @@ package v1
 
 import (
 	"net/http"
-	"sort"
 
 	"github.com/gin-gonic/gin"
 
-	"tarkib.uz/internal/controller/http/models"
 	"tarkib.uz/internal/usecase"
 	"tarkib.uz/pkg/logger"
 )
@@ -42,33 +40,8 @@ func (n *categoryRoutes) getAllCategories(c *gin.Context) {
 		return
 	}
 
-	// Sort categories by name
-	sort.Slice(categories, func(i, j int) bool {
-		return categories[i].Name < categories[j].Name
-	})
-
-	var categoryResponses []models.CategoryResponse
-	for _, category := range categories {
-		// Sort subcategories by name
-		sort.Slice(category.SubCategories, func(i, j int) bool {
-			return category.SubCategories[i].Name < category.SubCategories[j].Name
-		})
-		var subCategoryResponses []models.SubCategoryResponse
-		for _, subCategory := range category.SubCategories {
-			subCategoryResponses = append(subCategoryResponses, models.SubCategoryResponse{
-				ID:   subCategory.ID, // Use string for UUID
-				Name: subCategory.Name,
-			})
-		}
-		categoryResponses = append(categoryResponses, models.CategoryResponse{
-			ID:            category.ID, // Use string for UUID
-			Name:          category.Name,
-			SubCategories: subCategoryResponses,
-		})
-	}
-
 	c.JSON(http.StatusOK, gin.H{
-		"categories": categoryResponses,
+		"categories": categories,
 		"status":     true,
 	})
 }
