@@ -1,6 +1,7 @@
 package tokens
 
 import (
+	"errors"
 	"log"
 	"time"
 
@@ -76,6 +77,7 @@ func (jwtHandler *JWTHandler) ExtractClaims() (jwt.MapClaims, error) {
 		err   error
 	)
 
+	// Parse the token
 	token, err = jwt.Parse(jwtHandler.Token, func(t *jwt.Token) (interface{}, error) {
 		return []byte(jwtHandler.SigninKey), nil
 	})
@@ -83,10 +85,30 @@ func (jwtHandler *JWTHandler) ExtractClaims() (jwt.MapClaims, error) {
 		return nil, err
 	}
 
+	// Verify token validity and extract claims
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !(ok && token.Valid) {
 		log.Println("invalid jwt token")
 		return nil, err
 	}
+
+	// Check token expiration
+	expStr, ok := claims["exp"].(string) // The exp claim is in ISO 8601 format as a string
+	if !ok {
+		log.Println("expiration claim is missing or invalid")
+		return nil, errors.New("expiration claim is missing or invalid")
+	}
+
+	expTime, err := time.Parse(time.RFC3339, expStr)
+	if err != nil {
+		log.Println("error parsing expiration time:", err)
+		return nil, err
+	}
+
+	if time.Now().After(expTime) {
+		log.Println("token is expired")
+		return nil, errors.New("token is expired")
+	}
+
 	return claims, nil
 }

@@ -19,7 +19,7 @@ var BaseUrl = "https://v6.exchangerate-api.com/v6/c3d03f555eb8293880257456/lates
 
 func Exchange(baseCurrency string) error {
 	url := BaseUrl + baseCurrency
-
+	
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
