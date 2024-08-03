@@ -34,7 +34,7 @@ func NewAuthorizer(e *casbin.Enforcer, jwtHandler jWT.JWTHandler, cfg *config.Co
 		allow, err := a.CheckPermission(c.Request, l)
 		if err != nil {
 			pp.Println("OUR ERROR IS: ", err)
-			if err.Error() == "token is expired" {
+			if err.Error() == "token is expired huh" {
 				a.RequireRefresh(c)
 				return
 			}
