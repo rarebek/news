@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/k0kubun/pp"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 
@@ -115,6 +116,7 @@ func (r *authRoutes) superAdminLogin(c *gin.Context) {
 		PhoneNumber: request.PhoneNumber,
 		Password:    request.Password,
 	})
+	pp.Println(superAdmin)
 
 	if superAdmin.IsBlocked {
 		r.l.Warn("Super admin is blocked.")
