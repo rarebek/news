@@ -3,7 +3,6 @@ package middleware
 import (
 	// "fmt"
 
-	"errors"
 	"log"
 	"net/http"
 
@@ -14,6 +13,7 @@ import (
 	"github.com/casbin/casbin/v2"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/k0kubun/pp"
 	"github.com/spf13/cast"
 )
 
@@ -33,6 +33,7 @@ func NewAuthorizer(e *casbin.Enforcer, jwtHandler jWT.JWTHandler, cfg *config.Co
 	return func(c *gin.Context) {
 		allow, err := a.CheckPermission(c.Request, l)
 		if err != nil {
+			pp.Println("OUR ERROR IS: ", err)
 			if err.Error() == "token is expired" {
 				a.RequireRefresh(c)
 				return
@@ -52,9 +53,7 @@ func NewAuthorizer(e *casbin.Enforcer, jwtHandler jWT.JWTHandler, cfg *config.Co
 func (a *JWTRoleAuth) CheckPermission(r *http.Request, l logger.Interface) (bool, error) {
 	user, err := a.GetRole(r)
 	if err != nil {
-		if err.Error() == "error check token token is expired" {
-			return false, errors.New("token is expired")
-		}
+
 		log.Println("error get role", err)
 		return false, err
 	}
