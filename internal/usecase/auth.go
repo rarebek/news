@@ -34,13 +34,13 @@ func (uc *AuthUseCase) Login(ctx context.Context, request *entity.Admin) (*entit
 		return nil, errors.New("xato parol kiritdingiz")
 	}
 
-	expDuration := time.Duration(uc.cfg.Casbin.AccessTokenTimeOut) * time.Second
-	expTime := time.Now().Add(expDuration)
+	expDuration := time.Now().Add(time.Duration(uc.cfg.Casbin.AccessTokenTimeOut) * time.Second)
+	expTime := expDuration.Format(time.RFC3339)
 
 	jwtHandler := tokens.JWTHandler{
 		Sub:       admin.Id,
 		Iss:       time.Now().String(),
-		Exp:       expTime.String(),
+		Exp:       expTime,
 		Role:      "admin",
 		SigninKey: uc.cfg.Casbin.SigningKey,
 		Timeout:   uc.cfg.Casbin.AccessTokenTimeOut,

@@ -22,4 +22,4 @@ casbin:
   config_file_path: "./config/auth.conf"
   csv_file_path: "./config/auth.csv"
   signing_key: "dfhdghkglioe"
-  access_token_timeout: 30
+  access_token_timeout: 86400
