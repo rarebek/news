@@ -20,9 +20,10 @@ func NewAdRepo(pg *postgres.Postgres) *AdRepo {
 
 func (a *AdRepo) CreateAd(ctx context.Context, request *entity.Ad) error {
 	data := map[string]interface{}{
-		"id":        request.ID,
-		"link":      request.Link,
-		"image_url": request.ImageURL,
+		"id":         request.ID,
+		"link":       request.Link,
+		"image_url":  request.ImageURL,
+		"created_at": request.CreatedAt,
 	}
 	sql, args, err := a.Builder.Insert("ads").
 		SetMap(data).ToSql()

@@ -3,6 +3,7 @@ package v1
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -75,6 +76,7 @@ func (r *adRoutes) createAd(c *gin.Context) {
 	response.ID = id
 	response.ImageURL = ad.ImageURL
 	response.Link = ad.Link
+	response.CreatedAt = time.Now()
 
 	c.JSON(http.StatusCreated, response)
 }

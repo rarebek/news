@@ -1,13 +1,15 @@
 package entity
 
+import "time"
+
 type Ad struct {
-	ID        string `json:"id"`
-	Link      string `json:"link"`
-	ImageURL  string `json:"image_url"`
-	ViewCount int    `json:"view_count"`
+	ID        string    `json:"id"`
+	Link      string    `json:"link"`
+	ImageURL  string    `json:"image_url"`
+	ViewCount int       `json:"view_count"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
-// comment
 type CreateAdRequest struct {
 	Link     string `json:"link"`
 	ImageURL string `json:"image_url"`
