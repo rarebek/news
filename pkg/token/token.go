@@ -107,7 +107,7 @@ func (jwtHandler *JWTHandler) ExtractClaims() (jwt.MapClaims, error) {
 
 	if time.Now().After(expTime) {
 		log.Println("token is expired")
-		return nil, errors.New("token is expired")
+		return nil, errors.New("token is expired huh")
 	}
 
 	return claims, nil
