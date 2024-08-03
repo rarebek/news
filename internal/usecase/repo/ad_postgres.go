@@ -131,7 +131,7 @@ func (a *AdRepo) GetAd(ctx context.Context, request *entity.GetAdRequest) (*enti
 func (a *AdRepo) GetAllAds(ctx context.Context) ([]*entity.Ad, error) {
 	var ads []*entity.Ad
 
-	query := a.Builder.Select("id, link, image_url, view_count").From("ads")
+	query := a.Builder.Select("id, link, image_url, view_count").From("ads").OrderBy("created_at DESC")
 	sql, args, err := query.ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build SQL query: %w", err)
