@@ -3,6 +3,7 @@ package middleware
 import (
 	// "fmt"
 
+	"errors"
 	"log"
 	"net/http"
 
@@ -32,6 +33,9 @@ func NewAuthorizer(e *casbin.Enforcer, jwtHandler jWT.JWTHandler, cfg *config.Co
 	return func(c *gin.Context) {
 		allow, err := a.CheckPermission(c.Request, l)
 		if err != nil {
+			if err.Error() == "token is expired" {
+				a.RequireRefresh(c)
+			}
 			v, _ := err.(*jwt.ValidationError)
 			if v.Errors == jwt.ValidationErrorExpired {
 				a.RequireRefresh(c)
@@ -47,6 +51,9 @@ func NewAuthorizer(e *casbin.Enforcer, jwtHandler jWT.JWTHandler, cfg *config.Co
 func (a *JWTRoleAuth) CheckPermission(r *http.Request, l logger.Interface) (bool, error) {
 	user, err := a.GetRole(r)
 	if err != nil {
+		if err.Error() == "error check token token is expired" {
+			return false, errors.New("token is expired")
+		}
 		log.Println("error get role", err)
 		return false, err
 	}
@@ -104,7 +111,7 @@ func (a *JWTRoleAuth) GetRole(r *http.Request) (string, error) {
 
 func (a *JWTRoleAuth) RequireRefresh(c *gin.Context) {
 	c.JSON(http.StatusUnauthorized, gin.H{
-		"error": "required refresh",
+		"error": "token is expired",
 	})
 	c.AbortWithStatus(401)
 }
