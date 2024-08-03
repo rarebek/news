@@ -71,7 +71,7 @@ func (a *AuthRepo) GetAdminById(ctx context.Context, id string) (*entity.Admin, 
 func (a *AuthRepo) GetSuperAdminData(ctx context.Context, PhoneNumber string) (*entity.SuperAdmin, error) {
 	var adminPostgres entity.SuperAdmin
 	var avatarNull sql.NullString
-	sql, args, err := a.Builder.Select("id, phone_number, password, avatar").
+	sql, args, err := a.Builder.Select("id, phone_number, password, avatar, is_blocked").
 		From("superadmins").
 		Where(squirrel.Eq{
 			"phone_number": PhoneNumber,
@@ -82,7 +82,7 @@ func (a *AuthRepo) GetSuperAdminData(ctx context.Context, PhoneNumber string) (*
 
 	row := a.Pool.QueryRow(ctx, sql, args...)
 
-	if err = row.Scan(&adminPostgres.Id, &adminPostgres.PhoneNumber, &adminPostgres.Password, &avatarNull); err != nil {
+	if err = row.Scan(&adminPostgres.Id, &adminPostgres.PhoneNumber, &adminPostgres.Password, &avatarNull, &adminPostgres.IsBlocked); err != nil {
 		return nil, err
 	}
 

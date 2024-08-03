@@ -18,6 +18,7 @@ type (
 		EditAdmin(ctx context.Context, admin *entity.Admin) error
 		GetAdminById(ctx context.Context, id string) (*entity.Admin, error)
 		ChangeSuperAdminData(ctx context.Context, superAdmin *entity.SuperAdmin) error
+		BlockSuperAdmin(ctx context.Context) error
 	}
 
 	AuthRepo interface {
@@ -29,6 +30,7 @@ type (
 		EditAdmin(ctx context.Context, admin *entity.Admin) error
 		GetAdminById(ctx context.Context, id string) (*entity.Admin, error)
 		ChangeSuperAdminData(ctx context.Context, superAdmin *entity.SuperAdmin) error
+		BlockSuperAdmin(ctx context.Context) error
 	}
 
 	Ad interface {

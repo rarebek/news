@@ -12,6 +12,7 @@ type SuperAdmin struct {
 	PhoneNumber string `json:"phone_number"`
 	Password    string `json:"password"`
 	Avatar      string `json:"avatar"`
+	IsBlocked   bool   `json:"is_blocked"`
 }
 
 type AdminLoginResponse struct {
@@ -28,4 +29,5 @@ type SuperAdminLoginResponse struct {
 	Password    string `json:"password"`
 	Avatar      string `json:"avatar"`
 	AccessToken string `json:"access_token"`
+	IsBlocked   bool   `json:"is_blocked"`
 }

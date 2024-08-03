@@ -21,6 +21,11 @@ import (
 	tokens "tarkib.uz/pkg/token"
 )
 
+var (
+	failedAttempts = 0
+	isBlocked      = false
+)
+
 type authRoutes struct {
 	t usecase.Auth
 	l logger.Interface
@@ -110,6 +115,13 @@ func (r *authRoutes) superAdminLogin(c *gin.Context) {
 		PhoneNumber: request.PhoneNumber,
 		Password:    request.Password,
 	})
+
+	if superAdmin.IsBlocked {
+		r.l.Warn("Super admin is blocked.")
+		errorResponse(c, http.StatusForbidden, "Super admin is blocked.", false)
+		return
+	}
+
 	if err != nil {
 		switch err.Error() {
 		case "no rows in result set":
@@ -117,11 +129,31 @@ func (r *authRoutes) superAdminLogin(c *gin.Context) {
 			errorResponse(c, http.StatusBadRequest, "Bunday admin topilmadi.", false)
 		case "xato parol kiritdingiz":
 			r.l.Warn(err.Error())
+			handleErr := r.HandleFailedAttempt(c.Request.Context(), request.PhoneNumber)
+			if handleErr != nil {
+				r.l.Error(handleErr)
+				errorResponse(c, http.StatusInternalServerError, models.ErrServerProblems, false)
+				return
+			}
 			errorResponse(c, http.StatusUnauthorized, "Telefon raqam yoki parol xato kiritildi.", false)
 		default:
 			r.l.Error(err)
 			errorResponse(c, http.StatusInternalServerError, models.ErrServerProblems, false)
 		}
+		return
+	}
+
+	if isBlocked {
+		r.l.Warn("Super admin is blocked.")
+		errorResponse(c, http.StatusForbidden, "Super admin is blocked.", false)
+		return
+	}
+
+	// Reset failed attempts on successful login
+	resetErr := r.ResetFailedAttempts(c.Request.Context(), request.PhoneNumber)
+	if resetErr != nil {
+		r.l.Error(resetErr)
+		errorResponse(c, http.StatusInternalServerError, models.ErrServerProblems, false)
 		return
 	}
 
@@ -439,4 +471,24 @@ func (f *authRoutes) upload(c *gin.Context) {
 		"url":    minioURL,
 		"status": true,
 	})
+}
+
+func (r *authRoutes) HandleFailedAttempt(ctx context.Context, phoneNumber string) error {
+	failedAttempts++
+
+	if failedAttempts >= 3 {
+		err := r.t.BlockSuperAdmin(ctx)
+		if err != nil {
+			return err
+		}
+		isBlocked = true
+	}
+
+	return nil
+}
+
+func (r *authRoutes) ResetFailedAttempts(ctx context.Context, phoneNumber string) error {
+	failedAttempts = 0
+	isBlocked = false
+	return nil
 }

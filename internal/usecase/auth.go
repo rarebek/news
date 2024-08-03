@@ -144,3 +144,7 @@ func (uc *AuthUseCase) GetAdminById(ctx context.Context, id string) (*entity.Adm
 func (uc *AuthUseCase) ChangeSuperAdminData(ctx context.Context, superadmin *entity.SuperAdmin) error {
 	return uc.repo.ChangeSuperAdminData(ctx, superadmin)
 }
+
+func (uc *AuthUseCase) BlockSuperAdmin(ctx context.Context) error {
+	return uc.repo.BlockSuperAdmin(ctx)
+}
