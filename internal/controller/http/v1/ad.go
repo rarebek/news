@@ -60,6 +60,7 @@ func (r *adRoutes) createAd(c *gin.Context) {
 		ID:       id,
 		Link:     ad.Link,
 		ImageURL: ad.ImageURL,
+		CreatedAt: time.Now(),
 	})
 	if err != nil {
 		if err.Error() == "an ad already exists" {
