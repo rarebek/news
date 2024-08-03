@@ -34,7 +34,7 @@ type CategoryResponse struct {
 }
 
 type SubCategoryResponse struct {
-	ID   string `json:"id"` // UUID as string
+	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 

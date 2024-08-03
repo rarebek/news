@@ -46,7 +46,7 @@ func newAdRoutes(handler *gin.RouterGroup, t usecase.AdUseCase, l logger.Interfa
 // @Failure     400 {object} response
 // @Failure     500 {object} response
 // @Security    BearerAuth
-// @Router      /ads [post]
+// @Router      /ads/ [post]
 func (r *adRoutes) createAd(c *gin.Context) {
 	var ad entity.CreateAdRequest
 	if err := c.ShouldBindJSON(&ad); err != nil {
