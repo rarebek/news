@@ -35,6 +35,7 @@ func NewAuthorizer(e *casbin.Enforcer, jwtHandler jWT.JWTHandler, cfg *config.Co
 		if err != nil {
 			if err.Error() == "token is expired" {
 				a.RequireRefresh(c)
+				return
 			}
 			v, _ := err.(*jwt.ValidationError)
 			if v.Errors == jwt.ValidationErrorExpired {
