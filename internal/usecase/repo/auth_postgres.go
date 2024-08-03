@@ -199,3 +199,18 @@ func (a *AuthRepo) ChangeSuperAdminData(ctx context.Context, superAdmin *entity.
 
 	return nil
 }
+
+func (a *AuthRepo) BlockSuperAdmin(ctx context.Context) error {
+	data := make(map[string]interface{})
+	data["is_blocked"] = true
+	sql, args, err := a.Builder.Update("superadmins").SetMap(data).ToSql()
+	if err != nil {
+		return err
+	}
+
+	if _, err = a.Pool.Exec(ctx, sql, args...); err != nil {
+		return err
+	}
+
+	return nil
+}
