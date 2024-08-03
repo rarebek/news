@@ -96,6 +96,7 @@ func (uc *AuthUseCase) SuperAdminLogin(ctx context.Context, request *entity.Supe
 		Password:    admin.Password,
 		Avatar:      admin.Avatar,
 		AccessToken: accessToken,
+		IsBlocked:   admin.IsBlocked,
 	}, nil
 }
 
