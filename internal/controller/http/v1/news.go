@@ -32,7 +32,8 @@ func newNewsRoutes(handler *gin.RouterGroup, t usecase.NewsUseCase, l logger.Int
 		h.GET("/filtered", r.getFilteredNews)
 		h.PUT("/update/:id", r.updateNews)
 		h.GET("/get/:id", r.getNewsByID)
-		h.GET("search", r.searchGlobalWithLocal)
+		h.GET("/search", r.searchGlobalWithLocal)
+		h.GET("/convert", r.CurrencyConverter)
 	}
 }
 
