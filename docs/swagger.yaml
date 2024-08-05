@@ -637,6 +637,52 @@ paths:
       summary: Image upload
       tags:
       - file-upload
+  /news/convert:
+    get:
+      consumes:
+      - application/json
+      description: Converts an amount from one currency to another based on the latest
+        exchange rates.
+      operationId: currency-converter
+      parameters:
+      - description: Currency code to convert from
+        example: '"USD"'
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: Currency code to convert to
+        example: '"UZS"'
+        in: query
+        name: to
+        required: true
+        type: string
+      - description: Amount to be converted
+        example: '"100"'
+        in: query
+        name: amount
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns original amount, converted amount, from currency, and
+            to currency
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/v1.response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Currency Converter
+      tags:
+      - currency
   /news/create:
     post:
       consumes:

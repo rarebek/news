@@ -761,6 +761,69 @@ const docTemplate = `{
                 }
             }
         },
+        "/news/convert": {
+            "get": {
+                "description": "Converts an amount from one currency to another based on the latest exchange rates.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "currency"
+                ],
+                "summary": "Currency Converter",
+                "operationId": "currency-converter",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"USD\"",
+                        "description": "Currency code to convert from",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"UZS\"",
+                        "description": "Currency code to convert to",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"100\"",
+                        "description": "Amount to be converted",
+                        "name": "amount",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns original amount, converted amount, from currency, and to currency",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
         "/news/create": {
             "post": {
                 "security": [

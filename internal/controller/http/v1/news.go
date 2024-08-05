@@ -376,7 +376,6 @@ type Currency struct {
 // @Failure     400 {object} response "Bad request"
 // @Failure     500 {object} response "Internal server error"
 // @Router      /news/convert [get]
-
 func (n *newsRoutes) CurrencyConverter(c *gin.Context) {
 	from := c.Query("from")
 	to := c.Query("to")
