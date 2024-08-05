@@ -1197,6 +1197,9 @@ const docTemplate = `{
         "entity.Ad": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -1261,6 +1264,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
+                },
+                "is_blocked": {
+                    "type": "boolean"
                 },
                 "password": {
                     "type": "string"

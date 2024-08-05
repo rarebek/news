@@ -2,6 +2,8 @@ basePath: /v1
 definitions:
   entity.Ad:
     properties:
+      created_at:
+        type: string
       id:
         type: string
       image_url:
@@ -44,6 +46,8 @@ definitions:
         type: string
       id:
         type: string
+      is_blocked:
+        type: boolean
       password:
         type: string
       phone_number:

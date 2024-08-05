@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -343,4 +345,97 @@ func (n *newsRoutes) searchGlobalWithLocal(c *gin.Context) {
 		"news":   news,
 		"status": true,
 	})
+}
+
+// Currency struct to unmarshal JSON data
+type Currency struct {
+	ID       int    `json:"id"`
+	Code     string `json:"Code"`
+	Ccy      string `json:"Ccy"`
+	CcyNmRU  string `json:"CcyNm_RU"`
+	CcyNmUZ  string `json:"CcyNm_UZ"`
+	CcyNmUZC string `json:"CcyNm_UZC"`
+	CcyNmEN  string `json:"CcyNm_EN"`
+	Nominal  string `json:"Nominal"`
+	Rate     string `json:"Rate"`
+	Diff     string `json:"Diff"`
+	Date     string `json:"Date"`
+}
+
+// @Summary		Currency Converter
+// @Description Converts an amount from one currency to another based on the latest exchange rates.
+// @ID          currency-converter
+// @Tags  	    currency
+// @Accept      json
+// @Produce     json
+// @Param       from   query string true "Currency code to convert from" example("USD")
+// @Param       to     query string true "Currency code to convert to" example("UZS")
+// @Param       amount query string true "Amount to be converted" example("100")
+// @Success     200 {object} map[string]interface{} "Returns original amount, converted amount, from currency, and to currency"
+// @Failure     400 {object} response "Bad request"
+// @Failure     500 {object} response "Internal server error"
+// @Router      /news/convert [get]
+
+func (n *newsRoutes) CurrencyConverter(c *gin.Context) {
+	from := c.Query("from")
+	to := c.Query("to")
+	amountStr := c.Query("amount")
+
+	amount, err := strconv.ParseFloat(amountStr, 64)
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, "Invalid amount value", false)
+		return
+	}
+
+	resp, err := http.Get("https://cbu.uz/uz/arkhiv-kursov-valyut/json/")
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti", false)
+		return
+	}
+	defer resp.Body.Close()
+
+	var currencies []Currency
+	if err := json.NewDecoder(resp.Body).Decode(&currencies); err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Failed to parse currency data", false)
+		return
+	}
+
+	fromRate, err := findRate(currencies, from)
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, err.Error(), false)
+		return
+	}
+
+	toRate, err := findRate(currencies, to)
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, err.Error(), false)
+		return
+	}
+
+	convertedAmount := (amount * fromRate) / toRate
+
+	c.JSON(http.StatusOK, gin.H{
+		"from":            from,
+		"to":              to,
+		"originalAmount":  amount,
+		"convertedAmount": convertedAmount,
+	})
+}
+
+func findRate(currencies []Currency, code string) (float64, error) {
+	for _, currency := range currencies {
+		if currency.Ccy == code {
+			rate, err := strconv.ParseFloat(currency.Rate, 64)
+			if err != nil {
+				return 0, fmt.Errorf("invalid rate for currency %s", code)
+			}
+			return rate, nil
+		}
+	}
+	return 0, fmt.Errorf("currency not found: %s", code)
 }
