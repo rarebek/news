@@ -142,17 +142,6 @@ definitions:
         example: test
         type: string
     type: object
-  v1.FinancialData:
-    properties:
-      name:
-        type: string
-      price:
-        type: number
-      symbol:
-        type: string
-      updated_at:
-        type: string
-    type: object
   v1.response:
     properties:
       error:
@@ -830,13 +819,12 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: Returns financial and currency data
           schema:
-            items:
-              $ref: '#/definitions/v1.FinancialData'
-            type: array
+            additionalProperties: true
+            type: object
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
             additionalProperties:
               type: string

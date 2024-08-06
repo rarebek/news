@@ -1030,16 +1030,14 @@ const docTemplate = `{
                 "summary": "Get financial data for various symbols",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Returns financial and currency data",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/v1.FinancialData"
-                            }
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internal server error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -1506,23 +1504,6 @@ const docTemplate = `{
                 "phone_number": {
                     "type": "string",
                     "example": "test"
-                }
-            }
-        },
-        "v1.FinancialData": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "price": {
-                    "type": "number"
-                },
-                "symbol": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
                 }
             }
         },

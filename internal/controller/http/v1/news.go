@@ -498,7 +498,7 @@ type FinancialData struct {
 	Symbol    string  `json:"symbol"`
 	Name      string  `json:"name"`
 	Price     float64 `json:"price"`
-	UpdatedAt string  `json:"updated_at"`
+	UpdatedAt string  `json:"updatedAt"`
 }
 
 // GetFinancialData godoc
@@ -507,8 +507,8 @@ type FinancialData struct {
 // @Tags Financial
 // @Accept json
 // @Produce json
-// @Success 200 {array} FinancialData
-// @Failure 500 {object} map[string]string
+// @Success 200 {object} map[string]interface{} "Returns financial and currency data"
+// @Failure 500 {object} map[string]string "Internal server error"
 // @Router /news/financialData [get]
 func (n *newsRoutes) GetFinancialData(c *gin.Context) {
 	var financialDatas []FinancialData
@@ -534,5 +534,42 @@ func (n *newsRoutes) GetFinancialData(c *gin.Context) {
 		financialDatas = append(financialDatas, onedata)
 	}
 
-	c.JSON(200, financialDatas)
+	// Fetch currency data for specific currencies
+	currencies, err := fetchCurrencies([]string{"USD", "EUR", "RUB", "KZT", "KGS", "SAR"})
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Failed to fetch currency data", false)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"financial": financialDatas,
+		"currency":  currencies,
+	})
+}
+
+// fetchCurrencies fetches currency data for a list of currency codes
+func fetchCurrencies(codes []string) ([]Currency, error) {
+	resp, err := http.Get("https://cbu.uz/uz/arkhiv-kursov-valyut/json/")
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var allCurrencies []Currency
+	if err := json.NewDecoder(resp.Body).Decode(&allCurrencies); err != nil {
+		return nil, err
+	}
+
+	var selectedCurrencies []Currency
+	for _, currency := range allCurrencies {
+		for _, code := range codes {
+			if currency.Ccy == code {
+				selectedCurrencies = append(selectedCurrencies, currency)
+				break
+			}
+		}
+	}
+
+	return selectedCurrencies, nil
 }
