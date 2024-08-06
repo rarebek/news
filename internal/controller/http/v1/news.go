@@ -34,7 +34,7 @@ func newNewsRoutes(handler *gin.RouterGroup, t usecase.NewsUseCase, l logger.Int
 		h.GET("/get/:id", r.getNewsByID)
 		h.GET("/search", r.searchGlobalWithLocal)
 		h.GET("/convert", r.CurrencyConverter)
-		h.GET("financialData", r.GetFinancialData)
+		h.GET("/financialData", r.GetFinancialData)
 	}
 }
 
@@ -509,7 +509,7 @@ type FinancialData struct {
 // @Produce json
 // @Success 200 {array} FinancialData
 // @Failure 500 {object} map[string]string
-// @Router /financialData [get]
+// @Router /news/financialData [get]
 func (n *newsRoutes) GetFinancialData(c *gin.Context) {
 	var financialDatas []FinancialData
 	symbols := []string{"XAU", "XAG", "BTC"}

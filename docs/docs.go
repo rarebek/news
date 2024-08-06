@@ -761,41 +761,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/financialData": {
-            "get": {
-                "description": "Fetches financial data for symbols such as gold, silver, and bitcoin from external APIs",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Financial"
-                ],
-                "summary": "Get financial data for various symbols",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/v1.FinancialData"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/news/convert": {
             "get": {
                 "description": "Converts an amount from one currency to another based on the latest exchange rates.",
@@ -1045,6 +1010,41 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
+        "/news/financialData": {
+            "get": {
+                "description": "Fetches financial data for symbols such as gold, silver, and bitcoin from external APIs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Financial"
+                ],
+                "summary": "Get financial data for various symbols",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/v1.FinancialData"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
