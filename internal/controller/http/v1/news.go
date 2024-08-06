@@ -620,7 +620,7 @@ func (n *newsRoutes) GetWeatherData(c *gin.Context) {
 		return
 	}
 	defer resp.Body.Close()
-
+	pp.Println(resp.Body)
 	var weatherData WeatherData
 	if err := json.NewDecoder(resp.Body).Decode(&weatherData); err != nil {
 		n.l.Error(err)
