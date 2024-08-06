@@ -403,6 +403,59 @@ func (n *newsRoutes) CurrencyConverter(c *gin.Context) {
 		return
 	}
 
+	// If converting from UZS to another currency
+	if from == "UZS" {
+		for _, currency := range currencies {
+			if currency.Ccy == to {
+				rateOfTo := currency.Rate
+				rateFloat, err := strconv.ParseFloat(rateOfTo, 64)
+				if err != nil {
+					n.l.Error(err)
+					errorResponse(c, http.StatusInternalServerError, "Failed to parse currency data", false)
+					return
+				}
+				result := amount / rateFloat
+
+				c.JSON(http.StatusOK, gin.H{
+					"from":            from,
+					"to":              to,
+					"originalAmount":  amount,
+					"convertedAmount": result,
+				})
+				return
+			}
+		}
+		errorResponse(c, http.StatusBadRequest, "Currency not found", false)
+		return
+	}
+
+	// If converting to UZS from another currency
+	if to == "UZS" {
+		for _, currency := range currencies {
+			if currency.Ccy == from {
+				rateOfFrom := currency.Rate
+				rateFloat, err := strconv.ParseFloat(rateOfFrom, 64)
+				if err != nil {
+					n.l.Error(err)
+					errorResponse(c, http.StatusInternalServerError, "Failed to parse currency data", false)
+					return
+				}
+				result := amount * rateFloat
+
+				c.JSON(http.StatusOK, gin.H{
+					"from":            from,
+					"to":              to,
+					"originalAmount":  amount,
+					"convertedAmount": result,
+				})
+				return
+			}
+		}
+		errorResponse(c, http.StatusBadRequest, "Currency not found", false)
+		return
+	}
+
+	// If converting between two foreign currencies
 	fromRate, err := findRate(currencies, from)
 	if err != nil {
 		n.l.Error(err)
