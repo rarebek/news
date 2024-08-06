@@ -596,7 +596,7 @@ func (n *newsRoutes) GetWeatherData(c *gin.Context) {
 	latitudeStr := c.Query("latitude")
 	longitudeStr := c.Query("longitude")
 
-	url := "https://api.tomorrow.io/v4/weather/realtime?units=metric&apikey=ys7Slkzzh448ctbaydInVeSRGwxMr6wL?latitude=" + latitudeStr + "?longitude=" + longitudeStr
+	url := "https://api.tomorrow.io/v4/weather/realtime?units=metric&apikey=ys7Slkzzh448ctbaydInVeSRGwxMr6wL&latitude=" + latitudeStr + "&longitude=" + longitudeStr
 
 	req, _ := http.NewRequest("GET", url, nil)
 
