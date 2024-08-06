@@ -3,6 +3,7 @@ package v1
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -620,7 +621,16 @@ func (n *newsRoutes) GetWeatherData(c *gin.Context) {
 		return
 	}
 	defer resp.Body.Close()
-	pp.Println(resp.Body)
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Failed to read weather data", false)
+		return
+	}
+
+	pp.Println("Weather Data Response:", string(body))
+
 	var weatherData WeatherData
 	if err := json.NewDecoder(resp.Body).Decode(&weatherData); err != nil {
 		n.l.Error(err)
