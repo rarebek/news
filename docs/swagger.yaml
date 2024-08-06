@@ -142,6 +142,17 @@ definitions:
         example: test
         type: string
     type: object
+  v1.FinancialData:
+    properties:
+      name:
+        type: string
+      price:
+        type: number
+      symbol:
+        type: string
+      updated_at:
+        type: string
+    type: object
   v1.response:
     properties:
       error:
@@ -637,6 +648,30 @@ paths:
       summary: Image upload
       tags:
       - file-upload
+  /financialData:
+    get:
+      consumes:
+      - application/json
+      description: Fetches financial data for symbols such as gold, silver, and bitcoin
+        from external APIs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/v1.FinancialData'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get financial data for various symbols
+      tags:
+      - Financial
   /news/convert:
     get:
       consumes:
