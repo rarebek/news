@@ -596,47 +596,16 @@ func (n *newsRoutes) GetWeatherData(c *gin.Context) {
 	latitudeStr := c.Query("latitude")
 	longitudeStr := c.Query("longitude")
 
-	latitude, err := strconv.ParseFloat(latitudeStr, 64)
-	if err != nil {
-		n.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, "Invalid latitude value", false)
-		return
-	}
+	url := "https://api.tomorrow.io/v4/weather/realtime?units=metric&apikey=ys7Slkzzh448ctbaydInVeSRGwxMr6wL?latitude=" + latitudeStr + "?longitude=" + longitudeStr
 
-	longitude, err := strconv.ParseFloat(longitudeStr, 64)
-	if err != nil {
-		n.l.Error(err)
-		errorResponse(c, http.StatusBadRequest, "Invalid longitude value", false)
-		return
-	}
+	req, _ := http.NewRequest("GET", url, nil)
 
-	url := "https://api.open-meteo.com/v1/forecast?latitude=" + strconv.FormatFloat(latitude, 'f', 6, 64) +
-		"&longitude=" + strconv.FormatFloat(longitude, 'f', 6, 64) +
-		"&current_weather=true"
+	req.Header.Add("accept", "application/json")
 
-	resp, err := http.Get(url)
-	if err != nil {
-		n.l.Error(err)
-		errorResponse(c, http.StatusInternalServerError, "Failed to fetch weather data", false)
-		return
-	}
-	defer resp.Body.Close()
+	res, _ := http.DefaultClient.Do(req)
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		n.l.Error(err)
-		errorResponse(c, http.StatusInternalServerError, "Failed to read weather data", false)
-		return
-	}
+	defer res.Body.Close()
+	body, _ := io.ReadAll(res.Body)
 
-	pp.Println("Weather Data Response:", string(body))
-
-	var weatherData WeatherData
-	if err := json.NewDecoder(resp.Body).Decode(&weatherData); err != nil {
-		n.l.Error(err)
-		errorResponse(c, http.StatusInternalServerError, "Failed to parse weather data", false)
-		return
-	}
-
-	c.JSON(http.StatusOK, weatherData)
+	fmt.Println(string(body))
 }
