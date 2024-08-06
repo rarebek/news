@@ -142,6 +142,13 @@ definitions:
         example: test
         type: string
     type: object
+  v1.WeatherData:
+    properties:
+      temperature_2m:
+        type: number
+      weathercode:
+        type: integer
+    type: object
   v1.response:
     properties:
       error:
@@ -992,6 +999,47 @@ paths:
       summary: Update News
       tags:
       - news
+  /news/weatherData:
+    get:
+      consumes:
+      - application/json
+      description: Fetches current weather data for a specified location using the
+        Open-Meteo API
+      parameters:
+      - description: Latitude of the location
+        example: 40.7128
+        in: query
+        name: latitude
+        required: true
+        type: number
+      - description: Longitude of the location
+        example: -74.006
+        in: query
+        name: longitude
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns current weather data
+          schema:
+            $ref: '#/definitions/v1.WeatherData'
+        "400":
+          description: Bad request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get weather data
+      tags:
+      - Weather
 securityDefinitions:
   BearerAuth:
     in: header

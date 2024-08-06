@@ -1280,6 +1280,65 @@
                     }
                 }
             }
+        },
+        "/news/weatherData": {
+            "get": {
+                "description": "Fetches current weather data for a specified location using the Open-Meteo API",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Weather"
+                ],
+                "summary": "Get weather data",
+                "parameters": [
+                    {
+                        "type": "number",
+                        "example": 40.7128,
+                        "description": "Latitude of the location",
+                        "name": "latitude",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "example": -74.006,
+                        "description": "Longitude of the location",
+                        "name": "longitude",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns current weather data",
+                        "schema": {
+                            "$ref": "#/definitions/v1.WeatherData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1497,6 +1556,17 @@
                 "phone_number": {
                     "type": "string",
                     "example": "test"
+                }
+            }
+        },
+        "v1.WeatherData": {
+            "type": "object",
+            "properties": {
+                "temperature_2m": {
+                    "type": "number"
+                },
+                "weathercode": {
+                    "type": "integer"
                 }
             }
         },

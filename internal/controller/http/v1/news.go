@@ -573,3 +573,59 @@ func fetchCurrencies(codes []string) ([]Currency, error) {
 
 	return selectedCurrencies, nil
 }
+
+type WeatherData struct {
+	Temperature float64 `json:"temperature_2m"`
+	WeatherCode int     `json:"weathercode"`
+}
+
+// @Summary Get weather data
+// @Description Fetches current weather data for a specified location using the Open-Meteo API
+// @Tags Weather
+// @Accept json
+// @Produce json
+// @Param latitude query float64 true "Latitude of the location" example(40.7128)
+// @Param longitude query float64 true "Longitude of the location" example(-74.0060)
+// @Success 200 {object} WeatherData "Returns current weather data"
+// @Failure 400 {object} map[string]string "Bad request"
+// @Failure 500 {object} map[string]string "Internal server error"
+// @Router /news/weatherData [get]
+func (n *newsRoutes) GetWeatherData(c *gin.Context) {
+	latitudeStr := c.Query("latitude")
+	longitudeStr := c.Query("longitude")
+
+	latitude, err := strconv.ParseFloat(latitudeStr, 64)
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, "Invalid latitude value", false)
+		return
+	}
+
+	longitude, err := strconv.ParseFloat(longitudeStr, 64)
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusBadRequest, "Invalid longitude value", false)
+		return
+	}
+
+	url := "https://api.open-meteo.com/v1/forecast?latitude=" + strconv.FormatFloat(latitude, 'f', 6, 64) +
+		"&longitude=" + strconv.FormatFloat(longitude, 'f', 6, 64) +
+		"&current_weather=true"
+
+	resp, err := http.Get(url)
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Failed to fetch weather data", false)
+		return
+	}
+	defer resp.Body.Close()
+
+	var weatherData WeatherData
+	if err := json.NewDecoder(resp.Body).Decode(&weatherData); err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Failed to parse weather data", false)
+		return
+	}
+
+	c.JSON(http.StatusOK, weatherData)
+}
