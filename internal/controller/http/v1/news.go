@@ -34,6 +34,7 @@ func newNewsRoutes(handler *gin.RouterGroup, t usecase.NewsUseCase, l logger.Int
 		h.GET("/get/:id", r.getNewsByID)
 		h.GET("/search", r.searchGlobalWithLocal)
 		h.GET("/convert", r.CurrencyConverter)
+		h.GET("financialData", r.GetFinancialData)
 	}
 }
 
@@ -491,4 +492,47 @@ func findRate(currencies []Currency, code string) (float64, error) {
 		}
 	}
 	return 0, fmt.Errorf("currency not found: %s", code)
+}
+
+type FinancialData struct {
+	Symbol    string  `json:"symbol"`
+	Name      string  `json:"name"`
+	Price     float64 `json:"price"`
+	UpdatedAt string  `json:"updated_at"`
+}
+
+// GetFinancialData godoc
+// @Summary Get financial data for various symbols
+// @Description Fetches financial data for symbols such as gold, silver, and bitcoin from external APIs
+// @Tags Financial
+// @Accept json
+// @Produce json
+// @Success 200 {array} FinancialData
+// @Failure 500 {object} map[string]string
+// @Router /financialData [get]
+func (n *newsRoutes) GetFinancialData(c *gin.Context) {
+	var financialDatas []FinancialData
+	symbols := []string{"XAU", "XAG", "BTC"}
+
+	for _, v := range symbols {
+		var onedata FinancialData
+		resp, err := http.Get("https://api.gold-api.com/price/" + v)
+		if err != nil {
+			n.l.Error(err)
+			errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti", false)
+			return
+		}
+
+		defer resp.Body.Close()
+
+		if err := json.NewDecoder(resp.Body).Decode(&onedata); err != nil {
+			n.l.Error(err)
+			errorResponse(c, http.StatusInternalServerError, "Failed to parse currency data", false)
+			return
+		}
+
+		financialDatas = append(financialDatas, onedata)
+	}
+
+	c.JSON(200, financialDatas)
 }
