@@ -642,11 +642,13 @@ func (n *newsRoutes) GetWeatherData(c *gin.Context) {
 	eveningAvg := calculateAverage(eveningTemps)
 	nightAvg := calculateAverage(nightTemps)
 
-	// Forecast for the next 7 days (this is just an example, you might want to adjust based on actual data)
+	// Forecast for the next 7 days with weekday names
 	forecast := make(map[string]map[string]float64)
 	for i := 1; i <= 7; i++ {
-		date := time.Now().Add(time.Duration(i*24) * time.Hour).Format("2006-01-02")
-		forecast[date] = map[string]float64{
+		date := time.Now().Add(time.Duration(i*24) * time.Hour)
+		weekday := date.Weekday().String()
+		formattedDate := date.Format("2006-01-02")
+		forecast[fmt.Sprintf("%s (%s)", formattedDate, weekday)] = map[string]float64{
 			"daytime": daytimeAvg,
 			"evening": eveningAvg,
 			"night":   nightAvg,
