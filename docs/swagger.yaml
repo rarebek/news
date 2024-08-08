@@ -1027,7 +1027,7 @@ paths:
       summary: Update News
       tags:
       - news
-  /weatherData:
+  /news/weatherData:
     get:
       consumes:
       - application/json

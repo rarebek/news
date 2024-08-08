@@ -1288,7 +1288,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/weatherData": {
+        "/news/weatherData": {
             "get": {
                 "description": "Fetches current weather data for a specified location using the Open-Meteo API",
                 "consumes": [

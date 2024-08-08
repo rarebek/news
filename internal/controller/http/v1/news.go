@@ -591,7 +591,7 @@ type WeatherData struct {
 // @Success 200 {object} WeatherResponse "Returns current weather data"
 // @Failure 400 {object} map[string]string "Bad request"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /weatherData [get]
+// @Router /news/weatherData [get]
 func (n *newsRoutes) GetWeatherData(c *gin.Context) {
 	latitudeStr := c.Query("latitude")
 	longitudeStr := c.Query("longitude")
