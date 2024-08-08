@@ -537,7 +537,7 @@ func (n *newsRoutes) GetFinancialData(c *gin.Context) {
 	}
 
 	// Fetch currency data for specific currencies
-	currencies, err := fetchCurrencies([]string{"USD", "EUR", "RUB", "KZT", "KGS", "SAR"})
+	currencies, err := fetchCurrencies([]string{"USD", "EUR", "RUB", "KZT", "KGS", "SAR", "JPY", "BYN", "EGP"})
 	if err != nil {
 		n.l.Error(err)
 		errorResponse(c, http.StatusInternalServerError, "Failed to fetch currency data", false)
