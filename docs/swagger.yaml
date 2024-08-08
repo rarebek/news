@@ -142,11 +142,39 @@ definitions:
         example: test
         type: string
     type: object
-  v1.WeatherData:
+  v1.WeatherResponse:
     properties:
-      temperature_2m:
+      elevation:
         type: number
-      weathercode:
+      generationtime_ms:
+        type: number
+      hourly:
+        properties:
+          temperature_2m:
+            items:
+              type: number
+            type: array
+          time:
+            items:
+              type: string
+            type: array
+        type: object
+      hourly_units:
+        properties:
+          temperature_2m:
+            type: string
+          time:
+            type: string
+        type: object
+      latitude:
+        type: number
+      longitude:
+        type: number
+      timezone:
+        type: string
+      timezone_abbreviation:
+        type: string
+      utc_offset_seconds:
         type: integer
     type: object
   v1.response:
@@ -999,7 +1027,7 @@ paths:
       summary: Update News
       tags:
       - news
-  /news/weatherData:
+  /weatherData:
     get:
       consumes:
       - application/json
@@ -1024,7 +1052,7 @@ paths:
         "200":
           description: Returns current weather data
           schema:
-            $ref: '#/definitions/v1.WeatherData'
+            $ref: '#/definitions/v1.WeatherResponse'
         "400":
           description: Bad request
           schema:

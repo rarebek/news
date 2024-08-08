@@ -3,10 +3,10 @@ package v1
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/k0kubun/pp"
@@ -588,24 +588,128 @@ type WeatherData struct {
 // @Produce json
 // @Param latitude query float64 true "Latitude of the location" example(40.7128)
 // @Param longitude query float64 true "Longitude of the location" example(-74.0060)
-// @Success 200 {object} WeatherData "Returns current weather data"
+// @Success 200 {object} WeatherResponse "Returns current weather data"
 // @Failure 400 {object} map[string]string "Bad request"
 // @Failure 500 {object} map[string]string "Internal server error"
-// @Router /news/weatherData [get]
+// @Router /weatherData [get]
 func (n *newsRoutes) GetWeatherData(c *gin.Context) {
 	latitudeStr := c.Query("latitude")
 	longitudeStr := c.Query("longitude")
 
-	url := "https://api.tomorrow.io/v4/weather/realtime?units=metric&apikey=ys7Slkzzh448ctbaydInVeSRGwxMr6wL&latitude=" + latitudeStr + "&longitude=" + longitudeStr
+	if latitudeStr == "" || longitudeStr == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Latitude and longitude are required"})
+		return
+	}
 
-	req, _ := http.NewRequest("GET", url, nil)
+	url := fmt.Sprintf("https://api.open-meteo.com/v1/forecast?latitude=%s&longitude=%s&hourly=temperature_2m", latitudeStr, longitudeStr)
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create request"})
+		return
+	}
 
 	req.Header.Add("accept", "application/json")
 
-	res, _ := http.DefaultClient.Do(req)
-
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch weather data"})
+		return
+	}
 	defer res.Body.Close()
-	body, _ := io.ReadAll(res.Body)
 
-	fmt.Println(string(body))
+	if res.StatusCode != http.StatusOK {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch weather data"})
+		return
+	}
+
+	var weatherData struct {
+		Hourly struct {
+			Time          []string  `json:"time"`
+			Temperature2m []float64 `json:"temperature_2m"`
+		} `json:"hourly"`
+	}
+
+	if err := json.NewDecoder(res.Body).Decode(&weatherData); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to decode weather data"})
+		return
+	}
+
+	// Calculate averages for different times of the day
+	daytimeTemps, eveningTemps, nightTemps := splitByTimeOfDay(weatherData.Hourly.Time, weatherData.Hourly.Temperature2m)
+
+	daytimeAvg := calculateAverage(daytimeTemps)
+	eveningAvg := calculateAverage(eveningTemps)
+	nightAvg := calculateAverage(nightTemps)
+
+	// Forecast for the next 7 days (this is just an example, you might want to adjust based on actual data)
+	forecast := make(map[string]map[string]float64)
+	for i := 1; i <= 7; i++ {
+		date := time.Now().Add(time.Duration(i*24) * time.Hour).Format("2006-01-02")
+		forecast[date] = map[string]float64{
+			"daytime": daytimeAvg,
+			"evening": eveningAvg,
+			"night":   nightAvg,
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"today": map[string]float64{
+			"daytime": daytimeAvg,
+			"evening": eveningAvg,
+			"night":   nightAvg,
+		},
+		"forecast": forecast,
+	})
+}
+
+func splitByTimeOfDay(times []string, temperatures []float64) (daytime []float64, evening []float64, night []float64) {
+	// Dummy implementation: adjust according to your time periods
+	for i, timeStr := range times {
+		hour := extractHourFromTimeString(timeStr)
+		if hour >= 6 && hour < 18 {
+			daytime = append(daytime, temperatures[i])
+		} else if hour >= 18 && hour < 24 {
+			evening = append(evening, temperatures[i])
+		} else {
+			night = append(night, temperatures[i])
+		}
+	}
+	return
+}
+
+func extractHourFromTimeString(timeStr string) int {
+	// Assumes ISO 8601 format with the hour in position 11-13
+	hourStr := timeStr[11:13]
+	hour, _ := strconv.Atoi(hourStr)
+	return hour
+}
+
+func calculateAverage(temps []float64) float64 {
+	if len(temps) == 0 {
+		return 0
+	}
+	var sum float64
+	for _, temp := range temps {
+		sum += temp
+	}
+	return sum / float64(len(temps))
+}
+
+type WeatherResponse struct {
+	Latitude             float64 `json:"latitude"`
+	Longitude            float64 `json:"longitude"`
+	GenerationTimeMs     float64 `json:"generationtime_ms"`
+	UTCOffsetSeconds     int     `json:"utc_offset_seconds"`
+	Timezone             string  `json:"timezone"`
+	TimezoneAbbreviation string  `json:"timezone_abbreviation"`
+	Elevation            float64 `json:"elevation"`
+	HourlyUnits          struct {
+		Time          string `json:"time"`
+		Temperature2m string `json:"temperature_2m"`
+	} `json:"hourly_units"`
+	Hourly struct {
+		Time          []string  `json:"time"`
+		Temperature2m []float64 `json:"temperature_2m"`
+	} `json:"hourly"`
 }

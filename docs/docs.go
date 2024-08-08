@@ -1288,7 +1288,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/news/weatherData": {
+        "/weatherData": {
             "get": {
                 "description": "Fetches current weather data for a specified location using the Open-Meteo API",
                 "consumes": [
@@ -1323,7 +1323,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Returns current weather data",
                         "schema": {
-                            "$ref": "#/definitions/v1.WeatherData"
+                            "$ref": "#/definitions/v1.WeatherResponse"
                         }
                     },
                     "400": {
@@ -1566,13 +1566,56 @@ const docTemplate = `{
                 }
             }
         },
-        "v1.WeatherData": {
+        "v1.WeatherResponse": {
             "type": "object",
             "properties": {
-                "temperature_2m": {
+                "elevation": {
                     "type": "number"
                 },
-                "weathercode": {
+                "generationtime_ms": {
+                    "type": "number"
+                },
+                "hourly": {
+                    "type": "object",
+                    "properties": {
+                        "temperature_2m": {
+                            "type": "array",
+                            "items": {
+                                "type": "number"
+                            }
+                        },
+                        "time": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "hourly_units": {
+                    "type": "object",
+                    "properties": {
+                        "temperature_2m": {
+                            "type": "string"
+                        },
+                        "time": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "timezone": {
+                    "type": "string"
+                },
+                "timezone_abbreviation": {
+                    "type": "string"
+                },
+                "utc_offset_seconds": {
                     "type": "integer"
                 }
             }
