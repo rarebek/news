@@ -1605,6 +1605,20 @@ const docTemplate = `{
         "v1.WeatherResponse": {
             "type": "object",
             "properties": {
+                "current": {
+                    "type": "object",
+                    "properties": {
+                        "rain": {
+                            "type": "number"
+                        },
+                        "time": {
+                            "type": "string"
+                        },
+                        "wind_speed_10m": {
+                            "type": "number"
+                        }
+                    }
+                },
                 "elevation": {
                     "type": "number"
                 },
@@ -1614,6 +1628,12 @@ const docTemplate = `{
                 "hourly": {
                     "type": "object",
                     "properties": {
+                        "precipitation": {
+                            "type": "array",
+                            "items": {
+                                "type": "number"
+                            }
+                        },
                         "temperature_2m": {
                             "type": "array",
                             "items": {
@@ -1625,16 +1645,28 @@ const docTemplate = `{
                             "items": {
                                 "type": "string"
                             }
+                        },
+                        "wind_speed_10m": {
+                            "type": "array",
+                            "items": {
+                                "type": "number"
+                            }
                         }
                     }
                 },
                 "hourly_units": {
                     "type": "object",
                     "properties": {
+                        "precipitation": {
+                            "type": "string"
+                        },
                         "temperature_2m": {
                             "type": "string"
                         },
                         "time": {
+                            "type": "string"
+                        },
+                        "wind_speed_10m": {
                             "type": "string"
                         }
                     }

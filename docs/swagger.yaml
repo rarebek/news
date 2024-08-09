@@ -144,12 +144,25 @@ definitions:
     type: object
   v1.WeatherResponse:
     properties:
+      current:
+        properties:
+          rain:
+            type: number
+          time:
+            type: string
+          wind_speed_10m:
+            type: number
+        type: object
       elevation:
         type: number
       generationtime_ms:
         type: number
       hourly:
         properties:
+          precipitation:
+            items:
+              type: number
+            type: array
           temperature_2m:
             items:
               type: number
@@ -158,12 +171,20 @@ definitions:
             items:
               type: string
             type: array
+          wind_speed_10m:
+            items:
+              type: number
+            type: array
         type: object
       hourly_units:
         properties:
+          precipitation:
+            type: string
           temperature_2m:
             type: string
           time:
+            type: string
+          wind_speed_10m:
             type: string
         type: object
       latitude:

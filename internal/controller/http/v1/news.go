@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/k0kubun/pp"
@@ -582,6 +581,33 @@ type WeatherData struct {
 	WeatherCode int     `json:"weathercode"`
 }
 
+type WeatherResponse struct {
+	Latitude             float64 `json:"latitude"`
+	Longitude            float64 `json:"longitude"`
+	GenerationTimeMs     float64 `json:"generationtime_ms"`
+	UTCOffsetSeconds     int     `json:"utc_offset_seconds"`
+	Timezone             string  `json:"timezone"`
+	TimezoneAbbreviation string  `json:"timezone_abbreviation"`
+	Elevation            float64 `json:"elevation"`
+	Current              struct {
+		Time         string  `json:"time"`
+		Rain         float64 `json:"rain"`
+		WindSpeed10m float64 `json:"wind_speed_10m"`
+	} `json:"current"`
+	HourlyUnits struct {
+		Time          string `json:"time"`
+		Temperature2m string `json:"temperature_2m"`
+		Precipitation string `json:"precipitation"`
+		WindSpeed10m  string `json:"wind_speed_10m"`
+	} `json:"hourly_units"`
+	Hourly struct {
+		Time          []string  `json:"time"`
+		Temperature2m []float64 `json:"temperature_2m"`
+		Precipitation []float64 `json:"precipitation"`
+		WindSpeed10m  []float64 `json:"wind_speed_10m"`
+	} `json:"hourly"`
+}
+
 // @Summary Get weather data
 // @Description Fetches current weather data for a specified location using the Open-Meteo API
 // @Tags Weather
@@ -624,60 +650,14 @@ func (n *newsRoutes) GetWeatherData(c *gin.Context) {
 		return
 	}
 
-	var weatherData struct {
-		Latitude             float64 `json:"latitude"`
-		Longitude            float64 `json:"longitude"`
-		GenerationTimeMs     float64 `json:"generationtime_ms"`
-		UTCOffsetSeconds     int     `json:"utc_offset_seconds"`
-		Timezone             string  `json:"timezone"`
-		TimezoneAbbreviation string  `json:"timezone_abbreviation"`
-		Elevation            float64 `json:"elevation"`
-		Current              struct {
-			Time         string  `json:"time"`
-			Interval     int     `json:"interval"`
-			Rain         float64 `json:"rain"`
-			WindSpeed10m float64 `json:"wind_speed_10m"`
-		} `json:"current"`
-		HourlyUnits struct {
-			Time          string `json:"time"`
-			Temperature2m string `json:"temperature_2m"`
-			Precipitation string `json:"precipitation"`
-			WindSpeed10m  string `json:"wind_speed_10m"`
-		} `json:"hourly_units"`
-		Hourly struct {
-			Time          []string  `json:"time"`
-			Temperature2m []float64 `json:"temperature_2m"`
-			Precipitation []float64 `json:"precipitation"`
-			WindSpeed10m  []float64 `json:"wind_speed_10m"`
-		} `json:"hourly"`
-	}
+	var weatherData WeatherResponse
 
 	if err := json.NewDecoder(res.Body).Decode(&weatherData); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to decode weather data"})
 		return
 	}
 
-	pp.Println(weatherData)
-
-	// Calculate averages for different times of the day
-	daytimeTemps, eveningTemps, nightTemps := splitByTimeOfDay(weatherData.Hourly.Time, weatherData.Hourly.Temperature2m)
-
-	daytimeAvg := calculateAverage(daytimeTemps)
-	eveningAvg := calculateAverage(eveningTemps)
-	nightAvg := calculateAverage(nightTemps)
-
-	// Forecast for the next 7 days with weekday names
-	forecast := make(map[string]map[string]float64)
-	for i := 1; i <= 7; i++ {
-		date := time.Now().Add(time.Duration(i*24) * time.Hour)
-		weekday := date.Weekday().String()
-		formattedDate := date.Format("2006-01-02")
-		forecast[fmt.Sprintf("%s (%s)", formattedDate, weekday)] = map[string]float64{
-			"daytime": daytimeAvg,
-			"evening": eveningAvg,
-			"night":   nightAvg,
-		}
-	}
+	dailyData := aggregateDailyData(weatherData.Hourly.Time, weatherData.Hourly.Temperature2m, weatherData.Hourly.Precipitation, weatherData.Hourly.WindSpeed10m)
 
 	c.JSON(http.StatusOK, gin.H{
 		"current": map[string]interface{}{
@@ -685,13 +665,46 @@ func (n *newsRoutes) GetWeatherData(c *gin.Context) {
 			"rain":       weatherData.Current.Rain,
 			"wind_speed": weatherData.Current.WindSpeed10m,
 		},
-		"today": map[string]float64{
-			"daytime": daytimeAvg,
-			"evening": eveningAvg,
-			"night":   nightAvg,
-		},
-		"forecast": forecast,
+		"forecast": dailyData,
 	})
+}
+
+func aggregateDailyData(times []string, temperatures, precipitations, windSpeeds []float64) map[string]map[string]float64 {
+	dailyData := make(map[string]map[string]float64)
+
+	for i, timeStr := range times {
+		date := extractDateFromTimeString(timeStr)
+
+		if _, exists := dailyData[date]; !exists {
+			dailyData[date] = map[string]float64{
+				"temperature_sum":   0,
+				"temperature_count": 0,
+				"precipitation_sum": 0,
+				"wind_speed_sum":    0,
+				"wind_speed_count":  0,
+			}
+		}
+
+		dailyData[date]["temperature_sum"] += temperatures[i]
+		dailyData[date]["temperature_count"]++
+		dailyData[date]["precipitation_sum"] += precipitations[i]
+		dailyData[date]["wind_speed_sum"] += windSpeeds[i]
+		dailyData[date]["wind_speed_count"]++
+	}
+
+	// Calculate daily averages
+	for date, data := range dailyData {
+		dailyData[date]["average_temperature"] = data["temperature_sum"] / data["temperature_count"]
+		dailyData[date]["average_wind_speed"] = data["wind_speed_sum"] / data["wind_speed_count"]
+		dailyData[date]["total_precipitation"] = data["precipitation_sum"]
+	}
+
+	return dailyData
+}
+
+func extractDateFromTimeString(timeStr string) string {
+	// Assumes ISO 8601 format with the date in position 0-10
+	return timeStr[:10]
 }
 
 func splitByTimeOfDay(times []string, temperatures []float64) (daytime []float64, evening []float64, night []float64) {
@@ -725,24 +738,6 @@ func calculateAverage(temps []float64) float64 {
 		sum += temp
 	}
 	return sum / float64(len(temps))
-}
-
-type WeatherResponse struct {
-	Latitude             float64 `json:"latitude"`
-	Longitude            float64 `json:"longitude"`
-	GenerationTimeMs     float64 `json:"generationtime_ms"`
-	UTCOffsetSeconds     int     `json:"utc_offset_seconds"`
-	Timezone             string  `json:"timezone"`
-	TimezoneAbbreviation string  `json:"timezone_abbreviation"`
-	Elevation            float64 `json:"elevation"`
-	HourlyUnits          struct {
-		Time          string `json:"time"`
-		Temperature2m string `json:"temperature_2m"`
-	} `json:"hourly_units"`
-	Hourly struct {
-		Time          []string  `json:"time"`
-		Temperature2m []float64 `json:"temperature_2m"`
-	} `json:"hourly"`
 }
 
 // @Summary		Get Currency Codes
