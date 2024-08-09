@@ -37,6 +37,7 @@ func newNewsRoutes(handler *gin.RouterGroup, t usecase.NewsUseCase, l logger.Int
 		h.GET("/convert", r.CurrencyConverter)
 		h.GET("/financialData", r.GetFinancialData)
 		h.GET("/weatherData", r.GetWeatherData)
+		h.GET("/currencies", r.GetCurrencyCodes)
 	}
 }
 
@@ -714,4 +715,40 @@ type WeatherResponse struct {
 		Time          []string  `json:"time"`
 		Temperature2m []float64 `json:"temperature_2m"`
 	} `json:"hourly"`
+}
+
+// @Summary		Get Currency Codes
+// @Description Returns a list of currency codes and their names in Uzbek.
+// @ID          get-currency-codes
+// @Tags  	    currency
+// @Accept      json
+// @Produce     json
+// @Success     200 {array} map[string]string "Returns a list of currency codes and their Uzbek names"
+// @Failure     500 {object} response "Internal server error"
+// @Router      /news/currencies [get]
+func (n *newsRoutes) GetCurrencyCodes(c *gin.Context) {
+	resp, err := http.Get("https://cbu.uz/uz/arkhiv-kursov-valyut/json/")
+	if err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Kechirasiz, serverda muammolar bo'lyapti", false)
+		return
+	}
+	defer resp.Body.Close()
+
+	var currencies []Currency
+	if err := json.NewDecoder(resp.Body).Decode(&currencies); err != nil {
+		n.l.Error(err)
+		errorResponse(c, http.StatusInternalServerError, "Failed to parse currency data", false)
+		return
+	}
+
+	currencyList := make([]map[string]string, 0, len(currencies))
+	for _, currency := range currencies {
+		currencyList = append(currencyList, map[string]string{
+			"code": currency.Ccy,
+			"name": currency.CcyNmUZ,
+		})
+	}
+
+	c.JSON(http.StatusOK, currencyList)
 }

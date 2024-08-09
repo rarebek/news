@@ -35,4 +35,5 @@ p, admin, /v1/news/get/{id}, GET
 p, super-admin, /v1/news/get/{id}, GET
 p, unauthorized, /v1/news/search, GET
 p, unauthorized, /v1/news/weatherData, GET
+p, unauthorized, /v1/news/currencies, GET
 g, user, unauthorized   

@@ -882,6 +882,42 @@ const docTemplate = `{
                 }
             }
         },
+        "/news/currencies": {
+            "get": {
+                "description": "Returns a list of currency codes and their names in Uzbek.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "currency"
+                ],
+                "summary": "Get Currency Codes",
+                "operationId": "get-currency-codes",
+                "responses": {
+                    "200": {
+                        "description": "Returns a list of currency codes and their Uzbek names",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.response"
+                        }
+                    }
+                }
+            }
+        },
         "/news/delete/{id}": {
             "delete": {
                 "security": [

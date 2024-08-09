@@ -755,6 +755,30 @@ paths:
       summary: Create News
       tags:
       - news
+  /news/currencies:
+    get:
+      consumes:
+      - application/json
+      description: Returns a list of currency codes and their names in Uzbek.
+      operationId: get-currency-codes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns a list of currency codes and their Uzbek names
+          schema:
+            items:
+              additionalProperties:
+                type: string
+              type: object
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/v1.response'
+      summary: Get Currency Codes
+      tags:
+      - currency
   /news/delete/{id}:
     delete:
       consumes:
