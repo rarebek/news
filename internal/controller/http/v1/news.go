@@ -602,7 +602,7 @@ func (n *newsRoutes) GetWeatherData(c *gin.Context) {
 		return
 	}
 
-	url := fmt.Sprintf("https://api.open-meteo.com/v1/forecast?latitude=%s&longitude=%s&hourly=temperature_2m", latitudeStr, longitudeStr)
+	url := fmt.Sprintf("https://api.open-meteo.com/v1/forecast?latitude=%s&longitude=%s&hourly=temperature_2m,precipitation,wind_speed_10m&current_weather=true", latitudeStr, longitudeStr)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -625,9 +625,30 @@ func (n *newsRoutes) GetWeatherData(c *gin.Context) {
 	}
 
 	var weatherData struct {
+		Latitude             float64 `json:"latitude"`
+		Longitude            float64 `json:"longitude"`
+		GenerationTimeMs     float64 `json:"generationtime_ms"`
+		UTCOffsetSeconds     int     `json:"utc_offset_seconds"`
+		Timezone             string  `json:"timezone"`
+		TimezoneAbbreviation string  `json:"timezone_abbreviation"`
+		Elevation            float64 `json:"elevation"`
+		Current              struct {
+			Time         string  `json:"time"`
+			Interval     int     `json:"interval"`
+			Rain         float64 `json:"rain"`
+			WindSpeed10m float64 `json:"wind_speed_10m"`
+		} `json:"current"`
+		HourlyUnits struct {
+			Time          string `json:"time"`
+			Temperature2m string `json:"temperature_2m"`
+			Precipitation string `json:"precipitation"`
+			WindSpeed10m  string `json:"wind_speed_10m"`
+		} `json:"hourly_units"`
 		Hourly struct {
 			Time          []string  `json:"time"`
 			Temperature2m []float64 `json:"temperature_2m"`
+			Precipitation []float64 `json:"precipitation"`
+			WindSpeed10m  []float64 `json:"wind_speed_10m"`
 		} `json:"hourly"`
 	}
 
@@ -657,6 +678,11 @@ func (n *newsRoutes) GetWeatherData(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
+		"current": map[string]interface{}{
+			"time":       weatherData.Current.Time,
+			"rain":       weatherData.Current.Rain,
+			"wind_speed": weatherData.Current.WindSpeed10m,
+		},
 		"today": map[string]float64{
 			"daytime": daytimeAvg,
 			"evening": eveningAvg,
