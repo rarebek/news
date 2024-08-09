@@ -602,7 +602,7 @@ func (n *newsRoutes) GetWeatherData(c *gin.Context) {
 		return
 	}
 
-	url := fmt.Sprintf("https://api.open-meteo.com/v1/forecast?latitude=%s&longitude=%s&hourly=temperature_2m", latitudeStr, longitudeStr)
+	url := fmt.Sprintf("https://api.open-meteo.com/v1/forecast?latitude=%s&longitude=%s&hourly=temperature_2m,precipitation,wind_speed_10m", latitudeStr, longitudeStr)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -628,6 +628,8 @@ func (n *newsRoutes) GetWeatherData(c *gin.Context) {
 		Hourly struct {
 			Time          []string  `json:"time"`
 			Temperature2m []float64 `json:"temperature_2m"`
+			Precipitation []float64 `json:"precipitation"`
+			WindSpeed10m  []float64 `json:"wind_speed_10m"`
 		} `json:"hourly"`
 	}
 
@@ -638,51 +640,83 @@ func (n *newsRoutes) GetWeatherData(c *gin.Context) {
 
 	// Calculate averages for different times of the day
 	daytimeTemps, eveningTemps, nightTemps := splitByTimeOfDay(weatherData.Hourly.Time, weatherData.Hourly.Temperature2m)
+	daytimePrecip, eveningPrecip, nightPrecip := splitByTimeOfDay(weatherData.Hourly.Time, weatherData.Hourly.Precipitation)
+	daytimeWind, eveningWind, nightWind := splitByTimeOfDay(weatherData.Hourly.Time, weatherData.Hourly.WindSpeed10m)
 
-	daytimeAvg := calculateAverage(daytimeTemps)
-	eveningAvg := calculateAverage(eveningTemps)
-	nightAvg := calculateAverage(nightTemps)
+	daytimeAvgTemp := calculateAverage(daytimeTemps)
+	eveningAvgTemp := calculateAverage(eveningTemps)
+	nightAvgTemp := calculateAverage(nightTemps)
+
+	daytimeAvgPrecip := calculateAverage(daytimePrecip)
+	eveningAvgPrecip := calculateAverage(eveningPrecip)
+	nightAvgPrecip := calculateAverage(nightPrecip)
+
+	daytimeAvgWind := calculateAverage(daytimeWind)
+	eveningAvgWind := calculateAverage(eveningWind)
+	nightAvgWind := calculateAverage(nightWind)
 
 	// Forecast for the next 7 days with weekday names
-	forecast := make(map[string]map[string]float64)
+	forecast := make(map[string]map[string]WeatherForecast)
 	for i := 1; i <= 7; i++ {
 		date := time.Now().Add(time.Duration(i*24) * time.Hour)
 		weekday := date.Weekday().String()
 		formattedDate := date.Format("2006-01-02")
-		forecast[fmt.Sprintf("%s (%s)", formattedDate, weekday)] = map[string]float64{
-			"daytime": daytimeAvg,
-			"evening": eveningAvg,
-			"night":   nightAvg,
+		forecast[fmt.Sprintf("%s (%s)", formattedDate, weekday)] = map[string]WeatherForecast{
+			"daytime": {
+				Temperature:   daytimeAvgTemp,
+				Precipitation: daytimeAvgPrecip,
+				WindSpeed:     daytimeAvgWind,
+			},
+			"evening": {
+				Temperature:   eveningAvgTemp,
+				Precipitation: eveningAvgPrecip,
+				WindSpeed:     eveningAvgWind,
+			},
+			"night": {
+				Temperature:   nightAvgTemp,
+				Precipitation: nightAvgPrecip,
+				WindSpeed:     nightAvgWind,
+			},
 		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"today": map[string]float64{
-			"daytime": daytimeAvg,
-			"evening": eveningAvg,
-			"night":   nightAvg,
+		"today": map[string]WeatherForecast{
+			"daytime": {
+				Temperature:   daytimeAvgTemp,
+				Precipitation: daytimeAvgPrecip,
+				WindSpeed:     daytimeAvgWind,
+			},
+			"evening": {
+				Temperature:   eveningAvgTemp,
+				Precipitation: eveningAvgPrecip,
+				WindSpeed:     eveningAvgWind,
+			},
+			"night": {
+				Temperature:   nightAvgTemp,
+				Precipitation: nightAvgPrecip,
+				WindSpeed:     nightAvgWind,
+			},
 		},
 		"forecast": forecast,
 	})
 }
 
-func splitByTimeOfDay(times []string, temperatures []float64) (daytime []float64, evening []float64, night []float64) {
-	// Dummy implementation: adjust according to your time periods
+func splitByTimeOfDay(times []string, data []float64) (daytime []float64, evening []float64, night []float64) {
 	for i, timeStr := range times {
 		hour := extractHourFromTimeString(timeStr)
 		if hour >= 6 && hour < 18 {
-			daytime = append(daytime, temperatures[i])
+			daytime = append(daytime, data[i])
 		} else if hour >= 18 && hour < 24 {
-			evening = append(evening, temperatures[i])
+			evening = append(evening, data[i])
 		} else {
-			night = append(night, temperatures[i])
+			night = append(night, data[i])
 		}
 	}
 	return
 }
 
 func extractHourFromTimeString(timeStr string) int {
-	// Assumes ISO 8601 format with the hour in position 11-13
 	hourStr := timeStr[11:13]
 	hour, _ := strconv.Atoi(hourStr)
 	return hour
@@ -697,6 +731,12 @@ func calculateAverage(temps []float64) float64 {
 		sum += temp
 	}
 	return sum / float64(len(temps))
+}
+
+type WeatherForecast struct {
+	Temperature   float64 `json:"temperature"`
+	Precipitation float64 `json:"precipitation"`
+	WindSpeed     float64 `json:"wind_speed"`
 }
 
 type WeatherResponse struct {
