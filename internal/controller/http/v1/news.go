@@ -749,6 +749,11 @@ func (n *newsRoutes) GetCurrencyCodes(c *gin.Context) {
 			"name": currency.CcyNmUZ,
 		})
 	}
+	uz := map[string]string{
+		"code": "UZS",
+		"name": "O'zbekiston so'mi",
+	}
+	currencyList = append(currencyList, uz)
 
 	c.JSON(http.StatusOK, currencyList)
 }
