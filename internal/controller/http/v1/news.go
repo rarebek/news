@@ -657,6 +657,8 @@ func (n *newsRoutes) GetWeatherData(c *gin.Context) {
 		return
 	}
 
+	pp.Println(weatherData)
+
 	// Calculate averages for different times of the day
 	daytimeTemps, eveningTemps, nightTemps := splitByTimeOfDay(weatherData.Hourly.Time, weatherData.Hourly.Temperature2m)
 
